@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
-import { syncNflWeek } from "@/lib/ingest";
+import { syncLeagueWeek } from "@/lib/ingest";
 import { createManualGame, updateGame } from "@/lib/ingest/manual";
 import { settleGame } from "@/lib/scoring";
 import { db } from "@/lib/db";
@@ -27,11 +27,15 @@ function revalidate() {
   revalidatePath("/my-picks");
 }
 
-export async function syncNflAction(
+export async function syncGamesAction(
   _prev: AdminState,
   formData: FormData,
 ): Promise<AdminState> {
   await requireAdmin();
+  const leagueRaw = String(formData.get("league") ?? "");
+  if (!isLeague(leagueRaw) || leagueRaw === "HS6A") {
+    return { error: "Pick NFL or College (high school has no feed)." };
+  }
   const season = Number(formData.get("season"));
   const week = Number(formData.get("week"));
   const seasonType = Number(formData.get("seasonType")) || 2;
@@ -40,10 +44,10 @@ export async function syncNflAction(
   }
 
   try {
-    const result = await syncNflWeek(season, week, seasonType);
+    const result = await syncLeagueWeek(leagueRaw, season, week, seasonType);
     revalidate();
     return {
-      ok: `Synced NFL ${season} week ${week}: ${result.fetched} games (${result.created} new, ${result.updated} updated).`,
+      ok: `Synced ${leagueRaw} ${season} week ${week}: ${result.fetched} games (${result.created} new, ${result.updated} updated).`,
     };
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Sync failed." };

@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
-import { SyncNflForm } from "@/components/admin/SyncNflForm";
+import { SyncForm } from "@/components/admin/SyncForm";
 import { ManualGameForm } from "@/components/admin/ManualGameForm";
 import { ScoreForm } from "@/components/admin/ScoreForm";
 
@@ -44,10 +44,10 @@ export default async function AdminPage() {
 
       <section className="grid gap-6 md:grid-cols-2">
         <Card
-          title="Sync NFL (ESPN)"
-          desc="Pull a week's NFL schedule and scores. No API key needed."
+          title="Sync games (ESPN)"
+          desc="Pull a week's NFL or college (FBS) schedule and scores. No API key needed."
         >
-          <SyncNflForm />
+          <SyncForm />
         </Card>
         <Card
           title="Add a game manually"

@@ -1,8 +1,11 @@
-import type { GameStatus } from "@/generated/prisma/client";
-import type { GameProvider, NormalizedGame, NormalizedTeam } from "./types";
+import type { GameStatus, League } from "@/generated/prisma/client";
+import type { NormalizedGame, NormalizedTeam } from "./types";
 
-const ESPN_NFL_SCOREBOARD =
-  "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
+// ESPN's keyless scoreboard covers both the NFL and FBS college football.
+const SPORT_PATH: Partial<Record<League, string>> = {
+  NFL: "nfl",
+  CFB: "college-football",
+};
 
 // Minimal shapes for the bits of the ESPN scoreboard payload we consume.
 type EspnTeam = {
@@ -45,7 +48,12 @@ function mapTeam(t: EspnTeam): NormalizedTeam {
   };
 }
 
-function mapEvent(event: EspnEvent, season: number, week: number): NormalizedGame | null {
+function mapEvent(
+  league: League,
+  event: EspnEvent,
+  season: number,
+  week: number,
+): NormalizedGame | null {
   const competition = event.competitions?.[0];
   const competitors = competition?.competitors ?? [];
   const home = competitors.find((c) => c.homeAway === "home");
@@ -66,7 +74,7 @@ function mapEvent(event: EspnEvent, season: number, week: number): NormalizedGam
   return {
     source: "espn",
     externalId: event.id,
-    league: "NFL",
+    league,
     season,
     week,
     kickoff: new Date(event.date),
@@ -78,28 +86,38 @@ function mapEvent(event: EspnEvent, season: number, week: number): NormalizedGam
   };
 }
 
-// seasonType: 1 = preseason, 2 = regular season, 3 = postseason.
-export async function fetchNflWeek(
+// Fetch one week of games for a league from ESPN. seasonType: 1 = preseason,
+// 2 = regular season, 3 = postseason.
+export async function fetchEspnWeek(
+  league: League,
   season: number,
   week: number,
   seasonType = 2,
 ): Promise<NormalizedGame[]> {
-  const url = `${ESPN_NFL_SCOREBOARD}?dates=${season}&seasontype=${seasonType}&week=${week}`;
+  const path = SPORT_PATH[league];
+  if (!path) throw new Error(`No ESPN feed for ${league}.`);
+
+  const params = new URLSearchParams({
+    dates: String(season),
+    seasontype: String(seasonType),
+    week: String(week),
+  });
+  // FBS only (and lift the default result cap — a college week has ~60+ games).
+  if (league === "CFB") {
+    params.set("groups", "80");
+    params.set("limit", "300");
+  }
+
+  const url = `https://site.api.espn.com/apis/site/v2/sports/football/${path}/scoreboard?${params}`;
   const res = await fetch(url, {
     headers: { "User-Agent": "PickSix/0.1 (+local-dev)" },
     cache: "no-store",
   });
   if (!res.ok) {
-    throw new Error(`ESPN NFL fetch failed (${res.status} ${res.statusText})`);
+    throw new Error(`ESPN ${league} fetch failed (${res.status} ${res.statusText})`);
   }
   const data = (await res.json()) as { events?: EspnEvent[] };
   return (data.events ?? [])
-    .map((e) => mapEvent(e, season, week))
+    .map((e) => mapEvent(league, e, season, week))
     .filter((g): g is NormalizedGame => g !== null);
 }
-
-export const espnNflProvider: GameProvider = {
-  source: "espn",
-  league: "NFL",
-  fetchWeek: (season, week) => fetchNflWeek(season, week),
-};

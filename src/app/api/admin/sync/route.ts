@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { syncNflWeek } from "@/lib/ingest";
+import { syncLeagueWeek } from "@/lib/ingest";
+import { isLeague } from "@/lib/leagues";
 
-// Admin-only programmatic NFL sync. Also the seam a scheduler can hit later.
-// POST /api/admin/sync/nfl?season=2025&week=1&seasonType=2
+// Admin-only programmatic sync. Also the seam a scheduler can hit later.
+// POST /api/admin/sync?league=NFL&season=2026&week=1&seasonType=2
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.isAdmin) {
@@ -11,9 +12,17 @@ export async function POST(req: Request) {
   }
 
   const url = new URL(req.url);
+  const league = url.searchParams.get("league") ?? "";
   const season = Number(url.searchParams.get("season"));
   const week = Number(url.searchParams.get("week"));
   const seasonType = Number(url.searchParams.get("seasonType")) || 2;
+
+  if (!isLeague(league) || league === "HS6A") {
+    return NextResponse.json(
+      { error: "league must be NFL or CFB" },
+      { status: 400 },
+    );
+  }
   if (!Number.isInteger(season) || !Number.isInteger(week)) {
     return NextResponse.json(
       { error: "season and week query params are required integers" },
@@ -22,7 +31,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const result = await syncNflWeek(season, week, seasonType);
+    const result = await syncLeagueWeek(league, season, week, seasonType);
     return NextResponse.json({ status: "ok", ...result });
   } catch (error) {
     return NextResponse.json(

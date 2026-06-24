@@ -1,21 +1,23 @@
-import { fetchNflWeek } from "./espn-nfl";
+import { fetchEspnWeek } from "./espn";
 import { persistGames } from "./persist";
+import type { League } from "@/generated/prisma/client";
 
 export type SyncResult = {
-  league: string;
+  league: League;
   fetched: number;
   created: number;
   updated: number;
 };
 
-// Sync one NFL week from ESPN into the database. Shared by the admin UI action
-// and the programmatic API route (so a scheduler can call it later too).
-export async function syncNflWeek(
+// Sync one week of a league's games from ESPN into the database. Shared by the
+// admin UI action and the programmatic API route (so a scheduler can call it).
+export async function syncLeagueWeek(
+  league: League,
   season: number,
   week: number,
   seasonType = 2,
 ): Promise<SyncResult> {
-  const games = await fetchNflWeek(season, week, seasonType);
+  const games = await fetchEspnWeek(league, season, week, seasonType);
   const { created, updated } = await persistGames(games);
-  return { league: "NFL", fetched: games.length, created, updated };
+  return { league, fetched: games.length, created, updated };
 }
