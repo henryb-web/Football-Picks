@@ -9,13 +9,9 @@ import type { PickResult } from "@/generated/prisma/client";
 const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
   WIN: { label: "Win", className: "bg-emerald-600 text-white" },
   LOSS: { label: "Loss", className: "bg-red-600 text-white" },
-  PUSH: { label: "Push", className: "bg-neutral-400 text-white" },
-  VOID: { label: "Void", className: "bg-neutral-300 text-neutral-700" },
-  PENDING: {
-    label: "Pending",
-    className:
-      "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
-  },
+  PUSH: { label: "Push", className: "bg-neutral-500 text-white" },
+  VOID: { label: "Void", className: "bg-neutral-600 text-white" },
+  PENDING: { label: "Pending", className: "bg-background text-muted" },
 };
 
 export default async function MyPicksPage() {
@@ -36,38 +32,37 @@ export default async function MyPicksPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-10">
       <h1 className="text-3xl font-black tracking-tight">My Picks</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-muted">
         {picks.length} picks · {points} points · {wins}-{losses}-{pushes}
       </p>
 
       {picks.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-neutral-200 p-5 text-sm text-neutral-500 dark:border-neutral-800">
+        <p className="mt-6 rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
           You haven&apos;t made any picks yet.{" "}
-          <Link href="/games" className="font-semibold text-emerald-600 hover:underline">
+          <Link href="/games" className="font-semibold text-emerald-500 hover:underline">
             Go pick some games →
           </Link>
         </p>
       ) : (
-        <div className="mt-6 divide-y divide-neutral-200 rounded-xl border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+        <div className="mt-6 space-y-2">
           {picks.map((p) => {
-            const picked =
-              p.side === "HOME" ? p.game.homeTeam : p.game.awayTeam;
+            const picked = p.side === "HOME" ? p.game.homeTeam : p.game.awayTeam;
             const badge = RESULT_BADGE[p.result];
             return (
               <div
                 key={p.id}
-                className="flex items-center justify-between gap-3 p-4"
+                className="flex items-center justify-between gap-3 rounded-xl border border-cardborder bg-card p-4"
               >
                 <div className="min-w-0">
                   <div className="text-sm">
                     <span className="font-semibold">{picked.displayName}</span>
-                    <span className="text-neutral-400">
+                    <span className="text-muted">
                       {" "}
                       ({p.game.awayTeam.name} @ {p.game.homeTeam.name})
                     </span>
                   </div>
-                  <div className="mt-0.5 text-xs text-neutral-500">
-                    <span className="font-semibold text-emerald-600">
+                  <div className="mt-0.5 text-xs text-muted">
+                    <span className="font-semibold text-emerald-500">
                       {LEAGUE_LABELS[p.game.league]}
                     </span>
                     {p.game.week ? ` · Wk ${p.game.week}` : ""} ·{" "}

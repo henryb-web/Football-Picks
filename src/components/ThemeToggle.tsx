@@ -3,19 +3,20 @@
 import { useEffect, useState } from "react";
 
 // Reflects and toggles the `.dark` class on <html>, persisting the choice.
+// The click reads the live DOM state (not React state) so it always flips
+// correctly even before the icon has synced after load.
 export function ThemeToggle() {
   const [dark, setDark] = useState(true);
 
   useEffect(() => {
-    // Sync to whatever the no-flash script already applied.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setDark(document.documentElement.classList.contains("dark"));
   }, []);
 
   function toggle() {
-    const next = !dark;
-    setDark(next);
+    const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
+    setDark(next);
     try {
       localStorage.setItem("theme", next ? "dark" : "light");
     } catch {
