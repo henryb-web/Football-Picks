@@ -1,0 +1,203 @@
+// Football-Picks data model.
+// Three leagues (NFL, College FBS, Texas UIL 6A), a global pick'em pool,
+// betting lines for NFL/CFB, and picks scored ATS (NFL/CFB) or straight-up (HS).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum League {
+  NFL
+  CFB
+  HS6A
+}
+
+enum GameStatus {
+  SCHEDULED
+  IN_PROGRESS
+  FINAL
+  CANCELED
+}
+
+// Which side a pick is on.
+enum PickSide {
+  HOME
+  AWAY
+}
+
+// Outcome of a settled pick.
+enum PickResult {
+  PENDING
+  WIN
+  LOSS
+  PUSH
+  VOID
+}
+
+// How a game is scored. ATS = against the spread (NFL/CFB), SU = straight up (HS).
+enum ScoringMode {
+  ATS
+  SU
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  // Nullable so the OAuth adapter (Google) can create a user before a username
+  // is chosen; required at credential sign-up and enforced in the app.
+  username      String?   @unique
+  name          String?
+  image         String?
+  // Null for accounts created via Google with no password set.
+  passwordHash  String?
+  isAdmin       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  picks    Pick[]
+  accounts Account[]
+  sessions Session[]
+}
+
+// --- Auth.js (NextAuth) adapter models ---
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Team {
+  id           String  @id @default(cuid())
+  league       League
+  name         String  // e.g. "Cowboys", "Longhorns", "Westlake"
+  displayName   String // e.g. "Dallas Cowboys", "Texas Longhorns", "Westlake Chaparrals"
+  abbreviation String?
+  location     String? // city / school location
+  // Stable id from the source feed (ESPN/CFBD/etc), used for ingestion upserts.
+  externalId   String?
+  externalSource String?
+  // For HS: UIL district. For CFB: conference. For NFL: division. Free-form.
+  grouping     String?
+
+  homeGames Game[] @relation("HomeTeam")
+  awayGames Game[] @relation("AwayTeam")
+
+  @@unique([league, externalSource, externalId])
+  @@index([league])
+}
+
+model Game {
+  id          String     @id @default(cuid())
+  league      League
+  season      Int
+  week        Int?       // null for non-week-based contexts (e.g. some postseason)
+  kickoff     DateTime
+  // When picks lock for this game (kickoff for NFL/CFB; the Friday cutoff for HS).
+  pickLockAt  DateTime
+  status      GameStatus @default(SCHEDULED)
+  scoringMode ScoringMode
+
+  homeTeamId String
+  awayTeamId String
+  homeTeam   Team   @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam   Team   @relation("AwayTeam", fields: [awayTeamId], references: [id])
+
+  homeScore Int?
+  awayScore Int?
+
+  externalId     String?
+  externalSource String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lines Line[]
+  picks Pick[]
+
+  @@unique([league, externalSource, externalId])
+  @@index([league, season, week])
+  @@index([kickoff])
+}
+
+// A snapshot of a betting line for a game (only NFL/CFB). History is kept;
+// the most recent row is shown, and the row referenced by a Pick is used to settle it.
+model Line {
+  id        String   @id @default(cuid())
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  // Point spread from the HOME team's perspective (negative = home favored).
+  spreadHome     Float?
+  spreadHomePrice Int?    // American odds for the home spread, e.g. -110
+  spreadAwayPrice Int?
+  moneylineHome  Int?     // American odds, e.g. -150
+  moneylineAway  Int?
+  total          Float?
+
+  bookmaker String?
+  fetchedAt DateTime @default(now())
+
+  picks Pick[]
+
+  @@index([gameId, fetchedAt])
+}
+
+model Pick {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId String
+  game   Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  side PickSide
+
+  // The line this pick is graded against (snapshotted at pick/lock time). Null for HS (SU).
+  lineId       String?
+  line         Line?   @relation(fields: [lineId], references: [id])
+  spreadAtPick Float?  // denormalized spread (home perspective) captured when picked
+
+  result        PickResult @default(PENDING)
+  pointsAwarded Int        @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, gameId])
+  @@index([gameId])
+}
