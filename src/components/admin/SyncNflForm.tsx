@@ -23,7 +23,7 @@ export function SyncNflForm() {
             id="nfl-season"
             name="season"
             type="number"
-            defaultValue={2025}
+            defaultValue={2026}
             className={inputClass}
           />
         </div>

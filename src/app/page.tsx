@@ -1,18 +1,23 @@
+import Link from "next/link";
+
 const LEAGUES = [
   {
     tag: "NFL",
     title: "Pro",
     blurb: "Every NFL matchup, picked against the spread.",
+    href: "/games?league=NFL",
   },
   {
     tag: "CFB",
     title: "College",
     blurb: "FBS matchups and the road to the 12-team Playoff, against the spread.",
+    href: "/games?league=CFB",
   },
   {
     tag: "6A",
     title: "Texas High School",
     blurb: "UIL Class 6A games — straight-up winner picks.",
+    href: "/games?league=HS6A",
   },
 ];
 
@@ -34,16 +39,22 @@ export default function Home() {
 
       <div className="grid w-full max-w-3xl gap-4 sm:grid-cols-3">
         {LEAGUES.map((l) => (
-          <div
+          <Link
             key={l.tag}
-            className="rounded-2xl border border-neutral-200 p-5 dark:border-neutral-800"
+            href={l.href}
+            className="group rounded-2xl border border-neutral-200 p-5 transition hover:border-emerald-500 hover:shadow-sm dark:border-neutral-800 dark:hover:border-emerald-500"
           >
             <span className="inline-block rounded-full bg-emerald-600/10 px-2.5 py-0.5 text-xs font-bold text-emerald-600">
               {l.tag}
             </span>
-            <h2 className="mt-3 text-lg font-bold">{l.title}</h2>
+            <h2 className="mt-3 text-lg font-bold group-hover:text-emerald-600">
+              {l.title}
+            </h2>
             <p className="mt-1 text-sm text-neutral-500">{l.blurb}</p>
-          </div>
+            <span className="mt-3 inline-block text-sm font-semibold text-emerald-600 opacity-0 transition group-hover:opacity-100">
+              Make picks →
+            </span>
+          </Link>
         ))}
       </div>
 

@@ -52,7 +52,12 @@ function mapEvent(event: EspnEvent, season: number, week: number): NormalizedGam
   const away = competitors.find((c) => c.homeAway === "away");
   if (!home || !away) return null;
 
+  const status = mapStatus(competition?.status ?? event.status);
+
+  // ESPN reports "0" for games that haven't been played, so only trust scores
+  // once a game is live or final.
   const parseScore = (s?: string) => {
+    if (status === "SCHEDULED") return null;
     if (s == null || s === "") return null;
     const n = Number(s);
     return Number.isFinite(n) ? n : null;
@@ -65,7 +70,7 @@ function mapEvent(event: EspnEvent, season: number, week: number): NormalizedGam
     season,
     week,
     kickoff: new Date(event.date),
-    status: mapStatus(competition?.status ?? event.status),
+    status,
     home: mapTeam(home.team),
     away: mapTeam(away.team),
     homeScore: parseScore(home.score),

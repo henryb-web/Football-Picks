@@ -60,9 +60,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  picks    Pick[]
-  accounts Account[]
-  sessions Session[]
+  picks               Pick[]
+  accounts            Account[]
+  sessions            Session[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -100,6 +101,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Single-use password reset tokens. Only the SHA-256 hash is stored; the raw
+// token lives only in the emailed link.
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Team {

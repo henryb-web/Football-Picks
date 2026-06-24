@@ -9,13 +9,20 @@ type Props = {
   action: (state: AuthState, formData: FormData) => Promise<AuthState>;
   googleAction: () => Promise<void>;
   googleConfigured: boolean;
+  notice?: string;
 };
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 dark:border-neutral-700 dark:bg-neutral-900";
 const labelClass = "block text-sm font-medium text-neutral-700 dark:text-neutral-300";
 
-export function AuthForm({ mode, action, googleAction, googleConfigured }: Props) {
+export function AuthForm({
+  mode,
+  action,
+  googleAction,
+  googleConfigured,
+  notice,
+}: Props) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const isSignup = mode === "signup";
 
@@ -29,6 +36,12 @@ export function AuthForm({ mode, action, googleAction, googleConfigured }: Props
           ? "Sign up to start making picks."
           : "Log in to make your picks."}
       </p>
+
+      {notice ? (
+        <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+          {notice}
+        </p>
+      ) : null}
 
       <form action={formAction} className="mt-6 space-y-4">
         {isSignup ? (
@@ -88,6 +101,17 @@ export function AuthForm({ mode, action, googleAction, googleConfigured }: Props
             className={inputClass}
           />
         </div>
+
+        {!isSignup ? (
+          <div className="-mt-1 text-right">
+            <Link
+              href="/forgot"
+              className="text-xs font-medium text-emerald-600 hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+        ) : null}
 
         {state?.error ? (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
