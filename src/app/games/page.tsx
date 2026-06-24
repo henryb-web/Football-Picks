@@ -114,7 +114,7 @@ export default async function GamesPage({
               href={gamesHref(active, w)}
               className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
                 activeWeek === w
-                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                  ? "bg-emerald-600 text-white"
                   : "border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
               }`}
             >
@@ -125,7 +125,7 @@ export default async function GamesPage({
             href={gamesHref(active, "all")}
             className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
               activeWeek == null
-                ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                ? "bg-emerald-600 text-white"
                 : "border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
             }`}
           >
