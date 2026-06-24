@@ -1,5 +1,6 @@
 import { fetchEspnWeek } from "./espn";
 import { persistGames } from "./persist";
+import { isAllowedCollegeGame } from "@/lib/college-conferences";
 import type { League } from "@/generated/prisma/client";
 
 export type SyncResult = {
@@ -17,7 +18,13 @@ export async function syncLeagueWeek(
   week: number,
   seasonType = 2,
 ): Promise<SyncResult> {
-  const games = await fetchEspnWeek(league, season, week, seasonType);
+  let games = await fetchEspnWeek(league, season, week, seasonType);
+  // For college, keep only matchups between the power conferences + Notre Dame.
+  if (league === "CFB") {
+    games = games.filter((g) =>
+      isAllowedCollegeGame(g.home.location, g.away.location),
+    );
+  }
   const { created, updated } = await persistGames(games);
   return { league, fetched: games.length, created, updated };
 }
