@@ -61,6 +61,19 @@ docker compose stop      # stop the database (data is preserved)
 | `npx prisma migrate dev` | Apply schema changes / create a migration |
 | `npx prisma studio` | Browse the database in a web UI |
 
+## Authentication
+
+Sign up / log in with **email + username + password**, or with **Google** (stubbed
+until configured). Built on Auth.js (NextAuth v5) with JWT sessions.
+
+- **Pages:** `/signup` and `/login`. The header shows your username and a sign-out button once logged in.
+- **Enable Google later:** create an OAuth client in the Google Cloud Console, then add
+  `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` to `.env`. The Google button enables itself
+  automatically — no code change needed. Set the authorized redirect URI to
+  `http://localhost:3000/api/auth/callback/google` for local dev.
+- **Dev test account:** `npx tsx scripts/create-test-user.ts` creates
+  `tester` / `tester@example.com` with password `password123`.
+
 ## Project layout
 
 ```
