@@ -42,7 +42,7 @@ export default function Home() {
           <Link
             key={l.tag}
             href={l.href}
-            className="group rounded-2xl border border-neutral-200 p-5 transition hover:border-emerald-500 hover:shadow-sm dark:border-neutral-800 dark:hover:border-emerald-500"
+            className="group rounded-2xl border border-neutral-200 p-5 transition hover:border-emerald-500 hover:shadow-md hover:ring-2 hover:ring-emerald-500/40 dark:border-neutral-800 dark:hover:border-emerald-500"
           >
             <span className="inline-block rounded-full bg-emerald-600/10 px-2.5 py-0.5 text-xs font-bold text-emerald-600">
               {l.tag}
