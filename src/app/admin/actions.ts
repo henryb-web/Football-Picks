@@ -1,12 +1,23 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
 import { syncNflWeek } from "@/lib/ingest";
-import { createManualGame } from "@/lib/ingest/manual";
+import { createManualGame, updateGame } from "@/lib/ingest/manual";
 import { db } from "@/lib/db";
 import { isLeague } from "@/lib/leagues";
 import type { AdminState } from "@/lib/admin-types";
+import type { GameStatus } from "@/generated/prisma/client";
+
+const GAME_STATUSES = ["SCHEDULED", "IN_PROGRESS", "FINAL", "CANCELED"] as const;
+
+function parseScore(value: FormDataEntryValue | null): number | null {
+  const s = String(value ?? "").trim();
+  if (s === "") return null;
+  const n = Number(s);
+  return Number.isInteger(n) ? n : null;
+}
 
 function revalidate() {
   revalidatePath("/admin");
@@ -94,4 +105,63 @@ export async function setScoreAction(
   });
   revalidate();
   return { ok: "Final score saved." };
+}
+
+export async function updateGameAction(
+  _prev: AdminState,
+  formData: FormData,
+): Promise<AdminState> {
+  await requireAdmin();
+  const gameId = String(formData.get("gameId") ?? "");
+  if (!gameId) return { error: "Missing game." };
+
+  const leagueRaw = String(formData.get("league") ?? "");
+  if (!isLeague(leagueRaw)) return { error: "Pick a valid league." };
+
+  const homeName = String(formData.get("homeName") ?? "").trim();
+  const awayName = String(formData.get("awayName") ?? "").trim();
+  if (!homeName || !awayName) return { error: "Enter both team names." };
+
+  const kickoff = new Date(String(formData.get("kickoff") ?? ""));
+  if (Number.isNaN(kickoff.getTime())) {
+    return { error: "Enter a valid kickoff date and time." };
+  }
+
+  const season = Number(formData.get("season"));
+  if (!Number.isInteger(season)) return { error: "Enter a season year." };
+
+  const weekRaw = String(formData.get("week") ?? "").trim();
+  const week = weekRaw === "" ? null : Number(weekRaw);
+  if (week !== null && !Number.isInteger(week)) {
+    return { error: "Week must be a whole number (or left blank)." };
+  }
+
+  const statusRaw = String(formData.get("status") ?? "SCHEDULED");
+  if (!(GAME_STATUSES as readonly string[]).includes(statusRaw)) {
+    return { error: "Invalid status." };
+  }
+
+  await updateGame(gameId, {
+    league: leagueRaw,
+    season,
+    week,
+    kickoff,
+    homeName,
+    awayName,
+    status: statusRaw as GameStatus,
+    homeScore: parseScore(formData.get("homeScore")),
+    awayScore: parseScore(formData.get("awayScore")),
+  });
+  revalidate();
+  return { ok: "Game updated." };
+}
+
+export async function deleteGameAction(formData: FormData) {
+  await requireAdmin();
+  const gameId = String(formData.get("gameId") ?? "");
+  if (gameId) {
+    await db.game.delete({ where: { id: gameId } });
+  }
+  revalidate();
+  redirect("/admin");
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
@@ -81,13 +82,21 @@ export default async function AdminPage() {
                     {g.status}
                   </div>
                 </div>
-                <ScoreForm
-                  gameId={g.id}
-                  awayLabel={g.awayTeam.displayName}
-                  homeLabel={g.homeTeam.displayName}
-                  homeScore={g.homeScore}
-                  awayScore={g.awayScore}
-                />
+                <div className="flex items-center gap-3">
+                  <ScoreForm
+                    gameId={g.id}
+                    awayLabel={g.awayTeam.displayName}
+                    homeLabel={g.homeTeam.displayName}
+                    homeScore={g.homeScore}
+                    awayScore={g.awayScore}
+                  />
+                  <Link
+                    href={`/admin/games/${g.id}`}
+                    className="text-xs font-semibold text-emerald-600 hover:underline"
+                  >
+                    Edit
+                  </Link>
+                </div>
               </div>
             ))
           )}
