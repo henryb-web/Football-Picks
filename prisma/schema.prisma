@@ -215,6 +215,9 @@ model Team {
   externalSource String?
   // For HS: UIL district. For CFB: conference. For NFL: division. Free-form.
   grouping     String?
+  // Brand colors (hex without #), from the feed where available.
+  color        String?
+  altColor     String?
 
   homeGames Game[] @relation("HomeTeam")
   awayGames Game[] @relation("AwayTeam")

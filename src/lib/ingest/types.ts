@@ -9,6 +9,8 @@ export type NormalizedTeam = {
   displayName: string;
   abbreviation?: string | null;
   location?: string | null;
+  color?: string | null;
+  altColor?: string | null;
 };
 
 export type NormalizedGame = {

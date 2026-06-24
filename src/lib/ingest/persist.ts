@@ -21,12 +21,16 @@ async function upsertTeam(league: League, source: string, team: NormalizedTeam) 
       displayName: team.displayName,
       abbreviation: team.abbreviation ?? null,
       location: team.location ?? null,
+      color: team.color ?? null,
+      altColor: team.altColor ?? null,
     },
     update: {
       name: team.name,
       displayName: team.displayName,
       abbreviation: team.abbreviation ?? null,
       location: team.location ?? null,
+      color: team.color ?? null,
+      altColor: team.altColor ?? null,
     },
   });
 }

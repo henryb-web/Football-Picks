@@ -15,6 +15,8 @@ type EspnTeam = {
   name?: string;
   abbreviation?: string;
   location?: string;
+  color?: string;
+  alternateColor?: string;
 };
 type EspnCompetitor = {
   homeAway: "home" | "away";
@@ -45,6 +47,8 @@ function mapTeam(t: EspnTeam): NormalizedTeam {
     displayName: t.displayName ?? t.shortDisplayName ?? t.name ?? t.id,
     abbreviation: t.abbreviation ?? null,
     location: t.location ?? null,
+    color: t.color ?? null,
+    altColor: t.alternateColor ?? null,
   };
 }
 

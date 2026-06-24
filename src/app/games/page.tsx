@@ -15,6 +15,15 @@ function gamesHref(league: string | null, week: string | number | null) {
   return qs ? `/games?${qs}` : "/games";
 }
 
+function Dot({ color }: { color: string | null }) {
+  return (
+    <span
+      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-muted"
+      style={color ? { backgroundColor: `#${color}` } : undefined}
+    />
+  );
+}
+
 export default async function GamesPage({
   searchParams,
 }: {
@@ -72,7 +81,7 @@ export default async function GamesPage({
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-10">
       <h1 className="text-3xl font-black tracking-tight">Games</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-muted">
         Pick a winner for each game. Picks lock at kickoff.
       </p>
 
@@ -94,7 +103,7 @@ export default async function GamesPage({
             className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
               activeLeagueKey === t.key
                 ? "bg-emerald-600 text-white"
-                : "border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+                : "border border-cardborder hover:bg-card"
             }`}
           >
             {t.label}
@@ -115,7 +124,7 @@ export default async function GamesPage({
               className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
                 activeWeek === w
                   ? "bg-emerald-600 text-white"
-                  : "border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+                  : "border border-cardborder hover:bg-card"
               }`}
             >
               {w}
@@ -126,7 +135,7 @@ export default async function GamesPage({
             className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
               activeWeek == null
                 ? "bg-emerald-600 text-white"
-                : "border border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+                : "border border-cardborder hover:bg-card"
             }`}
           >
             All
@@ -134,9 +143,9 @@ export default async function GamesPage({
         </div>
       ) : null}
 
-      <div className="mt-6 divide-y divide-neutral-200 rounded-xl border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="mt-6 space-y-2">
         {games.length === 0 ? (
-          <p className="p-5 text-sm text-neutral-500">
+          <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
             No games here yet. An admin can add them from the Admin page.
           </p>
         ) : (
@@ -154,16 +163,18 @@ export default async function GamesPage({
             return (
               <div
                 key={g.id}
-                className="flex flex-wrap items-center justify-between gap-3 p-4"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cardborder bg-card p-4"
               >
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold">
-                    {g.awayTeam.displayName}{" "}
-                    <span className="text-neutral-400">@</span>{" "}
+                  <div className="flex items-center gap-2 text-sm font-semibold">
+                    <Dot color={g.awayTeam.color} />
+                    {g.awayTeam.displayName}
+                    <span className="text-muted">@</span>
+                    <Dot color={g.homeTeam.color} />
                     {g.homeTeam.displayName}
                   </div>
-                  <div className="mt-0.5 text-xs text-neutral-500">
-                    <span className="font-semibold text-emerald-600">
+                  <div className="mt-1 text-xs text-muted">
+                    <span className="font-semibold text-emerald-500">
                       {LEAGUE_LABELS[g.league]}
                     </span>
                     {g.week ? ` · Wk ${g.week}` : ""} · {formatKickoff(g.kickoff)}
@@ -176,6 +187,8 @@ export default async function GamesPage({
                       gameId={g.id}
                       awayLabel={g.awayTeam.name}
                       homeLabel={g.homeTeam.name}
+                      awayColor={g.awayTeam.color}
+                      homeColor={g.homeTeam.color}
                       initialSide={pick}
                     />
                   ) : (
@@ -185,7 +198,7 @@ export default async function GamesPage({
                           {g.awayScore} – {g.homeScore}
                         </span>
                       ) : (
-                        <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500 dark:bg-neutral-800">
+                        <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
                           {g.status === "IN_PROGRESS"
                             ? "Live"
                             : locked
@@ -194,9 +207,9 @@ export default async function GamesPage({
                         </span>
                       )}
                       {pickLabel ? (
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-muted">
                           Your pick:{" "}
-                          <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+                          <span className="font-semibold text-foreground">
                             {pickLabel}
                           </span>
                         </span>
