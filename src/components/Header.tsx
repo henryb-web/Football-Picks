@@ -9,10 +9,18 @@ export async function Header() {
   return (
     <header className="flex items-center justify-between border-b border-neutral-200 px-6 py-4 dark:border-neutral-800">
       <Link href="/" className="text-lg font-black tracking-tight">
-        🏈 Football Picks
+        🏈 PickSix
       </Link>
 
       <nav className="flex items-center gap-4 text-sm">
+        <Link href="/games" className="font-medium hover:underline">
+          Games
+        </Link>
+        {user?.isAdmin ? (
+          <Link href="/admin" className="font-medium hover:underline">
+            Admin
+          </Link>
+        ) : null}
         {user ? (
           <>
             <span className="text-neutral-500">

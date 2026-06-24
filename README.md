@@ -1,4 +1,4 @@
-# Football Picks
+# PickSix
 
 A weekly pick'em web app for **NFL**, **College (FBS / CFP)**, and **Texas UIL 6A high school**
 football. One global leaderboard. NFL & college games are picked against the spread (with live

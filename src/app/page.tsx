@@ -24,7 +24,7 @@ export default function Home() {
           Weekly pick&apos;em &middot; one global leaderboard
         </p>
         <h1 className="mt-3 text-5xl font-black tracking-tight sm:text-6xl">
-          Football Picks
+          PickSix
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-neutral-500">
           Make your picks before kickoff. Pro, college, and Texas 6A — with live

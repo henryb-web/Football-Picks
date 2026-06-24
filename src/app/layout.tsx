@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Football Picks",
+  title: "PickSix",
   description: "Make picks on NFL, college, and Texas 6A high school football games.",
 };
 
