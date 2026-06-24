@@ -1,12 +1,23 @@
 "use client";
 
-// Toggles the `.dark` class on <html> and remembers the choice. The icon
-// reflects the current theme purely via CSS, so no React state is needed.
+import { useEffect, useState } from "react";
+
+// Reflects and toggles the `.dark` class on <html>, persisting the choice.
 export function ThemeToggle() {
+  const [dark, setDark] = useState(true);
+
+  useEffect(() => {
+    // Sync to whatever the no-flash script already applied.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
   function toggle() {
-    const isDark = document.documentElement.classList.toggle("dark");
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
     try {
-      localStorage.setItem("theme", isDark ? "dark" : "light");
+      localStorage.setItem("theme", next ? "dark" : "light");
     } catch {
       // ignore (private mode, etc.)
     }
@@ -16,12 +27,11 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Toggle light/dark theme"
-      title="Toggle theme"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      title={dark ? "Switch to light mode" : "Switch to dark mode"}
       className="flex h-8 w-8 items-center justify-center rounded-lg border border-cardborder text-muted transition hover:text-foreground"
     >
-      <span className="hidden dark:inline">☀</span>
-      <span className="inline dark:hidden">☾</span>
+      {dark ? "☀" : "☾"}
     </button>
   );
 }

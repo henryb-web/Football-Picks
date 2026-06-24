@@ -22,7 +22,7 @@ export async function Header() {
     <header className="sticky top-0 z-20 border-b border-cardborder bg-card/80 px-6 py-3 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
         <Link href="/" className="text-lg font-black tracking-tight">
-          <span className="text-emerald-500">🏈 Pick</span>Six
+          <span className="text-emerald-500">Pick</span>Six
         </Link>
 
         <nav className="flex items-center gap-4">
