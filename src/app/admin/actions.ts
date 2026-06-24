@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
 import { syncNflWeek } from "@/lib/ingest";
 import { createManualGame, updateGame } from "@/lib/ingest/manual";
+import { settleGame } from "@/lib/scoring";
 import { db } from "@/lib/db";
 import { isLeague } from "@/lib/leagues";
 import type { AdminState } from "@/lib/admin-types";
@@ -22,6 +23,8 @@ function parseScore(value: FormDataEntryValue | null): number | null {
 function revalidate() {
   revalidatePath("/admin");
   revalidatePath("/games");
+  revalidatePath("/leaderboard");
+  revalidatePath("/my-picks");
 }
 
 export async function syncNflAction(
@@ -103,6 +106,7 @@ export async function setScoreAction(
     where: { id: gameId },
     data: { homeScore, awayScore, status: "FINAL" },
   });
+  await settleGame(gameId);
   revalidate();
   return { ok: "Final score saved." };
 }
@@ -152,6 +156,7 @@ export async function updateGameAction(
     homeScore: parseScore(formData.get("homeScore")),
     awayScore: parseScore(formData.get("awayScore")),
   });
+  await settleGame(gameId);
   revalidate();
   return { ok: "Game updated." };
 }

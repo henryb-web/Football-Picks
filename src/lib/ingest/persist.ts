@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { LEAGUE_SCORING } from "@/lib/leagues";
+import { settleGame } from "@/lib/scoring";
 import type { NormalizedGame, NormalizedTeam } from "./types";
 import type { League } from "@/generated/prisma/client";
 
@@ -71,12 +72,20 @@ export async function persistGames(games: NormalizedGame[]): Promise<PersistResu
       externalId: g.externalId,
     };
 
+    let gameId: string;
     if (existing) {
       await db.game.update({ where: { id: existing.id }, data });
+      gameId = existing.id;
       updated += 1;
     } else {
-      await db.game.create({ data });
+      const createdGame = await db.game.create({ data });
+      gameId = createdGame.id;
       created += 1;
+    }
+
+    // Grade picks as soon as a game is final.
+    if (data.status === "FINAL") {
+      await settleGame(gameId);
     }
   }
 

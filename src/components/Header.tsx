@@ -16,6 +16,14 @@ export async function Header() {
         <Link href="/games" className="font-medium hover:underline">
           Games
         </Link>
+        <Link href="/leaderboard" className="font-medium hover:underline">
+          Leaderboard
+        </Link>
+        {user ? (
+          <Link href="/my-picks" className="font-medium hover:underline">
+            My Picks
+          </Link>
+        ) : null}
         {user?.isAdmin ? (
           <Link href="/admin" className="font-medium hover:underline">
             Admin
