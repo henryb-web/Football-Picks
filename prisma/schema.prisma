@@ -45,6 +45,13 @@ enum ScoringMode {
   SU
 }
 
+enum BracketStatus {
+  SETUP // admin still seeding the field
+  OPEN // picks accepted
+  LOCKED // first game kicked off; no more picks
+  COMPLETE // champion decided
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -64,6 +71,7 @@ model User {
   accounts            Account[]
   sessions            Session[]
   passwordResetTokens PasswordResetToken[]
+  bracketPicks        BracketPick[]
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -114,6 +122,85 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+// --- Postseason brackets (NFL & CFP) ---
+
+model Bracket {
+  id        String        @id @default(cuid())
+  league    League
+  season    Int
+  title     String
+  status    BracketStatus @default(SETUP)
+  lockAt    DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  entries BracketEntry[]
+  games   BracketGame[]
+
+  @@unique([league, season])
+}
+
+// A seeded team in the field. Identified within a bracket by (group, seed):
+// group is the conference ("AFC"/"NFC") for NFL, null for the single CFP field.
+model BracketEntry {
+  id          String  @id @default(cuid())
+  bracketId   String
+  bracket     Bracket @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  seed        Int
+  group       String?
+  displayName String
+
+  @@unique([bracketId, group, seed])
+  @@index([bracketId])
+}
+
+// A matchup slot in the tree. Each side is either a seeded entry (topSeed/
+// topGroup) or the winner of an earlier slot (topFromSlot). The actual winner
+// is recorded as (winnerSeed, winnerGroup). Cross-refs are plain values, not
+// FKs, so deleting a bracket cleanly cascades without self-referential cycles.
+model BracketGame {
+  id        String  @id @default(cuid())
+  bracketId String
+  bracket   Bracket @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  round     Int
+  slot      Int
+  group     String?
+  label     String
+
+  topSeed        Int?
+  topGroup       String?
+  topFromSlot    Int?
+  bottomSeed     Int?
+  bottomGroup    String?
+  bottomFromSlot Int?
+
+  winnerSeed  Int?
+  winnerGroup String?
+
+  picks BracketPick[]
+
+  @@unique([bracketId, slot])
+  @@index([bracketId])
+}
+
+model BracketPick {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bracketGameId String
+  bracketGame   BracketGame @relation(fields: [bracketGameId], references: [id], onDelete: Cascade)
+  // Predicted winner of this slot, identified by (group, seed).
+  predSeed      Int
+  predGroup     String?
+  correct       Boolean?
+  points        Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([userId, bracketGameId])
+  @@index([bracketGameId])
 }
 
 model Team {
