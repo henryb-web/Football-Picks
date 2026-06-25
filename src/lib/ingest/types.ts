@@ -11,6 +11,7 @@ export type NormalizedTeam = {
   location?: string | null;
   color?: string | null;
   altColor?: string | null;
+  logo?: string | null;
 };
 
 export type NormalizedGame = {

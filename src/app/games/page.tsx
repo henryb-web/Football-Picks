@@ -5,6 +5,9 @@ import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
 import { isLocked } from "@/lib/picks";
 import { PickButtons } from "@/components/games/PickButtons";
+import { TeamLogo } from "@/components/games/TeamLogo";
+import { LockCountdown } from "@/components/games/LockCountdown";
+import { ConsensusBar } from "@/components/games/ConsensusBar";
 import type { League, PickSide } from "@/generated/prisma/client";
 
 function gamesHref(league: string | null, week: string | number | null) {
@@ -15,14 +18,6 @@ function gamesHref(league: string | null, week: string | number | null) {
   return qs ? `/games?${qs}` : "/games";
 }
 
-function Dot({ color }: { color: string | null }) {
-  return (
-    <span
-      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-muted"
-      style={color ? { backgroundColor: `#${color}` } : undefined}
-    />
-  );
-}
 
 export default async function GamesPage({
   searchParams,
@@ -66,6 +61,22 @@ export default async function GamesPage({
       where: { userId, gameId: { in: games.map((g) => g.id) } },
     });
     for (const p of picks) pickMap.set(p.gameId, p.side);
+  }
+
+  // Pool consensus: how many picks landed on each side of each game.
+  const consensus = new Map<string, { home: number; away: number }>();
+  if (games.length) {
+    const rows = await db.pick.groupBy({
+      by: ["gameId", "side"],
+      where: { gameId: { in: games.map((g) => g.id) } },
+      _count: { _all: true },
+    });
+    for (const r of rows) {
+      const c = consensus.get(r.gameId) ?? { home: 0, away: 0 };
+      if (r.side === "HOME") c.home = r._count._all;
+      else c.away = r._count._all;
+      consensus.set(r.gameId, c);
+    }
   }
 
   const leagueTabs = [
@@ -160,63 +171,81 @@ export default async function GamesPage({
                   ? g.awayTeam.name
                   : null;
 
+            const c = consensus.get(g.id) ?? { home: 0, away: 0 };
+
             return (
               <div
                 key={g.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-cardborder bg-card p-4"
+                className="rounded-xl border border-cardborder bg-card p-4"
               >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Dot color={g.awayTeam.color} />
-                    {g.awayTeam.displayName}
-                    <span className="text-muted">@</span>
-                    <Dot color={g.homeTeam.color} />
-                    {g.homeTeam.displayName}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <TeamLogo logo={g.awayTeam.logo} color={g.awayTeam.color} />
+                      {g.awayTeam.displayName}
+                      <span className="text-muted">@</span>
+                      <TeamLogo logo={g.homeTeam.logo} color={g.homeTeam.color} />
+                      {g.homeTeam.displayName}
+                    </div>
+                    <div className="mt-1 text-xs text-muted">
+                      <span className="font-semibold text-emerald-500">
+                        {LEAGUE_LABELS[g.league]}
+                      </span>
+                      {g.week ? ` · Wk ${g.week}` : ""} ·{" "}
+                      {formatKickoff(g.kickoff)}
+                      {!locked ? (
+                        <>
+                          {" · "}
+                          <LockCountdown lockAt={g.pickLockAt.toISOString()} />
+                        </>
+                      ) : null}
+                    </div>
                   </div>
-                  <div className="mt-1 text-xs text-muted">
-                    <span className="font-semibold text-emerald-500">
-                      {LEAGUE_LABELS[g.league]}
-                    </span>
-                    {g.week ? ` · Wk ${g.week}` : ""} · {formatKickoff(g.kickoff)}
+
+                  <div className="shrink-0">
+                    {userId && !locked ? (
+                      <PickButtons
+                        gameId={g.id}
+                        awayLabel={g.awayTeam.name}
+                        homeLabel={g.homeTeam.name}
+                        awayColor={g.awayTeam.color}
+                        homeColor={g.homeTeam.color}
+                        initialSide={pick}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-end gap-1 text-right">
+                        {isFinal ? (
+                          <span className="text-sm font-bold tabular-nums">
+                            {g.awayScore} – {g.homeScore}
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
+                            {g.status === "IN_PROGRESS"
+                              ? "Live"
+                              : locked
+                                ? "Locked"
+                                : "Scheduled"}
+                          </span>
+                        )}
+                        {pickLabel ? (
+                          <span className="text-xs text-muted">
+                            Your pick:{" "}
+                            <span className="font-semibold text-foreground">
+                              {pickLabel}
+                            </span>
+                          </span>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="shrink-0">
-                  {userId && !locked ? (
-                    <PickButtons
-                      gameId={g.id}
-                      awayLabel={g.awayTeam.name}
-                      homeLabel={g.homeTeam.name}
-                      awayColor={g.awayTeam.color}
-                      homeColor={g.homeTeam.color}
-                      initialSide={pick}
-                    />
-                  ) : (
-                    <div className="flex flex-col items-end gap-1 text-right">
-                      {isFinal ? (
-                        <span className="text-sm font-bold tabular-nums">
-                          {g.awayScore} – {g.homeScore}
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
-                          {g.status === "IN_PROGRESS"
-                            ? "Live"
-                            : locked
-                              ? "Locked"
-                              : "Scheduled"}
-                        </span>
-                      )}
-                      {pickLabel ? (
-                        <span className="text-xs text-muted">
-                          Your pick:{" "}
-                          <span className="font-semibold text-foreground">
-                            {pickLabel}
-                          </span>
-                        </span>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
+                <ConsensusBar
+                  awayCount={c.away}
+                  homeCount={c.home}
+                  awayColor={g.awayTeam.color}
+                  homeColor={g.homeTeam.color}
+                />
               </div>
             );
           })

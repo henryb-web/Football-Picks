@@ -218,6 +218,7 @@ model Team {
   // Brand colors (hex without #), from the feed where available.
   color        String?
   altColor     String?
+  logo         String? // team logo URL from the feed
 
   homeGames Game[] @relation("HomeTeam")
   awayGames Game[] @relation("AwayTeam")

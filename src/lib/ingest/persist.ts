@@ -23,6 +23,7 @@ async function upsertTeam(league: League, source: string, team: NormalizedTeam) 
       location: team.location ?? null,
       color: team.color ?? null,
       altColor: team.altColor ?? null,
+      logo: team.logo ?? null,
     },
     update: {
       name: team.name,
@@ -31,6 +32,7 @@ async function upsertTeam(league: League, source: string, team: NormalizedTeam) 
       location: team.location ?? null,
       color: team.color ?? null,
       altColor: team.altColor ?? null,
+      logo: team.logo ?? null,
     },
   });
 }
