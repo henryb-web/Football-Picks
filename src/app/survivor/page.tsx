@@ -25,7 +25,7 @@ export default async function SurvivorListPage() {
             <Link
               key={p.id}
               href={`/survivor/${p.id}`}
-              className="flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 transition hover:border-emerald-500/50"
+              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-emerald-500/50"
             >
               <div className="font-bold">{p.title}</div>
               <span className="text-xs text-muted">

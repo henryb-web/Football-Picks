@@ -63,7 +63,7 @@ export default async function Home() {
           <Link
             key={l.tag}
             href={l.href}
-            className="group rounded-2xl border border-cardborder bg-card p-5 transition hover:border-emerald-500 hover:shadow-md hover:ring-2 hover:ring-emerald-500/40"
+            className="lift group rounded-2xl border border-cardborder bg-card p-5 hover:border-emerald-500 hover:ring-2 hover:ring-emerald-500/40"
           >
             <span className="inline-block rounded-full bg-emerald-600/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500">
               {l.tag}

@@ -17,7 +17,7 @@ export function ConsensusBar({
 
   return (
     <div className="mt-2 w-full">
-      <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-cardborder">
+      <div className="animate-bar flex h-1.5 w-full overflow-hidden rounded-full bg-cardborder">
         <div
           style={{ width: `${awayPct}%`, backgroundColor: awayColor ? `#${awayColor}` : "var(--muted)" }}
         />

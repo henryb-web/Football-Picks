@@ -60,7 +60,7 @@ export default async function SurvivorPoolPage({
       <Link href="/survivor" className="text-sm text-emerald-500 hover:underline">
         ← All pools
       </Link>
-      <h1 className="mt-2 text-3xl font-black tracking-tight">{pool.title}</h1>
+      <h1 className="headline mt-2 text-4xl">{pool.title}</h1>
       <p className="mt-1 text-sm text-muted">
         <span className="font-semibold text-emerald-500">{LEAGUE_LABELS[pool.league]}</span>{" "}
         · {pool.season} {week != null ? `· Week ${week}` : ""}

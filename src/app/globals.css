@@ -42,7 +42,49 @@
 }
 
 body {
-  background: var(--background);
+  /* Subtle "stadium" glow at the top over the base background. */
+  background-color: var(--background);
+  background-image: radial-gradient(
+    1100px 520px at 50% -12%,
+    rgba(16, 185, 129, 0.09),
+    transparent 70%
+  );
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Card lift on hover (for clickable cards). */
+.lift {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* Consensus bar fills in on load. */
+@keyframes barIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.animate-bar {
+  transform-origin: left;
+  animation: barIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lift:hover {
+    transform: none;
+  }
+  .animate-bar {
+    animation: none;
+  }
 }

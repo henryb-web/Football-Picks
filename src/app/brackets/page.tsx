@@ -34,7 +34,7 @@ export default async function BracketsPage() {
             <Link
               key={b.id}
               href={`/brackets/${b.id}`}
-              className="flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 transition hover:border-emerald-500/50"
+              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-emerald-500/50"
             >
               <div>
                 <div className="font-bold">{b.title}</div>

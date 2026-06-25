@@ -52,7 +52,7 @@ export function PickButtons({
   }
 
   const base =
-    "min-w-[96px] rounded-lg border px-3 py-2 text-sm font-bold transition disabled:opacity-60";
+    "min-w-[96px] rounded-lg border px-3 py-2 text-sm font-bold transition active:scale-95 disabled:opacity-60";
   const unselected =
     "border-cardborder text-foreground hover:border-emerald-400";
 

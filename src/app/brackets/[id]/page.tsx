@@ -111,7 +111,7 @@ export default async function BracketPage({
       <Link href="/brackets" className="text-sm text-emerald-500 hover:underline">
         ← All brackets
       </Link>
-      <h1 className="mt-2 text-3xl font-black tracking-tight">{bracket.title}</h1>
+      <h1 className="headline mt-2 text-4xl">{bracket.title}</h1>
       <p className="mt-1 text-sm text-muted">
         <span className="font-semibold text-emerald-500">{LEAGUE_LABELS[bracket.league]}</span>{" "}
         · {bracket.season} ·{" "}
