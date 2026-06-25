@@ -22,10 +22,10 @@ export function TeamLogo({
   }
   return (
     <span
-      className={`inline-block shrink-0 rounded-full ${color ? "" : "bg-muted"}`}
+      className={`inline-block shrink-0 rounded-full ring-1 ring-inset ring-cardborder ${color ? "" : "bg-muted"}`}
       style={{
-        width: size * 0.55,
-        height: size * 0.55,
+        width: size * 0.6,
+        height: size * 0.6,
         backgroundColor: color ? `#${color}` : undefined,
       }}
     />
