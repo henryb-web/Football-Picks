@@ -3,7 +3,7 @@
 import "dotenv/config";
 import { db } from "@/lib/db";
 
-const REMOVE = new Set(["North Shore", "Rouse", "Duncanville", "DeSoto"]);
+const REMOVE = new Set(["North Shore", "Rouse", "Duncanville", "DeSoto", "North Crowley"]);
 const KEEP_TRACKED = new Set([
   "Austin High",
   "Dripping Springs",
@@ -12,7 +12,7 @@ const KEEP_TRACKED = new Set([
   "Anderson",
   "Regents",
   "Hyde Park",
-  "North Crowley",
+  "Vandegrift",
   "Westlake",
 ]);
 
