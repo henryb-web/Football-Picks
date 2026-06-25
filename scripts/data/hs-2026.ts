@@ -57,21 +57,6 @@ export const HS_2026: SchoolSchedule[] = [
     ],
   },
   {
-    school: "Rouse",
-    games: [
-      { opponent: "Midway", homeaway: "home", date: "2026-08-27", time: "19:00" },
-      { opponent: "Georgetown", homeaway: "away", date: "2026-09-04", time: "19:00" },
-      { opponent: "McNeil", homeaway: "home", date: "2026-09-11", time: "19:00" },
-      { opponent: "Cedar Ridge", homeaway: "away", date: "2026-09-18", time: "19:00" },
-      { opponent: "Vista Ridge", homeaway: "away", date: "2026-09-25", time: "19:00" },
-      { opponent: "Cedar Park", homeaway: "home", date: "2026-10-02", time: "19:00" },
-      { opponent: "Leander", homeaway: "away", date: "2026-10-09", time: "19:00" },
-      { opponent: "Hutto", homeaway: "home", date: "2026-10-22", time: "19:00" },
-      { opponent: "Vandegrift", homeaway: "away", date: "2026-10-30", time: "19:00" },
-      { opponent: "East View", homeaway: "home", date: "2026-11-06", time: "19:00" },
-    ],
-  },
-  {
     school: "Lake Travis",
     games: [
       { opponent: "Weiss", homeaway: "away", date: "2026-09-04", time: "19:00" },
@@ -100,21 +85,6 @@ export const HS_2026: SchoolSchedule[] = [
     ],
   },
   {
-    school: "Duncanville",
-    games: [
-      { opponent: "Allen", homeaway: "away", date: "2026-08-28", time: "19:00" },
-      { opponent: "Cedar Hill", homeaway: "home", date: "2026-09-04", time: "19:00" },
-      { opponent: "DeSoto", homeaway: "home", date: "2026-09-12", time: "19:00" },
-      { opponent: "North Crowley", homeaway: "home", date: "2026-09-18", time: "19:00" },
-      { opponent: "Red Oak", homeaway: "away", date: "2026-09-25", time: "19:00" },
-      { opponent: "Mansfield", homeaway: "home", date: "2026-10-09", time: "19:00" },
-      { opponent: "Crowley", homeaway: "home", date: "2026-10-16", time: "19:00" },
-      { opponent: "Waxahachie", homeaway: "away", date: "2026-10-23", time: "19:00" },
-      { opponent: "Lake Ridge", homeaway: "home", date: "2026-10-30", time: "19:00" },
-      { opponent: "Skyline", homeaway: "away", date: "2026-11-06", time: "19:30" },
-    ],
-  },
-  {
     school: "Regents",
     games: [
       { opponent: "Brazos Christian", homeaway: "away", date: "2026-08-28", time: "19:00" },
@@ -134,24 +104,10 @@ export const HS_2026: SchoolSchedule[] = [
     ],
   },
   {
-    school: "North Shore",
-    games: [
-      { opponent: "Lancaster", homeaway: "home", date: "2026-08-28", time: "19:00" },
-      { opponent: "John Curtis (LA)", homeaway: "away", date: "2026-09-04", time: "19:00" },
-      { opponent: "South Oak Cliff", homeaway: "away", date: "2026-09-12", time: "19:00" },
-      { opponent: "Crosby", homeaway: "away", date: "2026-09-18", time: "19:00" },
-      { opponent: "Atascocita", homeaway: "home", date: "2026-09-25", time: "19:00" },
-      { opponent: "Humble", homeaway: "away", date: "2026-10-01", time: "19:00" },
-      { opponent: "Summer Creek", homeaway: "away", date: "2026-10-09", time: "19:00" },
-      { opponent: "C.E. King", homeaway: "home", date: "2026-10-23", time: "19:00" },
-      { opponent: "Channelview", homeaway: "away", date: "2026-10-30", time: "19:00" },
-      { opponent: "Kingwood", homeaway: "home", date: "2026-11-05", time: "19:00" },
-    ],
-  },
-  {
     school: "North Crowley",
     games: [
       { opponent: "Aledo", homeaway: "home", date: "2026-08-28", time: "19:00" },
+      { opponent: "Duncanville", homeaway: "away", date: "2026-09-18", time: "19:00" },
       { opponent: "Southlake Carroll", homeaway: "home", date: "2026-09-04", time: "19:00" },
       { opponent: "Summer Creek", homeaway: "home", date: "2026-09-11", time: "19:00" },
       { opponent: "Crowley", homeaway: "home", date: "2026-09-25", time: "19:00" },
@@ -160,20 +116,6 @@ export const HS_2026: SchoolSchedule[] = [
       { opponent: "Skyline", homeaway: "away", date: "2026-10-22", time: "19:30" },
       { opponent: "Mansfield", homeaway: "away", date: "2026-10-29", time: "19:00" },
       { opponent: "Red Oak", homeaway: "home", date: "2026-11-05", time: "19:00" },
-    ],
-  },
-  {
-    school: "DeSoto",
-    games: [
-      { opponent: "St. Thomas Aquinas (FL)", homeaway: "away", date: "2026-08-29", time: "16:00" },
-      { opponent: "Allen", homeaway: "away", date: "2026-09-04", time: "19:00" },
-      { opponent: "Burleson Centennial", homeaway: "away", date: "2026-09-18", time: "19:00" },
-      { opponent: "Midlothian", homeaway: "home", date: "2026-09-25", time: "19:00" },
-      { opponent: "Lancaster", homeaway: "away", date: "2026-10-09", time: "19:00" },
-      { opponent: "Mansfield Summit", homeaway: "home", date: "2026-10-16", time: "19:00" },
-      { opponent: "Cedar Hill", homeaway: "away", date: "2026-10-23", time: "19:00" },
-      { opponent: "Mansfield Legacy", homeaway: "away", date: "2026-10-30", time: "19:00" },
-      { opponent: "Cleburne", homeaway: "home", date: "2026-11-05", time: "19:00" },
     ],
   },
 ];
