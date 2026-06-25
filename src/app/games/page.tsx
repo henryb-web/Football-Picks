@@ -179,7 +179,7 @@ export default async function GamesPage({
             return (
               <div
                 key={g.id}
-                className="relative overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5"
+                className="lift relative overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5"
               >
                 <span
                   aria-hidden
@@ -188,7 +188,14 @@ export default async function GamesPage({
                     background: `linear-gradient(to bottom, #${awayC} 0 50%, #${homeC} 50% 100%)`,
                   }}
                 />
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-[0.06]"
+                  style={{
+                    background: `linear-gradient(110deg, #${awayC}, transparent 42%, transparent 58%, #${homeC})`,
+                  }}
+                />
+                <div className="relative flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-sm font-semibold">
                       <TeamLogo logo={g.awayTeam.logo} color={g.awayTeam.color} />

@@ -70,7 +70,7 @@ export function MainNav({
                   key={i.href}
                   href={i.href}
                   aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition ${
+                  className={`flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition hover:scale-105 ${
                     active
                       ? "bg-emerald-600/15 text-emerald-500 ring-1 ring-emerald-500/40"
                       : "text-muted hover:text-foreground"

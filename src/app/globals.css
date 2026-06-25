@@ -54,7 +54,7 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
-/* Card lift on hover (for clickable cards). */
+/* Card lift + slight grow on hover (for cards / larger interactables). */
 .lift {
   transition:
     transform 0.15s ease,
@@ -62,8 +62,19 @@ body {
     border-color 0.15s ease;
 }
 .lift:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.015);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* Pop on hover (for buttons and small interactables). */
+.pop {
+  transition: transform 0.12s ease;
+}
+.pop:hover {
+  transform: scale(1.06);
+}
+.pop:active {
+  transform: scale(0.95);
 }
 
 /* Consensus bar fills in on load. */
@@ -81,7 +92,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lift:hover {
+  .lift:hover,
+  .pop:hover,
+  .pop:active {
     transform: none;
   }
   .animate-bar {

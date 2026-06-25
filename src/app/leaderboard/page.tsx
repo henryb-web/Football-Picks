@@ -2,6 +2,18 @@ import { Trophy } from "lucide-react";
 import { auth } from "@/auth";
 import { getLeaderboard } from "@/lib/scoring";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
+import { FormPips } from "@/components/FormPips";
+
+// Gold / silver / bronze for the top three.
+function medalClass(i: number): string {
+  return i === 0
+    ? "text-amber-400"
+    : i === 1
+      ? "text-zinc-300"
+      : i === 2
+        ? "text-amber-700"
+        : "text-muted";
+}
 
 export default async function LeaderboardPage() {
   const [rows, session] = await Promise.all([getLeaderboard(), auth()]);
@@ -32,8 +44,17 @@ export default async function LeaderboardPage() {
             <tbody className="divide-y divide-cardborder">
               {rows.map((r, i) => (
                 <tr key={r.userId} className={r.userId === meId ? "bg-emerald-500/10" : ""}>
-                  <td className="px-4 py-3 font-display text-lg text-muted">{i + 1}</td>
-                  <td className="px-4 py-3 font-medium">{r.name}</td>
+                  <td className={`px-4 py-3 font-display text-lg ${medalClass(i)}`}>
+                    {i + 1}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="font-medium">{r.name}</div>
+                    {r.form.length > 0 ? (
+                      <div className="mt-1">
+                        <FormPips form={r.form} />
+                      </div>
+                    ) : null}
+                  </td>
                   <td className="px-4 py-3 text-right font-display text-lg tabular-nums">
                     {r.points}
                   </td>

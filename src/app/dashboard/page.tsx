@@ -5,14 +5,25 @@ import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
 import { Page } from "@/components/ui/Page";
+import { FormPips } from "@/components/FormPips";
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({
+  label,
+  value,
+  gold,
+}: {
+  label: string;
+  value: string;
+  gold?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-cardborder bg-card p-4">
       <div className="text-[11px] font-semibold uppercase tracking-widest text-muted">
         {label}
       </div>
-      <div className="headline mt-1 text-4xl tabular-nums">{value}</div>
+      <div className={`headline mt-1 text-4xl tabular-nums ${gold ? "text-amber-400" : ""}`}>
+        {value}
+      </div>
     </div>
   );
 }
@@ -49,7 +60,7 @@ export default async function DashboardPage() {
       </h1>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Rank" value={rank ? `#${rank}` : "—"} />
+        <StatCard label="Rank" value={rank ? `#${rank}` : "—"} gold={rank === 1} />
         <StatCard label="Points" value={String(me?.points ?? 0)} />
         <StatCard
           label="Record"
@@ -60,6 +71,15 @@ export default async function DashboardPage() {
           value={stats.currentStreak > 0 ? `🔥 ${stats.currentStreak}` : "—"}
         />
       </div>
+
+      {me && me.form.length > 0 ? (
+        <div className="mt-3 flex items-center gap-2 text-xs">
+          <span className="font-semibold uppercase tracking-widest text-muted">
+            Form
+          </span>
+          <FormPips form={me.form} />
+        </div>
+      ) : null}
 
       {stats.badges.length > 0 ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -114,7 +134,17 @@ export default async function DashboardPage() {
                 }`}
               >
                 <span className="text-sm">
-                  <span className="mr-2 font-semibold text-muted">{i + 1}</span>
+                  <span
+                    className={`mr-2 font-display ${
+                      i === 0
+                        ? "text-amber-400"
+                        : i === 1
+                          ? "text-zinc-300"
+                          : "text-amber-700"
+                    }`}
+                  >
+                    {i + 1}
+                  </span>
                   {r.name}
                 </span>
                 <span className="text-sm font-bold tabular-nums">{r.points}</span>

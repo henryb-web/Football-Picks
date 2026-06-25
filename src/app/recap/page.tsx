@@ -22,7 +22,7 @@ export default async function RecapPage() {
                   {r.week === 0 ? "Other" : `Week ${r.week}`}
                 </h2>
                 {r.winnerPoints > 0 ? (
-                  <span className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                  <span className="rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-black">
                     🏆 {r.winners.join(" & ")} · {r.winnerPoints} pts
                   </span>
                 ) : null}

@@ -48,7 +48,7 @@ export function SurvivorPicker({
         disabled={disabled}
         aria-pressed={isSel}
         title={disabledByReuse ? "Already used this team" : undefined}
-        className={`flex flex-1 items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition disabled:opacity-40 ${
+        className={`flex flex-1 items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition hover:scale-[1.03] active:scale-95 disabled:opacity-40 ${
           isSel
             ? "border-emerald-500 bg-emerald-600 text-white"
             : "border-cardborder hover:border-emerald-400"

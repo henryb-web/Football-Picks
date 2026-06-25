@@ -58,6 +58,7 @@ export async function settleGame(gameId: string): Promise<void> {
   await gradeSurvivorForGame(gameId);
 }
 
+export type FormResult = "W" | "L" | "P";
 export type LeaderboardRow = {
   userId: string;
   name: string;
@@ -66,6 +67,7 @@ export type LeaderboardRow = {
   losses: number;
   pushes: number;
   total: number;
+  form: FormResult[]; // last up-to-5, oldest -> newest
 };
 
 // Global standings across all settled picks.
@@ -79,7 +81,7 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
 
   const byUser = new Map<
     string,
-    Omit<LeaderboardRow, "userId" | "name">
+    { points: number; wins: number; losses: number; pushes: number; total: number }
   >();
   for (const r of rows) {
     const e =
@@ -94,6 +96,21 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
     byUser.set(r.userId, e);
   }
 
+  // Each player's last-5 form (most recent settled picks).
+  const recent = await db.pick.findMany({
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] } },
+    select: { userId: true, result: true },
+    orderBy: { game: { kickoff: "desc" } },
+  });
+  const formByUser = new Map<string, FormResult[]>();
+  for (const p of recent) {
+    const arr = formByUser.get(p.userId) ?? [];
+    if (arr.length < 5) {
+      arr.push(p.result === "WIN" ? "W" : p.result === "LOSS" ? "L" : "P");
+      formByUser.set(p.userId, arr);
+    }
+  }
+
   const users = await db.user.findMany({
     where: { id: { in: [...byUser.keys()] } },
     select: { id: true, username: true, name: true },
@@ -103,7 +120,12 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
   );
 
   return [...byUser.entries()]
-    .map(([userId, s]) => ({ userId, name: nameOf.get(userId) ?? "Player", ...s }))
+    .map(([userId, s]) => ({
+      userId,
+      name: nameOf.get(userId) ?? "Player",
+      ...s,
+      form: (formByUser.get(userId) ?? []).slice().reverse(),
+    }))
     .sort(
       (a, b) =>
         b.points - a.points || b.wins - a.wins || a.losses - b.losses,
