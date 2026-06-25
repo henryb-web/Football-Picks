@@ -62,6 +62,11 @@ function nflTemplate(): BracketGameSpec[] {
   ];
 }
 
+// Form field name for a seed's team-name input in the admin seed editor.
+export function seedFieldName(group: string | null, seed: number) {
+  return `seed__${group ?? "-"}__${seed}`;
+}
+
 export function bracketTemplate(league: League): BracketGameSpec[] {
   if (league === "NFL") return nflTemplate();
   if (league === "CFB") return cfpTemplate();

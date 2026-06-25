@@ -35,11 +35,19 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl space-y-10 px-6 py-10">
-      <div>
-        <h1 className="text-3xl font-black tracking-tight">Admin</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Sync feeds, add games, and enter final scores.
-        </p>
+      <div className="flex items-end justify-between">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight">Admin</h1>
+          <p className="mt-1 text-sm text-neutral-500">
+            Sync feeds, add games, and enter final scores.
+          </p>
+        </div>
+        <Link
+          href="/admin/brackets"
+          className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-semibold transition hover:bg-card"
+        >
+          Manage brackets →
+        </Link>
       </div>
 
       <section className="grid gap-6 md:grid-cols-2">
