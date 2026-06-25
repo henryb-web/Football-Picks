@@ -27,6 +27,7 @@ export const HS_LOGOS: Record<string, string> = {
   Johnson: "https://www.txhslogoproject.com/wp-content/uploads/Buda-Johnson-Jaguars-large.png",
   Judson: "https://www.txhslogoproject.com/wp-content/uploads/2018/12/Converse-Judson-Rockets2-large.png",
   Kinkaid: "https://www.txhslogoproject.com/wp-content/uploads/2019/02/Houston-Kinkaid-Falcons1-large.png",
+  "Lake Travis": "https://cdn1.sportngin.com/attachments/logo_graphic/8086/5082/LT_6Star_NEW_medium.png",
   Leander: "https://www.txhslogoproject.com/wp-content/uploads/2018/12/Leander-Lions-large.png",
   Lehman: "https://www.txhslogoproject.com/wp-content/uploads/2018/12/Kyle-Lehman-Lobos.png",
   "Liberty Hill": "https://www.txhslogoproject.com/wp-content/uploads/2019/03/Liberty-Hill-Panthers1-large.png",
