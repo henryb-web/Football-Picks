@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react";
 import { getWeeklyRecaps } from "@/lib/stats";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
+import { Avatar } from "@/components/Avatar";
 
 export default async function RecapPage() {
   const recaps = await getWeeklyRecaps();
@@ -33,9 +34,10 @@ export default async function RecapPage() {
                     key={s.name + i}
                     className="flex items-center justify-between text-sm"
                   >
-                    <span className="text-muted">
-                      <span className="mr-2 font-semibold">{i + 1}</span>
-                      {s.name}
+                    <span className="flex items-center gap-2">
+                      <span className="font-semibold text-muted">{i + 1}</span>
+                      <Avatar name={s.name} size={22} />
+                      <span>{s.name}</span>
                     </span>
                     <span className="font-bold tabular-nums">{s.points}</span>
                   </div>

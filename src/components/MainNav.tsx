@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Avatar } from "@/components/Avatar";
 import { logoutAction } from "@/lib/auth-actions";
 
 type Item = {
@@ -89,8 +90,11 @@ export function MainNav({
           <div className="hidden items-center gap-2 md:flex">
             {user ? (
               <>
-                <span className="max-w-[120px] truncate text-sm text-muted">
-                  {user.name}
+                <span className="flex items-center gap-1.5">
+                  <Avatar name={user.name} size={24} />
+                  <span className="max-w-[120px] truncate text-sm text-muted">
+                    {user.name}
+                  </span>
                 </span>
                 <form action={logoutAction}>
                   <button

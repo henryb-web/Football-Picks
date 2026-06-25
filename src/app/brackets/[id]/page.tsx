@@ -13,6 +13,7 @@ import {
 import { getBracketStandings } from "@/lib/bracket/scoring";
 import { BracketPickButtons } from "@/components/brackets/BracketPickButtons";
 import { Page } from "@/components/ui/Page";
+import { Avatar } from "@/components/Avatar";
 
 function Chip({
   entry,
@@ -188,8 +189,9 @@ export default async function BracketPage({
                   row.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
-                <span>
-                  <span className="mr-2 font-semibold text-muted">{i + 1}</span>
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-muted">{i + 1}</span>
+                  <Avatar name={row.name} size={22} />
                   {row.name}
                 </span>
                 <span className="font-bold tabular-nums">

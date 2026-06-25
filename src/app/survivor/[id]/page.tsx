@@ -12,6 +12,7 @@ import {
 } from "@/lib/survivor";
 import { SurvivorPicker } from "@/components/survivor/SurvivorPicker";
 import { Page } from "@/components/ui/Page";
+import { Avatar } from "@/components/Avatar";
 
 const RESULT = {
   WIN: { label: "Survived", cls: "text-cyan-500" },
@@ -147,7 +148,10 @@ export default async function SurvivorPoolPage({
                   s.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
-                <span className="font-medium">{s.name}</span>
+                <span className="flex items-center gap-2 font-medium">
+                  <Avatar name={s.name} size={22} />
+                  {s.name}
+                </span>
                 <span className="text-xs">
                   {s.alive ? (
                     <span className="font-semibold text-cyan-500">

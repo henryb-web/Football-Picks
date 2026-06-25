@@ -6,6 +6,7 @@ import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
 import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
+import { Avatar } from "@/components/Avatar";
 
 function StatCard({
   label,
@@ -133,9 +134,9 @@ export default async function DashboardPage() {
                   r.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
-                <span className="text-sm">
+                <span className="flex items-center gap-2 text-sm">
                   <span
-                    className={`mr-2 font-display ${
+                    className={`font-display ${
                       i === 0
                         ? "text-amber-400"
                         : i === 1
@@ -145,6 +146,7 @@ export default async function DashboardPage() {
                   >
                     {i + 1}
                   </span>
+                  <Avatar name={r.name} size={24} />
                   {r.name}
                 </span>
                 <span className="text-sm font-bold tabular-nums">{r.points}</span>

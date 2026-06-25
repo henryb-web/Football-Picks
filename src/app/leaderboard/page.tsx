@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { getLeaderboard } from "@/lib/scoring";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
+import { Avatar } from "@/components/Avatar";
 
 // Gold / silver / bronze for the top three.
 function medalClass(i: number): string {
@@ -13,6 +14,18 @@ function medalClass(i: number): string {
       : i === 2
         ? "text-amber-700"
         : "text-muted";
+}
+
+function Movement({ m }: { m: number | null }) {
+  if (m == null) return null;
+  if (m === 0) return <span className="text-[10px] text-muted">—</span>;
+  const up = m > 0;
+  return (
+    <span className={`text-[10px] font-bold ${up ? "text-cyan-400" : "text-red-400"}`}>
+      {up ? "▲" : "▼"}
+      {Math.abs(m)}
+    </span>
+  );
 }
 
 export default async function LeaderboardPage() {
@@ -44,16 +57,26 @@ export default async function LeaderboardPage() {
             <tbody className="divide-y divide-cardborder">
               {rows.map((r, i) => (
                 <tr key={r.userId} className={r.userId === meId ? "bg-cyan-500/10" : ""}>
-                  <td className={`px-4 py-3 font-display text-lg ${medalClass(i)}`}>
-                    {i + 1}
+                  <td className="px-4 py-3">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className={`font-display text-lg ${medalClass(i)}`}>
+                        {i + 1}
+                      </span>
+                      <Movement m={r.movement} />
+                    </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="font-medium">{r.name}</div>
-                    {r.form.length > 0 ? (
-                      <div className="mt-1">
-                        <FormPips form={r.form} />
+                    <div className="flex items-center gap-2.5">
+                      <Avatar name={r.name} size={30} />
+                      <div>
+                        <div className="font-medium">{r.name}</div>
+                        {r.form.length > 0 ? (
+                          <div className="mt-1">
+                            <FormPips form={r.form} />
+                          </div>
+                        ) : null}
                       </div>
-                    ) : null}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-right font-display text-lg tabular-nums">
                     {r.points}

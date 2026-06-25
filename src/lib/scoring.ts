@@ -68,6 +68,7 @@ export type LeaderboardRow = {
   pushes: number;
   total: number;
   form: FormResult[]; // last up-to-5, oldest -> newest
+  movement: number | null; // rank change vs before the latest week (+up/-down)
 };
 
 // Global standings across all settled picks.
@@ -119,15 +120,46 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
     users.map((u) => [u.id, u.username ?? u.name ?? "Player"]),
   );
 
-  return [...byUser.entries()]
+  const base = [...byUser.entries()]
     .map(([userId, s]) => ({
       userId,
       name: nameOf.get(userId) ?? "Player",
       ...s,
       form: (formByUser.get(userId) ?? []).slice().reverse(),
     }))
-    .sort(
-      (a, b) =>
-        b.points - a.points || b.wins - a.wins || a.losses - b.losses,
-    );
+    .sort((a, b) => b.points - a.points || b.wins - a.wins || a.losses - b.losses);
+
+  const currentRank = new Map(base.map((r, i) => [r.userId, i]));
+
+  // Rank movement vs the standings *before* the latest settled week — derived,
+  // so we don't need stored snapshots.
+  const movement = new Map<string, number | null>();
+  const settled = await db.pick.findMany({
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] } },
+    select: { userId: true, pointsAwarded: true, game: { select: { week: true } } },
+  });
+  const weeks = settled.map((p) => p.game.week).filter((w): w is number => w != null);
+  if (weeks.length > 0) {
+    const latest = Math.max(...weeks);
+    if (weeks.some((w) => w < latest)) {
+      const priorPts = new Map<string, number>();
+      for (const p of settled) {
+        if (p.game.week != null && p.game.week < latest) {
+          priorPts.set(p.userId, (priorPts.get(p.userId) ?? 0) + p.pointsAwarded);
+        }
+      }
+      const priorRank = new Map(
+        base
+          .map((r) => ({ userId: r.userId, pts: priorPts.get(r.userId) ?? 0 }))
+          .sort((a, b) => b.pts - a.pts)
+          .map((r, i) => [r.userId, i] as const),
+      );
+      for (const r of base) {
+        const pr = priorRank.get(r.userId);
+        movement.set(r.userId, pr == null ? null : pr - (currentRank.get(r.userId) ?? 0));
+      }
+    }
+  }
+
+  return base.map((r) => ({ ...r, movement: movement.get(r.userId) ?? null }));
 }
