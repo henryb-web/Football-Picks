@@ -17,9 +17,9 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-neutral-200 p-5 dark:border-neutral-800">
+    <div className="rounded-xl border border-cardborder bg-card p-5">
       <h2 className="font-bold">{title}</h2>
-      <p className="mb-4 mt-0.5 text-xs text-neutral-500">{desc}</p>
+      <p className="mb-4 mt-0.5 text-xs text-muted">{desc}</p>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ export default async function AdminPage() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-3xl font-black tracking-tight">Admin</h1>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-muted">
             Sync feeds, add games, and enter final scores.
           </p>
         </div>
@@ -67,9 +67,9 @@ export default async function AdminPage() {
 
       <section>
         <h2 className="text-lg font-bold">Recent games ({games.length})</h2>
-        <div className="mt-3 divide-y divide-neutral-200 rounded-xl border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+        <div className="mt-3 divide-y divide-cardborder overflow-hidden rounded-xl border border-cardborder bg-card">
           {games.length === 0 ? (
-            <p className="p-4 text-sm text-neutral-500">
+            <p className="p-4 text-sm text-muted">
               No games yet — sync NFL or add one above.
             </p>
           ) : (
@@ -82,8 +82,8 @@ export default async function AdminPage() {
                   <div className="text-sm font-medium">
                     {g.awayTeam.displayName} @ {g.homeTeam.displayName}
                   </div>
-                  <div className="text-xs text-neutral-500">
-                    <span className="font-semibold text-emerald-600">
+                  <div className="text-xs text-muted">
+                    <span className="font-semibold text-emerald-500">
                       {LEAGUE_LABELS[g.league]}
                     </span>
                     {g.week ? ` · Wk ${g.week}` : ""} · {formatKickoff(g.kickoff)} ·{" "}
@@ -100,7 +100,7 @@ export default async function AdminPage() {
                   />
                   <Link
                     href={`/admin/games/${g.id}`}
-                    className="text-xs font-semibold text-emerald-600 hover:underline"
+                    className="text-xs font-semibold text-emerald-500 hover:underline"
                   >
                     Edit
                   </Link>

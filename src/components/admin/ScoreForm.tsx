@@ -5,7 +5,7 @@ import { setScoreAction } from "@/app/admin/actions";
 import type { AdminState } from "@/lib/admin-types";
 
 const scoreInput =
-  "w-14 rounded-md border border-neutral-300 bg-white px-2 py-1 text-center text-sm outline-none focus:border-emerald-500 dark:border-neutral-700 dark:bg-neutral-900";
+  "w-14 rounded-md border border-cardborder bg-background px-2 py-1 text-center text-sm outline-none focus:border-emerald-500";
 
 export function ScoreForm({
   gameId,
@@ -35,7 +35,7 @@ export function ScoreForm({
         aria-label={`${awayLabel} score`}
         className={scoreInput}
       />
-      <span className="text-xs text-neutral-400">@</span>
+      <span className="text-xs text-muted">@</span>
       <input
         name="homeScore"
         type="number"
@@ -46,7 +46,7 @@ export function ScoreForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md border border-neutral-300 px-2.5 py-1 text-xs font-semibold transition hover:bg-neutral-50 disabled:opacity-60 dark:border-neutral-700 dark:hover:bg-neutral-900"
+        className="rounded-md border border-cardborder px-2.5 py-1 text-xs font-semibold transition hover:bg-background disabled:opacity-60"
       >
         {pending ? "…" : "Save"}
       </button>

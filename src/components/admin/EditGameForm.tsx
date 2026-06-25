@@ -176,7 +176,7 @@ export function EditGameForm({ game }: { game: EditableGame }) {
             />
           </div>
         </div>
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-muted">
           Scores are ignored while status is Scheduled.
         </p>
 
