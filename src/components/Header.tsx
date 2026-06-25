@@ -26,6 +26,7 @@ export async function Header() {
         </Link>
 
         <nav className="flex items-center gap-4">
+          {user ? <NavLink href="/dashboard">Dashboard</NavLink> : null}
           <NavLink href="/games">Games</NavLink>
           <NavLink href="/leaderboard">Leaderboard</NavLink>
           {user ? <NavLink href="/my-picks">My Picks</NavLink> : null}
