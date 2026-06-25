@@ -5,7 +5,7 @@ export const LEAGUES = ["NFL", "CFB", "HS6A"] as const;
 export const LEAGUE_LABELS: Record<League, string> = {
   NFL: "NFL",
   CFB: "College",
-  HS6A: "Texas 6A",
+  HS6A: "Texas HS",
 };
 
 // NFL & college are scored against the spread; high school is straight-up.
