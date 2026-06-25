@@ -2,17 +2,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { logoutAction } from "@/lib/auth-actions";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-medium text-muted transition hover:text-foreground"
-    >
-      {children}
-    </Link>
-  );
-}
+import { NavLink } from "@/components/NavLink";
 
 export async function Header() {
   const session = await auth();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { setPickAction } from "@/app/games/actions";
+import { setPickAction, clearPickAction } from "@/app/games/actions";
 import type { PickSide } from "@/generated/prisma/client";
 
 export function PickButtons({
@@ -27,6 +27,20 @@ export function PickButtons({
     if (pending) return;
     const prev = side;
     setError(null);
+
+    // Clicking your current pick again removes it.
+    if (side === next) {
+      setSide(null);
+      startTransition(async () => {
+        const res = await clearPickAction(gameId);
+        if ("error" in res) {
+          setSide(prev);
+          setError(res.error);
+        }
+      });
+      return;
+    }
+
     setSide(next);
     startTransition(async () => {
       const res = await setPickAction(gameId, next);

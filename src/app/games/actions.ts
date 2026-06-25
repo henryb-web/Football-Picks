@@ -31,3 +31,20 @@ export async function setPickAction(
   revalidatePath("/games");
   return { ok: true };
 }
+
+// Remove a pick (clicking your already-picked team toggles it off).
+export async function clearPickAction(gameId: string): Promise<PickActionResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sign in to make picks." };
+
+  const game = await db.game.findUnique({
+    where: { id: gameId },
+    select: { status: true, pickLockAt: true },
+  });
+  if (!game) return { error: "Game not found." };
+  if (isLocked(game)) return { error: "Picks are locked for this game." };
+
+  await db.pick.deleteMany({ where: { userId: session.user.id, gameId } });
+  revalidatePath("/games");
+  return { ok: true };
+}
