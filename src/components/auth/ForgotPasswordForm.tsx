@@ -6,7 +6,7 @@ import { requestPasswordResetAction } from "@/lib/password-reset-actions";
 import type { FormState } from "@/lib/form-state";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30";
+  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30";
 
 export function ForgotPasswordForm() {
   const [state, action, pending] = useActionState<FormState, FormData>(
@@ -22,7 +22,7 @@ export function ForgotPasswordForm() {
       </p>
 
       {state?.ok ? (
-        <p className="mt-6 rounded-lg bg-emerald-500/10 px-3 py-3 text-sm text-emerald-500">
+        <p className="mt-6 rounded-lg bg-cyan-500/10 px-3 py-3 text-sm text-cyan-500">
           {state.ok}
         </p>
       ) : (
@@ -43,7 +43,7 @@ export function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-60"
+            className="w-full rounded-lg bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-60"
           >
             {pending ? "Sending…" : "Send reset link"}
           </button>
@@ -51,7 +51,7 @@ export function ForgotPasswordForm() {
       )}
 
       <p className="mt-6 text-center text-sm text-muted">
-        <Link href="/login" className="font-semibold text-emerald-500 hover:underline">
+        <Link href="/login" className="font-semibold text-cyan-500 hover:underline">
           Back to log in
         </Link>
       </p>

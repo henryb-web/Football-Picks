@@ -91,7 +91,7 @@ export default async function AdminPage() {
                     {g.awayTeam.displayName} @ {g.homeTeam.displayName}
                   </div>
                   <div className="text-xs text-muted">
-                    <span className="font-semibold text-emerald-500">
+                    <span className="font-semibold text-cyan-500">
                       {LEAGUE_LABELS[g.league]}
                     </span>
                     {g.week ? ` · Wk ${g.week}` : ""} · {formatKickoff(g.kickoff)} ·{" "}
@@ -108,7 +108,7 @@ export default async function AdminPage() {
                   />
                   <Link
                     href={`/admin/games/${g.id}`}
-                    className="text-xs font-semibold text-emerald-500 hover:underline"
+                    className="text-xs font-semibold text-cyan-500 hover:underline"
                   >
                     Edit
                   </Link>

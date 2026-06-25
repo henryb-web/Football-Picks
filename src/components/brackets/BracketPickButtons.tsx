@@ -52,8 +52,8 @@ export function BracketPickButtons({
         aria-pressed={picked}
         className={`flex-1 rounded-md border px-3 py-2 text-left text-sm font-semibold transition hover:scale-[1.03] active:scale-95 disabled:opacity-60 ${
           picked
-            ? "border-emerald-500 bg-emerald-600 text-white"
-            : "border-cardborder hover:border-emerald-400"
+            ? "border-cyan-500 bg-cyan-600 text-white"
+            : "border-cardborder hover:border-cyan-400"
         }`}
       >
         <span className="text-xs opacity-70">{side.seed}</span> {side.displayName}

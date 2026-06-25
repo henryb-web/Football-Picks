@@ -72,7 +72,7 @@ export function MainNav({
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm font-medium transition hover:scale-105 ${
                     active
-                      ? "bg-emerald-600/15 text-emerald-500 ring-1 ring-emerald-500/40"
+                      ? "bg-cyan-600/15 text-cyan-500 ring-1 ring-cyan-500/40"
                       : "text-muted hover:text-foreground"
                   }`}
                 >
@@ -111,7 +111,7 @@ export function MainNav({
                 </Link>
                 <Link
                   href="/signup"
-                  className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+                  className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
                 >
                   Sign up
                 </Link>
@@ -143,7 +143,7 @@ export function MainNav({
                   href={i.href}
                   onClick={() => setOpen(false)}
                   className={`flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium ${
-                    active ? "bg-emerald-600/15 text-emerald-500" : "text-muted"
+                    active ? "bg-cyan-600/15 text-cyan-500" : "text-muted"
                   }`}
                 >
                   <i.icon className="h-4 w-4" />
@@ -174,7 +174,7 @@ export function MainNav({
                 <Link
                   href="/signup"
                   onClick={() => setOpen(false)}
-                  className="flex-1 rounded-lg bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white"
+                  className="flex-1 rounded-lg bg-cyan-600 px-3 py-2 text-center text-sm font-semibold text-white"
                 >
                   Sign up
                 </Link>

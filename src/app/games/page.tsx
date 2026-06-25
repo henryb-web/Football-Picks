@@ -98,7 +98,7 @@ export default async function GamesPage({
       </p>
 
       {!userId ? (
-        <p className="mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+        <p className="mt-4 rounded-lg bg-cyan-50 px-4 py-3 text-sm text-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-200">
           <Link href="/login" className="font-semibold underline">
             Log in
           </Link>{" "}
@@ -114,7 +114,7 @@ export default async function GamesPage({
             href={t.href}
             className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
               activeLeagueKey === t.key
-                ? "bg-emerald-600 text-white"
+                ? "bg-cyan-600 text-white"
                 : "border border-cardborder hover:bg-card"
             }`}
           >
@@ -135,7 +135,7 @@ export default async function GamesPage({
               href={gamesHref(active, w)}
               className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
                 activeWeek === w
-                  ? "bg-emerald-600 text-white"
+                  ? "bg-cyan-600 text-white"
                   : "border border-cardborder hover:bg-card"
               }`}
             >
@@ -146,7 +146,7 @@ export default async function GamesPage({
             href={gamesHref(active, "all")}
             className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
               activeWeek == null
-                ? "bg-emerald-600 text-white"
+                ? "bg-cyan-600 text-white"
                 : "border border-cardborder hover:bg-card"
             }`}
           >
@@ -205,7 +205,7 @@ export default async function GamesPage({
                       {g.homeTeam.displayName}
                     </div>
                     <div className="mt-1 text-xs text-muted">
-                      <span className="font-semibold text-emerald-500">
+                      <span className="font-semibold text-cyan-500">
                         {LEAGUE_LABELS[g.league]}
                       </span>
                       {g.week ? ` · Wk ${g.week}` : ""} ·{" "}

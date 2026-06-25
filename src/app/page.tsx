@@ -14,7 +14,7 @@ export default async function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-12 px-6 py-20">
       <div className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-emerald-500">
+        <p className="text-sm font-semibold uppercase tracking-widest text-cyan-500">
           Weekly pick&apos;em &middot; one global leaderboard
         </p>
         <h1 className="mt-3 text-5xl font-black tracking-tight sm:text-6xl">PickSix</h1>
@@ -28,7 +28,7 @@ export default async function Home() {
             <>
               <Link
                 href="/games"
-                className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+                className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
               >
                 Make your picks
               </Link>
@@ -43,7 +43,7 @@ export default async function Home() {
             <>
               <Link
                 href="/signup"
-                className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500"
+                className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
               >
                 Create an account
               </Link>
@@ -63,12 +63,12 @@ export default async function Home() {
           <Link
             key={l.tag}
             href={l.href}
-            className="lift group rounded-2xl border border-cardborder bg-card p-5 hover:border-emerald-500 hover:ring-2 hover:ring-emerald-500/40"
+            className="lift group rounded-2xl border border-cardborder bg-card p-5 hover:border-cyan-500 hover:ring-2 hover:ring-cyan-500/40"
           >
-            <span className="inline-block rounded-full bg-emerald-600/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500">
+            <span className="inline-block rounded-full bg-cyan-600/10 px-2.5 py-0.5 text-xs font-bold text-cyan-500">
               {l.tag}
             </span>
-            <h2 className="mt-3 text-lg font-bold group-hover:text-emerald-500">{l.title}</h2>
+            <h2 className="mt-3 text-lg font-bold group-hover:text-cyan-500">{l.title}</h2>
             <p className="mt-1 text-sm text-muted">{l.blurb}</p>
           </Link>
         ))}

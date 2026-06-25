@@ -9,7 +9,7 @@ export function FormPips({ form }: { form: FormResult[] }) {
         <span
           key={i}
           className={`h-1.5 w-1.5 rounded-full ${
-            r === "W" ? "bg-emerald-500" : r === "L" ? "bg-red-500" : "bg-muted"
+            r === "W" ? "bg-cyan-500" : r === "L" ? "bg-red-500" : "bg-muted"
           }`}
         />
       ))}

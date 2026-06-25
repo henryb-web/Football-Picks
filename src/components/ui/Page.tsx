@@ -20,7 +20,7 @@ export function PageHeader({
       <div className="flex items-stretch gap-3">
         <span
           aria-hidden
-          className="mt-1 w-1.5 shrink-0 -skew-x-12 rounded-sm bg-emerald-500"
+          className="mt-1 w-1.5 shrink-0 -skew-x-12 rounded-sm bg-cyan-500"
         />
         <div>
           <h1 className="headline text-4xl text-foreground sm:text-5xl">{title}</h1>

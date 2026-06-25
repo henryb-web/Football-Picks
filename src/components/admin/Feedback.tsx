@@ -6,7 +6,7 @@ export function Feedback({ state }: { state: AdminState }) {
     return <p className="text-sm font-medium text-red-600">{state.error}</p>;
   }
   if (state.ok) {
-    return <p className="text-sm font-medium text-emerald-600">{state.ok}</p>;
+    return <p className="text-sm font-medium text-cyan-600">{state.ok}</p>;
   }
   return null;
 }

@@ -14,7 +14,7 @@ import { SurvivorPicker } from "@/components/survivor/SurvivorPicker";
 import { Page } from "@/components/ui/Page";
 
 const RESULT = {
-  WIN: { label: "Survived", cls: "text-emerald-500" },
+  WIN: { label: "Survived", cls: "text-cyan-500" },
   LOSS: { label: "Eliminated", cls: "text-red-500" },
   PENDING: { label: "Pending", cls: "text-muted" },
 } as const;
@@ -57,18 +57,18 @@ export default async function SurvivorPoolPage({
 
   return (
     <Page>
-      <Link href="/survivor" className="text-sm text-emerald-500 hover:underline">
+      <Link href="/survivor" className="text-sm text-cyan-500 hover:underline">
         ← All pools
       </Link>
       <h1 className="headline mt-2 text-4xl">{pool.title}</h1>
       <p className="mt-1 text-sm text-muted">
-        <span className="font-semibold text-emerald-500">{LEAGUE_LABELS[pool.league]}</span>{" "}
+        <span className="font-semibold text-cyan-500">{LEAGUE_LABELS[pool.league]}</span>{" "}
         · {pool.season} {week != null ? `· Week ${week}` : ""}
       </p>
 
       {!userId ? (
-        <p className="mt-4 rounded-lg bg-emerald-500/10 px-4 py-3 text-sm">
-          <Link href="/login" className="font-semibold text-emerald-500 underline">
+        <p className="mt-4 rounded-lg bg-cyan-500/10 px-4 py-3 text-sm">
+          <Link href="/login" className="font-semibold text-cyan-500 underline">
             Log in
           </Link>{" "}
           to play survivor.
@@ -77,7 +77,7 @@ export default async function SurvivorPoolPage({
         <p
           className={`mt-4 rounded-lg px-4 py-3 text-sm font-semibold ${
             view.alive
-              ? "bg-emerald-500/10 text-emerald-500"
+              ? "bg-cyan-500/10 text-cyan-500"
               : "bg-red-500/10 text-red-500"
           }`}
         >
@@ -144,13 +144,13 @@ export default async function SurvivorPoolPage({
               <div
                 key={s.userId}
                 className={`flex items-center justify-between px-4 py-3 text-sm ${
-                  s.userId === userId ? "bg-emerald-500/10" : ""
+                  s.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
                 <span className="font-medium">{s.name}</span>
                 <span className="text-xs">
                   {s.alive ? (
-                    <span className="font-semibold text-emerald-500">
+                    <span className="font-semibold text-cyan-500">
                       Alive · {s.survived} wk
                     </span>
                   ) : (

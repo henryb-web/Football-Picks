@@ -5,7 +5,7 @@ import { setScoreAction } from "@/app/admin/actions";
 import type { AdminState } from "@/lib/admin-types";
 
 const scoreInput =
-  "w-14 rounded-md border border-cardborder bg-background px-2 py-1 text-center text-sm outline-none focus:border-emerald-500";
+  "w-14 rounded-md border border-cardborder bg-background px-2 py-1 text-center text-sm outline-none focus:border-cyan-500";
 
 export function ScoreForm({
   gameId,

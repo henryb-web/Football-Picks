@@ -9,7 +9,7 @@ import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import type { PickResult } from "@/generated/prisma/client";
 
 const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
-  WIN: { label: "Win", className: "bg-emerald-600 text-white" },
+  WIN: { label: "Win", className: "bg-cyan-600 text-white" },
   LOSS: { label: "Loss", className: "bg-red-600 text-white" },
   PUSH: { label: "Push", className: "bg-neutral-500 text-white" },
   VOID: { label: "Void", className: "bg-neutral-600 text-white" },
@@ -41,7 +41,7 @@ export default async function MyPicksPage() {
       {picks.length === 0 ? (
         <EmptyState icon={ClipboardList}>
           You haven&apos;t made any picks yet.{" "}
-          <Link href="/games" className="font-semibold text-emerald-500 hover:underline">
+          <Link href="/games" className="font-semibold text-cyan-500 hover:underline">
             Go pick some games →
           </Link>
         </EmptyState>
@@ -64,7 +64,7 @@ export default async function MyPicksPage() {
                     </span>
                   </div>
                   <div className="mt-0.5 text-xs text-muted">
-                    <span className="font-semibold text-emerald-500">
+                    <span className="font-semibold text-cyan-500">
                       {LEAGUE_LABELS[p.game.league]}
                     </span>
                     {p.game.week ? ` · Wk ${p.game.week}` : ""} ·{" "}

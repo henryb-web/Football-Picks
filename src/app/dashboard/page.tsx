@@ -56,7 +56,7 @@ export default async function DashboardPage() {
   return (
     <Page>
       <h1 className="headline text-4xl sm:text-5xl">
-        Welcome back, <span className="text-emerald-500">{name}</span>
+        Welcome back, <span className="text-cyan-500">{name}</span>
       </h1>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -98,8 +98,8 @@ export default async function DashboardPage() {
         href="/games"
         className={`mt-4 flex items-center justify-between rounded-xl border p-5 transition ${
           needPicks > 0
-            ? "border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/15"
-            : "border-cardborder bg-card hover:border-emerald-500/50"
+            ? "border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500/15"
+            : "border-cardborder bg-card hover:border-cyan-500/50"
         }`}
       >
         <div>
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
         <div className="mt-8">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-lg font-bold">Leaderboard</h2>
-            <Link href="/leaderboard" className="text-sm font-medium text-emerald-500 hover:underline">
+            <Link href="/leaderboard" className="text-sm font-medium text-cyan-500 hover:underline">
               View all →
             </Link>
           </div>
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
               <div
                 key={r.userId}
                 className={`flex items-center justify-between px-4 py-3 ${
-                  r.userId === userId ? "bg-emerald-500/10" : ""
+                  r.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
                 <span className="text-sm">

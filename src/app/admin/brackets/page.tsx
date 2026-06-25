@@ -14,7 +14,7 @@ export default async function AdminBracketsPage() {
   return (
     <main className="mx-auto w-full max-w-3xl space-y-8 px-6 py-10">
       <div>
-        <Link href="/admin" className="text-sm text-emerald-500 hover:underline">
+        <Link href="/admin" className="text-sm text-cyan-500 hover:underline">
           ← Back to admin
         </Link>
         <h1 className="mt-2 text-3xl font-black tracking-tight">Brackets</h1>
@@ -32,12 +32,12 @@ export default async function AdminBracketsPage() {
             <Link
               key={b.id}
               href={`/admin/brackets/${b.id}`}
-              className="flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 transition hover:border-emerald-500/50"
+              className="flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 transition hover:border-cyan-500/50"
             >
               <div>
                 <div className="font-bold">{b.title}</div>
                 <div className="mt-0.5 text-xs text-muted">
-                  <span className="font-semibold text-emerald-500">
+                  <span className="font-semibold text-cyan-500">
                     {LEAGUE_LABELS[b.league]}
                   </span>{" "}
                   · {b.season} · {b._count.entries} seeds · {b._count.games} games

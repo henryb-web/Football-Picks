@@ -28,10 +28,10 @@ function Chip({
       className={`flex-1 rounded-md border px-3 py-2 text-sm font-semibold ${
         picked
           ? result === "win"
-            ? "border-emerald-500 bg-emerald-600 text-white"
+            ? "border-cyan-500 bg-cyan-600 text-white"
             : result === "loss"
               ? "border-red-500 bg-red-600/80 text-white"
-              : "border-emerald-500 bg-emerald-500/15"
+              : "border-cyan-500 bg-cyan-500/15"
           : "border-cardborder text-muted"
       }`}
     >
@@ -108,12 +108,12 @@ export default async function BracketPage({
 
   return (
     <Page>
-      <Link href="/brackets" className="text-sm text-emerald-500 hover:underline">
+      <Link href="/brackets" className="text-sm text-cyan-500 hover:underline">
         ← All brackets
       </Link>
       <h1 className="headline mt-2 text-4xl">{bracket.title}</h1>
       <p className="mt-1 text-sm text-muted">
-        <span className="font-semibold text-emerald-500">{LEAGUE_LABELS[bracket.league]}</span>{" "}
+        <span className="font-semibold text-cyan-500">{LEAGUE_LABELS[bracket.league]}</span>{" "}
         · {bracket.season} ·{" "}
         {bracket.status === "OPEN"
           ? "open — pick away"
@@ -123,8 +123,8 @@ export default async function BracketPage({
       </p>
 
       {!userId ? (
-        <p className="mt-4 rounded-lg bg-emerald-500/10 px-4 py-3 text-sm">
-          <Link href="/login" className="font-semibold text-emerald-500 underline">
+        <p className="mt-4 rounded-lg bg-cyan-500/10 px-4 py-3 text-sm">
+          <Link href="/login" className="font-semibold text-cyan-500 underline">
             Log in
           </Link>{" "}
           to fill out this bracket.
@@ -185,7 +185,7 @@ export default async function BracketPage({
               <div
                 key={row.userId}
                 className={`flex items-center justify-between px-4 py-3 text-sm ${
-                  row.userId === userId ? "bg-emerald-500/10" : ""
+                  row.userId === userId ? "bg-cyan-500/10" : ""
                 }`}
               >
                 <span>
