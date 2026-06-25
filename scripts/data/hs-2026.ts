@@ -61,6 +61,7 @@ export const HS_2026: SchoolSchedule[] = [
     games: [
       { opponent: "Midway", homeaway: "home", date: "2026-08-27", time: "19:00" },
       { opponent: "Georgetown", homeaway: "away", date: "2026-09-04", time: "19:00" },
+      { opponent: "McNeil", homeaway: "home", date: "2026-09-11", time: "19:00" },
       { opponent: "Cedar Ridge", homeaway: "away", date: "2026-09-18", time: "19:00" },
       { opponent: "Vista Ridge", homeaway: "away", date: "2026-09-25", time: "19:00" },
       { opponent: "Cedar Park", homeaway: "home", date: "2026-10-02", time: "19:00" },
@@ -76,6 +77,7 @@ export const HS_2026: SchoolSchedule[] = [
       { opponent: "Weiss", homeaway: "away", date: "2026-09-04", time: "19:00" },
       { opponent: "Steele", homeaway: "away", date: "2026-09-11", time: "19:00" },
       { opponent: "Cornerstone Christian", homeaway: "home", date: "2026-09-17", time: "19:00" },
+      { opponent: "McNeil", homeaway: "away", date: "2026-09-24", time: "19:00" },
       { opponent: "Cedar Ridge", homeaway: "home", date: "2026-10-09", time: "19:00" },
       { opponent: "Stony Point", homeaway: "away", date: "2026-10-16", time: "19:00" },
       { opponent: "Round Rock", homeaway: "away", date: "2026-10-30", time: "19:00" },
