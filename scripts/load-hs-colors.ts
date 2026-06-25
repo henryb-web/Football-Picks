@@ -59,7 +59,7 @@ const COLORS: Record<string, string> = {
   Vandegrift: "1A1A1A",
   "Vista Ridge": "041E42",
   Weiss: "A6192E",
-  Westlake: "C8102E",
+  Westlake: "092DDC",
   Westwood: "E87722",
 };
 
