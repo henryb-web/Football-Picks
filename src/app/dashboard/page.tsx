@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
+import { getUserStats } from "@/lib/stats";
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
     : 0;
   const needPicks = upcomingIds.length - pickedCount;
 
+  const stats = await getUserStats(userId);
   const name = session.user.username ?? session.user.name ?? "there";
   const top = board.slice(0, 3);
 
@@ -43,14 +45,31 @@ export default async function DashboardPage() {
         Welcome back, <span className="text-emerald-500">{name}</span>
       </h1>
 
-      <div className="mt-6 grid grid-cols-3 gap-3">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Rank" value={rank ? `#${rank}` : "—"} />
         <StatCard label="Points" value={String(me?.points ?? 0)} />
         <StatCard
           label="Record"
           value={me ? `${me.wins}-${me.losses}-${me.pushes}` : "0-0-0"}
         />
+        <StatCard
+          label="Streak"
+          value={stats.currentStreak > 0 ? `🔥 ${stats.currentStreak}` : "—"}
+        />
       </div>
+
+      {stats.badges.length > 0 ? (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {stats.badges.map((b) => (
+            <span
+              key={b.label}
+              className="rounded-full border border-cardborder bg-card px-3 py-1 text-xs font-semibold"
+            >
+              {b.emoji} {b.label}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
       <Link
         href="/games"

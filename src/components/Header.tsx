@@ -30,6 +30,7 @@ export async function Header() {
           <NavLink href="/games">Games</NavLink>
           <NavLink href="/brackets">Brackets</NavLink>
           <NavLink href="/leaderboard">Leaderboard</NavLink>
+          <NavLink href="/recap">Recap</NavLink>
           {user ? <NavLink href="/my-picks">My Picks</NavLink> : null}
           {user?.isAdmin ? <NavLink href="/admin">Admin</NavLink> : null}
 
