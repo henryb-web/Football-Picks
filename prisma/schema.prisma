@@ -52,6 +52,12 @@ enum BracketStatus {
   COMPLETE // champion decided
 }
 
+enum SurvivorResult {
+  PENDING
+  WIN
+  LOSS
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -72,6 +78,7 @@ model User {
   sessions            Session[]
   passwordResetTokens PasswordResetToken[]
   bracketPicks        BracketPick[]
+  survivorPicks       SurvivorPick[]
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -203,6 +210,43 @@ model BracketPick {
   @@index([bracketGameId])
 }
 
+// --- Survivor / eliminator pool ---
+// Each week pick one team to win (straight up); can't reuse a team; one loss
+// and you're out. Uses existing Games of the pool's league/season.
+
+model SurvivorPool {
+  id        String         @id @default(cuid())
+  league    League
+  season    Int
+  title     String
+  active    Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  picks     SurvivorPick[]
+
+  @@unique([league, season])
+}
+
+model SurvivorPick {
+  id     String       @id @default(cuid())
+  poolId String
+  pool   SurvivorPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  userId String
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  week   Int
+  gameId String
+  game   Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  teamId String
+  team   Team         @relation(fields: [teamId], references: [id])
+  result SurvivorResult @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([poolId, userId, week])
+  @@index([gameId])
+  @@index([poolId])
+}
+
 model Team {
   id           String  @id @default(cuid())
   league       League
@@ -220,8 +264,9 @@ model Team {
   altColor     String?
   logo         String? // team logo URL from the feed
 
-  homeGames Game[] @relation("HomeTeam")
-  awayGames Game[] @relation("AwayTeam")
+  homeGames     Game[]         @relation("HomeTeam")
+  awayGames     Game[]         @relation("AwayTeam")
+  survivorPicks SurvivorPick[]
 
   @@unique([league, externalSource, externalId])
   @@index([league])
@@ -252,8 +297,9 @@ model Game {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lines Line[]
-  picks Pick[]
+  lines         Line[]
+  picks         Pick[]
+  survivorPicks SurvivorPick[]
 
   @@unique([league, externalSource, externalId])
   @@index([league, season, week])

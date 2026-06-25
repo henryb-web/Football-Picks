@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { gradeSurvivorForGame } from "@/lib/survivor";
 import type { PickResult, PickSide } from "@/generated/prisma/client";
 
 // Straight-up grading (no spreads yet). 1 point per correct winner; a tie is a
@@ -52,6 +53,9 @@ export async function settleGame(gameId: string): Promise<void> {
       });
     }
   }
+
+  // Survivor picks on this game are graded the same way (team must win SU).
+  await gradeSurvivorForGame(gameId);
 }
 
 export type LeaderboardRow = {

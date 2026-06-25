@@ -29,6 +29,7 @@ export async function Header() {
           {user ? <NavLink href="/dashboard">Dashboard</NavLink> : null}
           <NavLink href="/games">Games</NavLink>
           <NavLink href="/brackets">Brackets</NavLink>
+          <NavLink href="/survivor">Survivor</NavLink>
           <NavLink href="/leaderboard">Leaderboard</NavLink>
           <NavLink href="/recap">Recap</NavLink>
           {user ? <NavLink href="/my-picks">My Picks</NavLink> : null}

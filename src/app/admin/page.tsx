@@ -42,12 +42,20 @@ export default async function AdminPage() {
             Sync feeds, add games, and enter final scores.
           </p>
         </div>
-        <Link
-          href="/admin/brackets"
-          className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-semibold transition hover:bg-card"
-        >
-          Manage brackets →
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href="/admin/brackets"
+            className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-semibold transition hover:bg-card"
+          >
+            Brackets →
+          </Link>
+          <Link
+            href="/admin/survivor"
+            className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-semibold transition hover:bg-card"
+          >
+            Survivor →
+          </Link>
+        </div>
       </div>
 
       <section className="grid gap-6 md:grid-cols-2">
