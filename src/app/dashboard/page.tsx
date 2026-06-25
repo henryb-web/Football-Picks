@@ -9,8 +9,10 @@ import { Page } from "@/components/ui/Page";
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-cardborder bg-card p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
-      <div className="mt-1 text-3xl font-black tabular-nums">{value}</div>
+      <div className="text-[11px] font-semibold uppercase tracking-widest text-muted">
+        {label}
+      </div>
+      <div className="headline mt-1 text-4xl tabular-nums">{value}</div>
     </div>
   );
 }
@@ -42,7 +44,7 @@ export default async function DashboardPage() {
 
   return (
     <Page>
-      <h1 className="text-3xl font-black tracking-tight">
+      <h1 className="headline text-4xl sm:text-5xl">
         Welcome back, <span className="text-emerald-500">{name}</span>
       </h1>
 

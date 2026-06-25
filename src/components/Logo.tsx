@@ -5,7 +5,7 @@ export function Logo({ withText = true }: { withText?: boolean }) {
         6
       </span>
       {withText ? (
-        <span className="text-lg font-black tracking-tight">
+        <span className="headline text-xl">
           Pick<span className="text-emerald-500">Six</span>
         </span>
       ) : null}

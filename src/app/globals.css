@@ -30,6 +30,15 @@
   --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-oswald);
+}
+
+/* Broadcast-style headline: condensed, uppercase, tight tracking. */
+.headline {
+  font-family: var(--font-oswald), system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
 }
 
 body {

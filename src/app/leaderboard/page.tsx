@@ -32,9 +32,11 @@ export default async function LeaderboardPage() {
             <tbody className="divide-y divide-cardborder">
               {rows.map((r, i) => (
                 <tr key={r.userId} className={r.userId === meId ? "bg-emerald-500/10" : ""}>
-                  <td className="px-4 py-3 font-semibold text-muted">{i + 1}</td>
+                  <td className="px-4 py-3 font-display text-lg text-muted">{i + 1}</td>
                   <td className="px-4 py-3 font-medium">{r.name}</td>
-                  <td className="px-4 py-3 text-right font-bold tabular-nums">{r.points}</td>
+                  <td className="px-4 py-3 text-right font-display text-lg tabular-nums">
+                    {r.points}
+                  </td>
                   <td className="px-4 py-3 text-right tabular-nums text-muted">
                     {r.wins}-{r.losses}-{r.pushes}
                   </td>

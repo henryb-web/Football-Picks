@@ -92,8 +92,8 @@ export default async function GamesPage({
 
   return (
     <Page>
-      <h1 className="text-3xl font-black tracking-tight">Games</h1>
-      <p className="mt-1 text-sm text-muted">
+      <h1 className="headline text-4xl sm:text-5xl">Games</h1>
+      <p className="mt-1.5 text-sm text-muted">
         Pick a winner for each game. Picks lock at kickoff.
       </p>
 
@@ -173,12 +173,21 @@ export default async function GamesPage({
                   : null;
 
             const c = consensus.get(g.id) ?? { home: 0, away: 0 };
+            const awayC = g.awayTeam.color ?? "3b4252";
+            const homeC = g.homeTeam.color ?? "3b4252";
 
             return (
               <div
                 key={g.id}
-                className="rounded-xl border border-cardborder bg-card p-4"
+                className="relative overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5"
               >
+                <span
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 w-1.5"
+                  style={{
+                    background: `linear-gradient(to bottom, #${awayC} 0 50%, #${homeC} 50% 100%)`,
+                  }}
+                />
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-sm font-semibold">
@@ -216,8 +225,10 @@ export default async function GamesPage({
                     ) : (
                       <div className="flex flex-col items-end gap-1 text-right">
                         {isFinal ? (
-                          <span className="text-sm font-bold tabular-nums">
-                            {g.awayScore} – {g.homeScore}
+                          <span className="font-display text-2xl font-semibold tabular-nums">
+                            {g.awayScore}
+                            <span className="mx-1 text-muted">–</span>
+                            {g.homeScore}
                           </span>
                         ) : (
                           <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
