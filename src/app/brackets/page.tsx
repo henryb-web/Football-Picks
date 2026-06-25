@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { GitMerge } from "lucide-react";
 import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
+import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 
 const STATUS_LABEL: Record<string, string> = {
   OPEN: "Open for picks",
@@ -15,20 +17,20 @@ export default async function BracketsPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="text-3xl font-black tracking-tight">Brackets</h1>
-      <p className="mt-1 text-sm text-muted">
-        Predict the whole postseason before it starts. More points for later rounds.
-      </p>
+    <Page>
+      <PageHeader
+        title="Brackets"
+        subtitle="Predict the whole postseason before it starts. More points for later rounds."
+      />
 
-      <div className="mt-6 space-y-2">
-        {brackets.length === 0 ? (
-          <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
-            No brackets are open yet — they appear here once the postseason field
-            is set.
-          </p>
-        ) : (
-          brackets.map((b) => (
+      {brackets.length === 0 ? (
+        <EmptyState icon={GitMerge}>
+          No brackets are open yet — they appear here once the postseason field is
+          set.
+        </EmptyState>
+      ) : (
+        <div className="space-y-2">
+          {brackets.map((b) => (
             <Link
               key={b.id}
               href={`/brackets/${b.id}`}
@@ -53,9 +55,9 @@ export default async function BracketsPage() {
                 {STATUS_LABEL[b.status] ?? b.status}
               </span>
             </Link>
-          ))
-        )}
-      </div>
-    </main>
+          ))}
+        </div>
+      )}
+    </Page>
   );
 }

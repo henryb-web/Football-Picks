@@ -12,6 +12,7 @@ import {
 } from "@/lib/bracket/resolve";
 import { getBracketStandings } from "@/lib/bracket/scoring";
 import { BracketPickButtons } from "@/components/brackets/BracketPickButtons";
+import { Page } from "@/components/ui/Page";
 
 function Chip({
   entry,
@@ -106,7 +107,7 @@ export default async function BracketPage({
   rounds.sort((a, b) => a.round - b.round);
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
+    <Page>
       <Link href="/brackets" className="text-sm text-emerald-500 hover:underline">
         ← All brackets
       </Link>
@@ -199,6 +200,6 @@ export default async function BracketPage({
           </div>
         </div>
       ) : null}
-    </main>
+    </Page>
   );
 }

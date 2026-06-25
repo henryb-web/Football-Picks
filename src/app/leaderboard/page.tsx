@@ -1,23 +1,25 @@
+import { Trophy } from "lucide-react";
 import { auth } from "@/auth";
 import { getLeaderboard } from "@/lib/scoring";
+import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 
 export default async function LeaderboardPage() {
   const [rows, session] = await Promise.all([getLeaderboard(), auth()]);
   const meId = session?.user?.id;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="text-3xl font-black tracking-tight">Leaderboard</h1>
-      <p className="mt-1 text-sm text-muted">
-        Global standings — 1 point per correct pick.
-      </p>
+    <Page>
+      <PageHeader
+        title="Leaderboard"
+        subtitle="Global standings — 1 point per correct pick."
+      />
 
       {rows.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
+        <EmptyState icon={Trophy}>
           No graded picks yet. Standings appear once games go final.
-        </p>
+        </EmptyState>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-xl border border-cardborder bg-card">
+        <div className="overflow-hidden rounded-xl border border-cardborder bg-card">
           <table className="w-full text-sm">
             <thead className="bg-background text-left text-xs uppercase tracking-wide text-muted">
               <tr>
@@ -42,6 +44,6 @@ export default async function LeaderboardPage() {
           </table>
         </div>
       )}
-    </main>
+    </Page>
   );
 }

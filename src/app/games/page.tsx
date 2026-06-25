@@ -8,6 +8,7 @@ import { PickButtons } from "@/components/games/PickButtons";
 import { TeamLogo } from "@/components/games/TeamLogo";
 import { LockCountdown } from "@/components/games/LockCountdown";
 import { ConsensusBar } from "@/components/games/ConsensusBar";
+import { Page } from "@/components/ui/Page";
 import type { League, PickSide } from "@/generated/prisma/client";
 
 function gamesHref(league: string | null, week: string | number | null) {
@@ -90,7 +91,7 @@ export default async function GamesPage({
   const activeLeagueKey = active ?? "all";
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-10">
+    <Page>
       <h1 className="text-3xl font-black tracking-tight">Games</h1>
       <p className="mt-1 text-sm text-muted">
         Pick a winner for each game. Picks lock at kickoff.
@@ -251,6 +252,6 @@ export default async function GamesPage({
           })
         )}
       </div>
-    </main>
+    </Page>
   );
 }

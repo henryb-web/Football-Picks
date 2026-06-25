@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Skull } from "lucide-react";
 import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
+import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 
 export default async function SurvivorListPage() {
   const pools = await db.survivorPool.findMany({
@@ -9,20 +11,17 @@ export default async function SurvivorListPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="text-3xl font-black tracking-tight">Survivor</h1>
-      <p className="mt-1 text-sm text-muted">
-        Pick one team to win each week. Can&apos;t reuse a team. One loss and
-        you&apos;re out — last one standing wins.
-      </p>
+    <Page>
+      <PageHeader
+        title="Survivor"
+        subtitle="Pick one team to win each week. Can't reuse a team. One loss and you're out — last one standing wins."
+      />
 
-      <div className="mt-6 space-y-2">
-        {pools.length === 0 ? (
-          <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
-            No survivor pools are running right now.
-          </p>
-        ) : (
-          pools.map((p) => (
+      {pools.length === 0 ? (
+        <EmptyState icon={Skull}>No survivor pools are running right now.</EmptyState>
+      ) : (
+        <div className="space-y-2">
+          {pools.map((p) => (
             <Link
               key={p.id}
               href={`/survivor/${p.id}`}
@@ -36,9 +35,9 @@ export default async function SurvivorListPage() {
                 · {p.season}
               </span>
             </Link>
-          ))
-        )}
-      </div>
-    </main>
+          ))}
+        </div>
+      )}
+    </Page>
   );
 }

@@ -1,0 +1,14 @@
+export function Logo({ withText = true }: { withText?: boolean }) {
+  return (
+    <span className="flex items-center gap-2">
+      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600 text-sm font-black text-white">
+        6
+      </span>
+      {withText ? (
+        <span className="text-lg font-black tracking-tight">
+          Pick<span className="text-emerald-500">Six</span>
+        </span>
+      ) : null}
+    </span>
+  );
+}

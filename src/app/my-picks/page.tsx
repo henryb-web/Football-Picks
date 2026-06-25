@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ClipboardList } from "lucide-react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
+import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import type { PickResult } from "@/generated/prisma/client";
 
 const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
@@ -30,21 +32,21 @@ export default async function MyPicksPage() {
   const pushes = picks.filter((p) => p.result === "PUSH").length;
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="text-3xl font-black tracking-tight">My Picks</h1>
-      <p className="mt-1 text-sm text-muted">
-        {picks.length} picks · {points} points · {wins}-{losses}-{pushes}
-      </p>
+    <Page>
+      <PageHeader
+        title="My Picks"
+        subtitle={`${picks.length} picks · ${points} points · ${wins}-${losses}-${pushes}`}
+      />
 
       {picks.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
+        <EmptyState icon={ClipboardList}>
           You haven&apos;t made any picks yet.{" "}
           <Link href="/games" className="font-semibold text-emerald-500 hover:underline">
             Go pick some games →
           </Link>
-        </p>
+        </EmptyState>
       ) : (
-        <div className="mt-6 space-y-2">
+        <div className="space-y-2">
           {picks.map((p) => {
             const picked = p.side === "HOME" ? p.game.homeTeam : p.game.awayTeam;
             const badge = RESULT_BADGE[p.result];
@@ -82,6 +84,6 @@ export default async function MyPicksPage() {
           })}
         </div>
       )}
-    </main>
+    </Page>
   );
 }

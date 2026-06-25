@@ -11,6 +11,7 @@ import {
   getUserSurvivorView,
 } from "@/lib/survivor";
 import { SurvivorPicker } from "@/components/survivor/SurvivorPicker";
+import { Page } from "@/components/ui/Page";
 
 const RESULT = {
   WIN: { label: "Survived", cls: "text-emerald-500" },
@@ -55,7 +56,7 @@ export default async function SurvivorPoolPage({
   }));
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
+    <Page>
       <Link href="/survivor" className="text-sm text-emerald-500 hover:underline">
         ← All pools
       </Link>
@@ -161,6 +162,6 @@ export default async function SurvivorPoolPage({
           </div>
         )}
       </section>
-    </main>
+    </Page>
   );
 }

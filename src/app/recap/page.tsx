@@ -1,21 +1,20 @@
+import { CalendarDays } from "lucide-react";
 import { getWeeklyRecaps } from "@/lib/stats";
+import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 
 export default async function RecapPage() {
   const recaps = await getWeeklyRecaps();
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <h1 className="text-3xl font-black tracking-tight">Weekly Recap</h1>
-      <p className="mt-1 text-sm text-muted">
-        Who topped the pool each week.
-      </p>
+    <Page>
+      <PageHeader title="Weekly Recap" subtitle="Who topped the pool each week." />
 
       {recaps.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
+        <EmptyState icon={CalendarDays}>
           No completed weeks yet — recaps appear once games go final.
-        </p>
+        </EmptyState>
       ) : (
-        <div className="mt-6 space-y-4">
+        <div className="space-y-4">
           {recaps.map((r) => (
             <div key={r.week} className="rounded-xl border border-cardborder bg-card p-5">
               <div className="flex items-center justify-between">
@@ -46,6 +45,6 @@ export default async function RecapPage() {
           ))}
         </div>
       )}
-    </main>
+    </Page>
   );
 }

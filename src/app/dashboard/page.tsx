@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
+import { Page } from "@/components/ui/Page";
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
@@ -40,7 +41,7 @@ export default async function DashboardPage() {
   const top = board.slice(0, 3);
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-6 py-10">
+    <Page>
       <h1 className="text-3xl font-black tracking-tight">
         Welcome back, <span className="text-emerald-500">{name}</span>
       </h1>
@@ -120,6 +121,6 @@ export default async function DashboardPage() {
           </div>
         </div>
       ) : null}
-    </main>
+    </Page>
   );
 }
