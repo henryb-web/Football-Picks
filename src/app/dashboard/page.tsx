@@ -8,6 +8,21 @@ import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
 
+// Start of the football week containing `d`, anchored at Tuesday 12:00 UTC — a
+// dead zone between Monday-night games (which can spill into early Tuesday in UTC)
+// and the next Thursday slate. Keeps a full Thu–Mon week in one bucket on any
+// server timezone, and merges NFL/CFB/HS games that fall in the same calendar week
+// even though each league numbers its weeks differently.
+function weekStartFor(d: Date): Date {
+  const start = new Date(
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12, 0, 0, 0),
+  );
+  const daysSinceTuesday = (start.getUTCDay() - 2 + 7) % 7; // getUTCDay: 0=Sun..6=Sat
+  start.setUTCDate(start.getUTCDate() - daysSinceTuesday);
+  if (start > d) start.setUTCDate(start.getUTCDate() - 7);
+  return start;
+}
+
 function StatCard({
   label,
   value,
@@ -39,16 +54,30 @@ export default async function DashboardPage() {
   const me = idx >= 0 ? board[idx] : null;
   const rank = idx >= 0 ? idx + 1 : null;
 
-  // Games still open for picking that this user hasn't picked yet.
-  const upcoming = await db.game.findMany({
-    where: { status: "SCHEDULED", pickLockAt: { gt: new Date() } },
-    select: { id: true },
+  // Games still open for picking, scoped to the nearest football week only — so we
+  // nudge about the immediate slate, not every game left in the season. We take the
+  // soonest still-open game across all leagues and count everything in its Tue→Mon
+  // week that this user hasn't picked (NFL/CFB/HS merged by calendar week).
+  const now = new Date();
+  const openGames = await db.game.findMany({
+    where: { status: "SCHEDULED", pickLockAt: { gt: now } },
+    select: { id: true, kickoff: true },
+    orderBy: { kickoff: "asc" },
   });
-  const upcomingIds = upcoming.map((g) => g.id);
-  const pickedCount = upcomingIds.length
-    ? await db.pick.count({ where: { userId, gameId: { in: upcomingIds } } })
+
+  let weekIds: string[] = [];
+  if (openGames.length > 0) {
+    const weekStart = weekStartFor(openGames[0].kickoff);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setUTCDate(weekEnd.getUTCDate() + 7);
+    weekIds = openGames
+      .filter((g) => g.kickoff >= weekStart && g.kickoff < weekEnd)
+      .map((g) => g.id);
+  }
+  const pickedCount = weekIds.length
+    ? await db.pick.count({ where: { userId, gameId: { in: weekIds } } })
     : 0;
-  const needPicks = upcomingIds.length - pickedCount;
+  const needPicks = weekIds.length - pickedCount;
 
   const stats = await getUserStats(userId);
   const name = session.user.username ?? session.user.name ?? "there";
@@ -106,7 +135,7 @@ export default async function DashboardPage() {
         <div>
           <div className="text-lg font-bold">
             {needPicks > 0
-              ? `${needPicks} game${needPicks === 1 ? "" : "s"} need your picks`
+              ? `${needPicks} game${needPicks === 1 ? "" : "s"} need your picks this week`
               : "You're all caught up"}
           </div>
           <div className="mt-0.5 text-sm text-muted">
