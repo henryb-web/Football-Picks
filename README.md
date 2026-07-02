@@ -1,15 +1,16 @@
 # PickSix
 
 A weekly pick'em web app for **NFL**, **College (FBS / CFP)**, and **Texas UIL 6A high school**
-football. One global leaderboard. NFL & college games are picked against the spread (with live
-odds shown); high school games are straight-up winner picks. A single-elimination bracket mode
-runs for the postseason.
+football. One global leaderboard. Every game is a straight-up winner pick (choose who wins) —
+no spreads. A single-elimination bracket mode runs for the postseason, alongside a
+survivor/eliminator pool.
 
 ## Tech stack
 
 - **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS 4**
 - **PostgreSQL 16** (via Docker) + **Prisma 7** (with the `pg` driver adapter)
-- Auth, data ingestion, and scoring are added in later milestones.
+- **Auth.js (NextAuth v5)** for auth, ESPN's keyless APIs for NFL/CFB ingestion, and a
+  straight-up scoring engine that settles picks when games go final.
 
 ## Prerequisites
 
@@ -78,7 +79,7 @@ until configured). Built on Auth.js (NextAuth v5) with JWT sessions.
 
 ```
 prisma/
-  schema.prisma        # data model (User, Team, Game, Line, Pick)
+  schema.prisma        # data model (User, Team, Game, Pick, brackets, survivor)
   migrations/          # migration history
 prisma.config.ts       # Prisma 7 config (DB url for the CLI)
 src/
