@@ -25,12 +25,28 @@ function Card({
   );
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
   await requireAdmin();
+  const q = (await searchParams).q?.trim() ?? "";
+
   const games = await db.game.findMany({
+    where: q
+      ? {
+          OR: [
+            { homeTeam: { displayName: { contains: q, mode: "insensitive" } } },
+            { homeTeam: { name: { contains: q, mode: "insensitive" } } },
+            { awayTeam: { displayName: { contains: q, mode: "insensitive" } } },
+            { awayTeam: { name: { contains: q, mode: "insensitive" } } },
+          ],
+        }
+      : undefined,
     include: { homeTeam: true, awayTeam: true },
     orderBy: { kickoff: "desc" },
-    take: 30,
+    take: q ? 100 : 30,
   });
 
   return (
@@ -74,11 +90,40 @@ export default async function AdminPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-bold">Recent games ({games.length})</h2>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 className="text-lg font-bold">
+            {q
+              ? `Search results (${games.length})`
+              : `Recent games (${games.length})`}
+          </h2>
+          <form method="get" action="/admin" className="flex items-center gap-2">
+            <input
+              type="search"
+              name="q"
+              defaultValue={q}
+              placeholder="Search by team…"
+              aria-label="Search games by team"
+              className="w-48 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-cyan-500"
+            />
+            <button
+              type="submit"
+              className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
+            >
+              Search
+            </button>
+            {q ? (
+              <Link href="/admin" className="text-xs text-muted hover:underline">
+                Clear
+              </Link>
+            ) : null}
+          </form>
+        </div>
         <div className="mt-3 divide-y divide-cardborder overflow-hidden rounded-xl border border-cardborder bg-card">
           {games.length === 0 ? (
             <p className="p-4 text-sm text-muted">
-              No games yet — sync NFL or add one above.
+              {q
+                ? `No games match “${q}”.`
+                : "No games yet — sync NFL or add one above."}
             </p>
           ) : (
             games.map((g) => (
