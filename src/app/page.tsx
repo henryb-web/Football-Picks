@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 const LEAGUES = [
   { tag: "NFL", title: "Pro", blurb: "Every NFL matchup.", href: "/games?league=NFL" },
   { tag: "CFB", title: "College", blurb: "Power-conference & CFP teams.", href: "/games?league=CFB" },
-  { tag: "6A", title: "Texas High School", blurb: "UIL Class 6A games.", href: "/games?league=HS6A" },
+  { tag: "6A", title: "Texas High School", blurb: "Tracked UIL & TAPPS schools.", href: "/games?league=HS6A" },
 ];
 
 export default async function Home() {
@@ -12,67 +12,87 @@ export default async function Home() {
   const loggedIn = Boolean(session?.user);
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-12 px-6 py-20">
-      <div className="text-center">
-        <p className="text-sm font-semibold uppercase tracking-widest text-cyan-500">
-          Weekly pick&apos;em &middot; one global leaderboard
-        </p>
-        <h1 className="mt-3 text-5xl font-black tracking-tight sm:text-6xl">PickSix</h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-muted">
-          Make your picks before kickoff. Pro, college, and Texas 6A — compete
-          on one leaderboard.
-        </p>
+    <main className="flex flex-1 flex-col">
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-cardborder">
+        {/* yard-line motif */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 text-foreground opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(90deg, transparent 0 54px, currentColor 54px 56px)",
+          }}
+        />
+        <div className="relative mx-auto max-w-3xl px-6 py-24 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-500">
+            Weekly pick&apos;em · one leaderboard
+          </p>
+          <h1 className="headline mt-4 text-7xl sm:text-8xl">
+            Pick<span className="text-cyan-500">Six</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
+            Call the NFL, college, and Texas high-school slate before kickoff —
+            against the whole field, all season long.
+          </p>
 
-        <div className="mt-6 flex justify-center gap-3">
-          {loggedIn ? (
-            <>
-              <Link
-                href="/games"
-                className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
-              >
-                Make your picks
-              </Link>
-              <Link
-                href="/dashboard"
-                className="rounded-lg border border-cardborder px-5 py-2.5 text-sm font-semibold transition hover:bg-card"
-              >
-                Your dashboard
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/signup"
-                className="rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
-              >
-                Create an account
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-lg border border-cardborder px-5 py-2.5 text-sm font-semibold transition hover:bg-card"
-              >
-                Log in
-              </Link>
-            </>
-          )}
+          <div className="mt-8 flex justify-center gap-3">
+            {loggedIn ? (
+              <>
+                <Link
+                  href="/games"
+                  className="pop rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white hover:bg-cyan-500"
+                >
+                  Make your picks
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="pop rounded-lg border border-cardborder px-6 py-3 text-sm font-semibold hover:bg-card"
+                >
+                  Your dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/signup"
+                  className="pop rounded-lg bg-cyan-600 px-6 py-3 text-sm font-semibold text-white hover:bg-cyan-500"
+                >
+                  Create an account
+                </Link>
+                <Link
+                  href="/login"
+                  className="pop rounded-lg border border-cardborder px-6 py-3 text-sm font-semibold hover:bg-card"
+                >
+                  Log in
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid w-full max-w-3xl gap-4 sm:grid-cols-3">
-        {LEAGUES.map((l) => (
-          <Link
-            key={l.tag}
-            href={l.href}
-            className="lift group rounded-2xl border border-cardborder bg-card p-5 hover:border-cyan-500 hover:ring-2 hover:ring-cyan-500/40"
-          >
-            <span className="inline-block rounded-full bg-cyan-600/10 px-2.5 py-0.5 text-xs font-bold text-cyan-500">
-              {l.tag}
-            </span>
-            <h2 className="mt-3 text-lg font-bold group-hover:text-cyan-500">{l.title}</h2>
-            <p className="mt-1 text-sm text-muted">{l.blurb}</p>
-          </Link>
-        ))}
-      </div>
+      {/* Leagues */}
+      <section className="mx-auto w-full max-w-3xl px-6 py-12">
+        <div className="grid gap-4 sm:grid-cols-3">
+          {LEAGUES.map((l) => (
+            <Link
+              key={l.tag}
+              href={l.href}
+              className="lift group relative overflow-hidden rounded-2xl border border-cardborder bg-card p-5 hover:border-cyan-500 hover:ring-2 hover:ring-cyan-500/40"
+            >
+              <span className="headline pointer-events-none absolute -right-1 -top-2 text-6xl text-cyan-500/10 transition group-hover:text-cyan-500/25">
+                {l.tag}
+              </span>
+              <h2 className="headline relative text-2xl">{l.title}</h2>
+              <p className="relative mt-1 text-sm text-muted">{l.blurb}</p>
+              <span className="relative mt-3 inline-block text-sm font-semibold text-cyan-500 opacity-0 transition group-hover:opacity-100">
+                Make picks →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
