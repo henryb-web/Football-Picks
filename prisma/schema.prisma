@@ -1,6 +1,6 @@
 // Football-Picks data model.
 // Three leagues (NFL, College FBS, Texas UIL 6A), a global pick'em pool,
-// betting lines for NFL/CFB, and picks scored ATS (NFL/CFB) or straight-up (HS).
+// and picks scored straight-up (pick the winner) across all leagues.
 
 generator client {
   provider = "prisma-client"
@@ -37,12 +37,6 @@ enum PickResult {
   LOSS
   PUSH
   VOID
-}
-
-// How a game is scored. ATS = against the spread (NFL/CFB), SU = straight up (HS).
-enum ScoringMode {
-  ATS
-  SU
 }
 
 enum BracketStatus {
@@ -281,7 +275,6 @@ model Game {
   // When picks lock for this game (kickoff for NFL/CFB; the Friday cutoff for HS).
   pickLockAt  DateTime
   status      GameStatus @default(SCHEDULED)
-  scoringMode ScoringMode
 
   homeTeamId String
   awayTeamId String
@@ -297,36 +290,12 @@ model Game {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  lines         Line[]
   picks         Pick[]
   survivorPicks SurvivorPick[]
 
   @@unique([league, externalSource, externalId])
   @@index([league, season, week])
   @@index([kickoff])
-}
-
-// A snapshot of a betting line for a game (only NFL/CFB). History is kept;
-// the most recent row is shown, and the row referenced by a Pick is used to settle it.
-model Line {
-  id        String   @id @default(cuid())
-  gameId    String
-  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-
-  // Point spread from the HOME team's perspective (negative = home favored).
-  spreadHome     Float?
-  spreadHomePrice Int?    // American odds for the home spread, e.g. -110
-  spreadAwayPrice Int?
-  moneylineHome  Int?     // American odds, e.g. -150
-  moneylineAway  Int?
-  total          Float?
-
-  bookmaker String?
-  fetchedAt DateTime @default(now())
-
-  picks Pick[]
-
-  @@index([gameId, fetchedAt])
 }
 
 model Pick {
@@ -337,11 +306,6 @@ model Pick {
   game   Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   side PickSide
-
-  // The line this pick is graded against (snapshotted at pick/lock time). Null for HS (SU).
-  lineId       String?
-  line         Line?   @relation(fields: [lineId], references: [id])
-  spreadAtPick Float?  // denormalized spread (home perspective) captured when picked
 
   result        PickResult @default(PENDING)
   pointsAwarded Int        @default(0)

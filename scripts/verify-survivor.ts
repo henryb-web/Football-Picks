@@ -22,7 +22,6 @@ async function makeGame(week: number, homeName: string, awayName: string) {
       kickoff,
       pickLockAt: kickoff,
       status: "SCHEDULED",
-      scoringMode: "ATS",
       homeTeamId: home.id,
       awayTeamId: away.id,
       externalSource: "manual",

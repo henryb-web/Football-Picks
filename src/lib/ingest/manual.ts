@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { LEAGUE_SCORING } from "@/lib/leagues";
 import type { GameStatus, League } from "@/generated/prisma/client";
 
 // Reuse an existing team in the league by display name, else create a manual one.
@@ -38,7 +37,6 @@ export async function createManualGame(input: GameInput) {
       kickoff: input.kickoff,
       pickLockAt: input.kickoff,
       status: "SCHEDULED",
-      scoringMode: LEAGUE_SCORING[input.league],
       homeTeamId: home.id,
       awayTeamId: away.id,
       externalSource: "manual",
@@ -47,7 +45,7 @@ export async function createManualGame(input: GameInput) {
 }
 
 // Edit an existing game's details (admin). Reassigns teams by name, recomputes
-// the lock time and scoring mode, and clears scores if moved back to scheduled.
+// the lock time, and clears scores if moved back to scheduled.
 export async function updateGame(
   gameId: string,
   input: GameInput & {
@@ -71,7 +69,6 @@ export async function updateGame(
       kickoff: input.kickoff,
       pickLockAt: input.kickoff,
       status: input.status,
-      scoringMode: LEAGUE_SCORING[input.league],
       homeTeamId: home.id,
       awayTeamId: away.id,
       homeScore: scheduled ? null : input.homeScore,

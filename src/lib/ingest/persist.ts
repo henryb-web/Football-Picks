@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { LEAGUE_SCORING } from "@/lib/leagues";
 import { settleGame } from "@/lib/scoring";
 import type { NormalizedGame, NormalizedTeam } from "./types";
 import type { League } from "@/generated/prisma/client";
@@ -69,7 +68,6 @@ export async function persistGames(games: NormalizedGame[]): Promise<PersistResu
       kickoff: g.kickoff,
       pickLockAt: g.kickoff,
       status: g.status,
-      scoringMode: LEAGUE_SCORING[g.league],
       homeTeamId: home.id,
       awayTeamId: away.id,
       homeScore: g.homeScore,

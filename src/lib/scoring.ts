@@ -2,8 +2,8 @@ import { db } from "@/lib/db";
 import { gradeSurvivorForGame } from "@/lib/survivor";
 import type { PickResult, PickSide } from "@/generated/prisma/client";
 
-// Straight-up grading (no spreads yet). 1 point per correct winner; a tie is a
-// push worth 0. When spreads arrive, ATS grading slots in here.
+// Straight-up grading: 1 point per correct winner; a tie is a push worth 0.
+// All leagues are scored this way — pick the winner, no spreads.
 function gradeStraightUp(
   side: PickSide,
   homeScore: number,

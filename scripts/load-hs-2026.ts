@@ -55,7 +55,6 @@ async function main() {
         kickoff,
         pickLockAt: kickoff,
         status: "SCHEDULED",
-        scoringMode: "SU",
         homeTeamId: home.id,
         awayTeamId: away.id,
         externalSource: "manual",
