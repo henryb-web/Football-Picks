@@ -127,3 +127,29 @@ export async function fetchEspnWeek(
     .map((e) => mapEvent(league, e, season, week))
     .filter((g): g is NormalizedGame => g !== null);
 }
+
+// The set of FBS (top-division) team ids for a season, from ESPN's core API
+// group 80. Used to keep the college slate to FBS matchups (power-vs-G5 is fine,
+// power-vs-FCS is dropped). Ids are parsed out of each item's $ref URL, so we
+// don't have to dereference every team.
+export async function fetchFbsTeamIds(season: number): Promise<Set<string>> {
+  const url =
+    `https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/` +
+    `seasons/${season}/types/2/groups/80/teams?limit=300`;
+  const res = await fetch(url, {
+    headers: { "User-Agent": "PickSix/0.1 (+local-dev)" },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    throw new Error(
+      `ESPN FBS teams fetch failed (${res.status} ${res.statusText})`,
+    );
+  }
+  const data = (await res.json()) as { items?: { $ref?: string }[] };
+  const ids = new Set<string>();
+  for (const item of data.items ?? []) {
+    const match = /teams\/(\d+)/.exec(item.$ref ?? "");
+    if (match) ids.add(match[1]);
+  }
+  return ids;
+}

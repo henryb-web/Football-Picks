@@ -1,6 +1,8 @@
 // College teams we care about: the power conferences + Notre Dame. A college
-// game is kept only if BOTH teams are in this set (so power-vs-FCS/G5 cupcakes
-// are filtered out). Matched on each team's school name (ESPN's `location`),
+// game is kept if AT LEAST ONE team is in this set (so marquee power-vs-G5 games
+// like Texas vs UTSA are included) AND both teams are FBS (so FCS tune-up games
+// are still filtered out). FBS membership comes from ESPN at ingest time; see
+// isKeptCollegeGame. Matched on each team's school name (ESPN's `location`),
 // which is stable across mascot/branding changes.
 //
 // Edit these lists to adjust membership (e.g. future realignment).
@@ -43,10 +45,35 @@ export function isAllowedCollegeTeam(location: string | null | undefined): boole
   return location != null && ALLOWED_COLLEGE_SCHOOLS.has(location.trim());
 }
 
-// Keep a college game only when both teams are in the allowed set.
+// Strict fallback: keep a college game only when both teams are power-conference.
+// Used when the FBS team list can't be fetched (see isKeptCollegeGame).
 export function isAllowedCollegeGame(
   homeLocation: string | null | undefined,
   awayLocation: string | null | undefined,
 ): boolean {
   return isAllowedCollegeTeam(homeLocation) && isAllowedCollegeTeam(awayLocation);
+}
+
+type CollegeSide = {
+  location?: string | null;
+  externalId?: string | null;
+};
+
+// The live policy: keep a game when at least one team is power-conference AND
+// both teams are FBS. `fbsTeamIds` is the set of ESPN FBS team ids for the
+// season (from fetchFbsTeamIds), which is how we drop FCS opponents while
+// keeping power-vs-G5 matchups.
+export function isKeptCollegeGame(
+  home: CollegeSide,
+  away: CollegeSide,
+  fbsTeamIds: Set<string>,
+): boolean {
+  const hasPowerTeam =
+    isAllowedCollegeTeam(home.location) || isAllowedCollegeTeam(away.location);
+  const bothFbs =
+    home.externalId != null &&
+    away.externalId != null &&
+    fbsTeamIds.has(home.externalId) &&
+    fbsTeamIds.has(away.externalId);
+  return hasPowerTeam && bothFbs;
 }

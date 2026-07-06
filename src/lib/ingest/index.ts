@@ -1,6 +1,9 @@
-import { fetchEspnWeek } from "./espn";
+import { fetchEspnWeek, fetchFbsTeamIds } from "./espn";
 import { persistGames } from "./persist";
-import { isAllowedCollegeGame } from "@/lib/college-conferences";
+import {
+  isAllowedCollegeGame,
+  isKeptCollegeGame,
+} from "@/lib/college-conferences";
 import type { League } from "@/generated/prisma/client";
 
 export type SyncResult = {
@@ -19,10 +22,20 @@ export async function syncLeagueWeek(
   seasonType = 2,
 ): Promise<SyncResult> {
   let games = await fetchEspnWeek(league, season, week, seasonType);
-  // For college, keep only matchups between the power conferences + Notre Dame.
+  // For college, keep games with at least one power-conference team, as long as
+  // both teams are FBS (drops FCS tune-ups, keeps power-vs-G5). If the FBS list
+  // can't be fetched, fall back to the strict both-power rule.
   if (league === "CFB") {
+    let fbsTeamIds: Set<string> | null = null;
+    try {
+      fbsTeamIds = await fetchFbsTeamIds(season);
+    } catch {
+      fbsTeamIds = null;
+    }
     games = games.filter((g) =>
-      isAllowedCollegeGame(g.home.location, g.away.location),
+      fbsTeamIds
+        ? isKeptCollegeGame(g.home, g.away, fbsTeamIds)
+        : isAllowedCollegeGame(g.home.location, g.away.location),
     );
   }
   const { created, updated } = await persistGames(games);

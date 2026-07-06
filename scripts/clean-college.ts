@@ -5,7 +5,11 @@ import { db } from "@/lib/db";
 import {
   ALLOWED_COLLEGE_SCHOOLS,
   isAllowedCollegeGame,
+  isKeptCollegeGame,
 } from "@/lib/college-conferences";
+import { fetchFbsTeamIds } from "@/lib/ingest/espn";
+
+const SEASON = 2026;
 
 async function main() {
   const teams = await db.team.findMany({
@@ -24,12 +28,24 @@ async function main() {
   const games = await db.game.findMany({
     where: { league: "CFB" },
     include: {
-      homeTeam: { select: { location: true } },
-      awayTeam: { select: { location: true } },
+      homeTeam: { select: { location: true, externalId: true } },
+      awayTeam: { select: { location: true, externalId: true } },
     },
   });
+  // Match the ingest policy: keep power-vs-FBS games, drop FCS. Fall back to the
+  // strict both-power rule if the FBS list can't be fetched.
+  let fbsTeamIds: Set<string> | null = null;
+  try {
+    fbsTeamIds = await fetchFbsTeamIds(SEASON);
+  } catch {
+    fbsTeamIds = null;
+  }
   const toDelete = games
-    .filter((g) => !isAllowedCollegeGame(g.homeTeam.location, g.awayTeam.location))
+    .filter((g) =>
+      !(fbsTeamIds
+        ? isKeptCollegeGame(g.homeTeam, g.awayTeam, fbsTeamIds)
+        : isAllowedCollegeGame(g.homeTeam.location, g.awayTeam.location)),
+    )
     .map((g) => g.id);
 
   await db.game.deleteMany({ where: { id: { in: toDelete } } });
