@@ -23,6 +23,7 @@ async function upsertTeam(league: League, source: string, team: NormalizedTeam) 
       color: team.color ?? null,
       altColor: team.altColor ?? null,
       logo: team.logo ?? null,
+      record: team.record ?? null,
     },
     update: {
       name: team.name,
@@ -32,6 +33,8 @@ async function upsertTeam(league: League, source: string, team: NormalizedTeam) 
       color: team.color ?? null,
       altColor: team.altColor ?? null,
       logo: team.logo ?? null,
+      // Don't clobber a known record with a null from a feed that omits it.
+      ...(team.record != null ? { record: team.record } : {}),
     },
   });
 }
@@ -76,13 +79,21 @@ export async function persistGames(games: NormalizedGame[]): Promise<PersistResu
       externalId: g.externalId,
     };
 
+    // Odds vanish from the feed once a game starts; keep the last known line
+    // by only writing these when present.
+    const odds: { spread?: string; overUnder?: number } = {};
+    if (g.spread != null) odds.spread = g.spread;
+    if (g.overUnder != null) odds.overUnder = g.overUnder;
+
     let gameId: string;
     if (existing) {
-      await db.game.update({ where: { id: existing.id }, data });
+      await db.game.update({ where: { id: existing.id }, data: { ...data, ...odds } });
       gameId = existing.id;
       updated += 1;
     } else {
-      const createdGame = await db.game.create({ data });
+      const createdGame = await db.game.create({
+        data: { ...data, spread: g.spread ?? null, overUnder: g.overUnder ?? null },
+      });
       gameId = createdGame.id;
       created += 1;
     }

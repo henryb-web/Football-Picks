@@ -258,6 +258,8 @@ model Team {
   color        String?
   altColor     String?
   logo         String? // team logo URL from the feed
+  // Overall win/loss record summary from the feed, e.g. "7-2" (null if unknown).
+  record       String?
 
   homeGames     Game[]         @relation("HomeTeam")
   awayGames     Game[]         @relation("AwayTeam")
@@ -287,6 +289,11 @@ model Game {
 
   // Overrides the home team's stadium for neutral-site / relocated games.
   venue String?
+
+  // Pregame betting line from the feed, e.g. "TCU -6.5" (spread) and the
+  // over/under total. Null once unavailable; the last known line is kept.
+  spread     String?
+  overUnder  Float?
 
   externalId     String?
   externalSource String?

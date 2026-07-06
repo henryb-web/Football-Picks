@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, MapPin, CalendarDays, Clock, Lock } from "lucide-react";
+import { X, MapPin, CalendarDays, Clock, Lock, Scale, Sigma } from "lucide-react";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatGameDate, formatGameTime } from "@/lib/format";
 import { TeamLogo } from "./TeamLogo";
@@ -123,6 +123,16 @@ export function GameModal({
               )
             }
           />
+          {game.spread ? (
+            <Fact icon={<Scale className="size-4" />} label="Spread" value={game.spread} />
+          ) : null}
+          {game.overUnder != null ? (
+            <Fact
+              icon={<Sigma className="size-4" />}
+              label="Over / Under"
+              value={String(game.overUnder)}
+            />
+          ) : null}
         </dl>
 
         {/* Per-team detail */}
@@ -207,6 +217,9 @@ function TeamSide({
       <TeamLogo logo={team.logo} color={team.color} size={36} />
       <div className="min-w-0">
         <div className="truncate text-sm font-semibold">{team.displayName}</div>
+        {team.record ? (
+          <div className="text-xs text-muted">{team.record}</div>
+        ) : null}
         {score != null ? (
           <div className="font-display text-2xl font-semibold tabular-nums">{score}</div>
         ) : null}
@@ -230,6 +243,9 @@ function TeamDetail({
         {label}
       </div>
       <div className="mt-0.5 truncate text-sm font-semibold">{team.displayName}</div>
+      {team.record ? (
+        <div className="mt-1 text-xs text-muted">Record: {team.record}</div>
+      ) : null}
       {team.grouping ? (
         <div className="mt-1 text-xs text-muted">
           {groupingLabel(league)}: {team.grouping}
