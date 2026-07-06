@@ -1,0 +1,38 @@
+// Current NFL home stadiums, keyed by Team.displayName.
+// Source: en.wikipedia.org/wiki/List_of_current_NFL_stadiums (2026 season).
+// Shared stadiums: Jets & Giants -> MetLife; Chargers & Rams -> SoFi.
+// Apply with: npx tsx scripts/load-nfl-stadiums.ts
+export const NFL_STADIUMS: Record<string, string> = {
+  "Buffalo Bills": "Highmark Stadium",
+  "Miami Dolphins": "Hard Rock Stadium",
+  "New England Patriots": "Gillette Stadium",
+  "New York Jets": "MetLife Stadium",
+  "Baltimore Ravens": "M&T Bank Stadium",
+  "Cincinnati Bengals": "Paycor Stadium",
+  "Cleveland Browns": "Huntington Bank Field",
+  "Pittsburgh Steelers": "Acrisure Stadium",
+  "Houston Texans": "NRG Stadium",
+  "Indianapolis Colts": "Lucas Oil Stadium",
+  "Jacksonville Jaguars": "EverBank Stadium",
+  "Tennessee Titans": "Nissan Stadium",
+  "Denver Broncos": "Empower Field at Mile High",
+  "Kansas City Chiefs": "Arrowhead Stadium",
+  "Las Vegas Raiders": "Allegiant Stadium",
+  "Los Angeles Chargers": "SoFi Stadium",
+  "Dallas Cowboys": "AT&T Stadium",
+  "New York Giants": "MetLife Stadium",
+  "Philadelphia Eagles": "Lincoln Financial Field",
+  "Washington Commanders": "Northwest Stadium",
+  "Chicago Bears": "Soldier Field",
+  "Detroit Lions": "Ford Field",
+  "Green Bay Packers": "Lambeau Field",
+  "Minnesota Vikings": "U.S. Bank Stadium",
+  "Atlanta Falcons": "Mercedes-Benz Stadium",
+  "Carolina Panthers": "Bank of America Stadium",
+  "New Orleans Saints": "Caesars Superdome",
+  "Tampa Bay Buccaneers": "Raymond James Stadium",
+  "Arizona Cardinals": "State Farm Stadium",
+  "Los Angeles Rams": "SoFi Stadium",
+  "San Francisco 49ers": "Levi's Stadium",
+  "Seattle Seahawks": "Lumen Field",
+};

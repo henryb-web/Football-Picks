@@ -248,6 +248,7 @@ model Team {
   displayName   String // e.g. "Dallas Cowboys", "Texas Longhorns", "Westlake Chaparrals"
   abbreviation String?
   location     String? // city / school location
+  venue        String? // home stadium name (mainly HS)
   // Stable id from the source feed (ESPN/CFBD/etc), used for ingestion upserts.
   externalId   String?
   externalSource String?
@@ -283,6 +284,9 @@ model Game {
 
   homeScore Int?
   awayScore Int?
+
+  // Overrides the home team's stadium for neutral-site / relocated games.
+  venue String?
 
   externalId     String?
   externalSource String?

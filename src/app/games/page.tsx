@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
@@ -210,6 +211,17 @@ export default async function GamesPage({
                       </span>
                       {g.week ? ` · Wk ${g.week}` : ""} ·{" "}
                       {formatKickoff(g.kickoff)}
+                      {(g.venue || g.homeTeam.venue || g.homeTeam.location) &&
+                      (g.league === "HS6A" || g.league === "NFL") ? (
+                        <span className="ml-1 inline-flex items-center gap-0.5">
+                          <MapPin className="inline size-3 -translate-y-px" aria-hidden />
+                          {g.venue
+                            ? g.venue
+                            : [g.homeTeam.venue, g.homeTeam.location]
+                                .filter(Boolean)
+                                .join(", ")}
+                        </span>
+                      ) : null}
                       {!locked ? (
                         <>
                           {" · "}
