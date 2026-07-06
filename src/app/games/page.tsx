@@ -49,16 +49,20 @@ export default async function GamesPage({
   const session = await auth();
   const userId = session?.user?.id ?? null;
 
-  const allGames = await db.game.findMany({
-    where: active ? { league: active } : undefined,
-    include: { homeTeam: true, awayTeam: true },
-    orderBy: { kickoff: "asc" },
-    take: 300,
-  });
+  const leagueWhere = active ? { league: active } : {};
 
-  const weeks = [
-    ...new Set(allGames.map((g) => g.week).filter((w): w is number => w != null)),
-  ].sort((a, b) => a - b);
+  // Week tabs come from a distinct query so they're never truncated by the
+  // game fetch below (a full CFB season is ~460 games).
+  const weekRows = await db.game.findMany({
+    where: { ...leagueWhere, week: { not: null } },
+    select: { week: true },
+    distinct: ["week"],
+    orderBy: { week: "asc" },
+  });
+  const weeks = weekRows
+    .map((r) => r.week)
+    .filter((w): w is number => w != null)
+    .sort((a, b) => a - b);
 
   // Active week: explicit ?week=, else the earliest week with an open game.
   let activeWeek: number | null = null;
@@ -67,12 +71,28 @@ export default async function GamesPage({
   } else if (week && /^\d+$/.test(week) && weeks.includes(Number(week))) {
     activeWeek = Number(week);
   } else {
-    const upcoming = allGames.find((g) => g.week != null && !isLocked(g));
+    // Earliest-kickoff game that's still open for picks (mirrors isLocked).
+    const upcoming = await db.game.findFirst({
+      where: {
+        ...leagueWhere,
+        week: { not: null },
+        status: "SCHEDULED",
+        pickLockAt: { gt: new Date() },
+      },
+      orderBy: { kickoff: "asc" },
+      select: { week: true },
+    });
     activeWeek = upcoming?.week ?? weeks[0] ?? null;
   }
 
-  const games =
-    activeWeek == null ? allGames : allGames.filter((g) => g.week === activeWeek);
+  // Fetch only the games we'll actually render: a single week, or everything
+  // (capped) when the "All" week tab is selected.
+  const games = await db.game.findMany({
+    where: activeWeek == null ? leagueWhere : { ...leagueWhere, week: activeWeek },
+    include: { homeTeam: true, awayTeam: true },
+    orderBy: { kickoff: "asc" },
+    take: 300,
+  });
 
   const pickMap = new Map<string, PickSide>();
   if (userId && games.length) {
