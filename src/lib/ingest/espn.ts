@@ -19,19 +19,26 @@ type EspnTeam = {
   alternateColor?: string;
   logo?: string;
 };
+type EspnRecord = { type?: string; summary?: string };
 type EspnCompetitor = {
   homeAway: "home" | "away";
   team: EspnTeam;
   score?: string;
+  records?: EspnRecord[];
 };
 type EspnStatus = {
   type?: { state?: string; completed?: boolean };
 };
+type EspnOdds = { details?: string; overUnder?: number };
 type EspnEvent = {
   id: string;
   date: string;
   status?: EspnStatus;
-  competitions?: { competitors?: EspnCompetitor[]; status?: EspnStatus }[];
+  competitions?: {
+    competitors?: EspnCompetitor[];
+    status?: EspnStatus;
+    odds?: EspnOdds[];
+  }[];
 };
 
 function mapStatus(status: EspnStatus | undefined): GameStatus {
@@ -41,7 +48,15 @@ function mapStatus(status: EspnStatus | undefined): GameStatus {
   return "SCHEDULED";
 }
 
-function mapTeam(t: EspnTeam): NormalizedTeam {
+// ESPN gives a few record splits per competitor; the overall one is type
+// "total" (e.g. "7-2"). Fall back to the first summary if the type is absent.
+function overallRecord(records: EspnRecord[] | undefined): string | null {
+  if (!records?.length) return null;
+  const total = records.find((r) => r.type === "total") ?? records[0];
+  return total.summary ?? null;
+}
+
+function mapTeam(t: EspnTeam, record: string | null): NormalizedTeam {
   return {
     externalId: t.id,
     name: t.name ?? t.shortDisplayName ?? t.displayName ?? t.abbreviation ?? t.id,
@@ -51,6 +66,7 @@ function mapTeam(t: EspnTeam): NormalizedTeam {
     color: t.color ?? null,
     altColor: t.alternateColor ?? null,
     logo: t.logo ?? null,
+    record,
   };
 }
 
@@ -67,6 +83,9 @@ function mapEvent(
   if (!home || !away) return null;
 
   const status = mapStatus(competition?.status ?? event.status);
+
+  // ESPN carries a pregame line (top-priority provider first) for upcoming games.
+  const odds = competition?.odds?.[0];
 
   // ESPN reports "0" for games that haven't been played, so only trust scores
   // once a game is live or final.
@@ -85,10 +104,12 @@ function mapEvent(
     week,
     kickoff: new Date(event.date),
     status,
-    home: mapTeam(home.team),
-    away: mapTeam(away.team),
+    home: mapTeam(home.team, overallRecord(home.records)),
+    away: mapTeam(away.team, overallRecord(away.records)),
     homeScore: parseScore(home.score),
     awayScore: parseScore(away.score),
+    spread: odds?.details ?? null,
+    overUnder: odds?.overUnder ?? null,
   };
 }
 

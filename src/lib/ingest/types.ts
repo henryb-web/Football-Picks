@@ -12,6 +12,7 @@ export type NormalizedTeam = {
   color?: string | null;
   altColor?: string | null;
   logo?: string | null;
+  record?: string | null; // overall W-L summary, e.g. "7-2"
 };
 
 export type NormalizedGame = {
@@ -26,6 +27,8 @@ export type NormalizedGame = {
   away: NormalizedTeam;
   homeScore: number | null;
   awayScore: number | null;
+  spread?: string | null; // pregame line, e.g. "TCU -6.5"
+  overUnder?: number | null;
 };
 
 export interface GameProvider {

@@ -22,6 +22,7 @@ export type GameCardTeam = {
   color: string | null;
   altColor: string | null;
   logo: string | null;
+  record: string | null;
 };
 
 export type GameCardData = {
@@ -35,6 +36,8 @@ export type GameCardData = {
   homeScore: number | null;
   awayScore: number | null;
   venueLabel: string | null;
+  spread: string | null;
+  overUnder: number | null;
   homeTeam: GameCardTeam;
   awayTeam: GameCardTeam;
 };

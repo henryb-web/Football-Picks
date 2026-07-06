@@ -113,6 +113,57 @@ export default async function GamesPage({
     }
   }
 
+  // Records derived from our own finished games, keyed by `${teamId}:${season}`.
+  // Used as a fallback when a team has no feed-provided record yet.
+  const derivedRecord = new Map<string, { w: number; l: number; t: number }>();
+  if (games.length) {
+    const teamIds = new Set<string>();
+    const seasons = new Set<number>();
+    for (const g of games) {
+      teamIds.add(g.homeTeamId);
+      teamIds.add(g.awayTeamId);
+      seasons.add(g.season);
+    }
+    const finals = await db.game.findMany({
+      where: {
+        status: "FINAL",
+        season: { in: [...seasons] },
+        OR: [
+          { homeTeamId: { in: [...teamIds] } },
+          { awayTeamId: { in: [...teamIds] } },
+        ],
+      },
+      select: {
+        season: true,
+        homeTeamId: true,
+        awayTeamId: true,
+        homeScore: true,
+        awayScore: true,
+      },
+    });
+    const bump = (teamId: string, season: number, k: "w" | "l" | "t") => {
+      if (!teamIds.has(teamId)) return;
+      const key = `${teamId}:${season}`;
+      const r = derivedRecord.get(key) ?? { w: 0, l: 0, t: 0 };
+      r[k] += 1;
+      derivedRecord.set(key, r);
+    };
+    for (const f of finals) {
+      if (f.homeScore == null || f.awayScore == null) continue;
+      const tie = f.homeScore === f.awayScore;
+      const homeWon = f.homeScore > f.awayScore;
+      bump(f.homeTeamId, f.season, tie ? "t" : homeWon ? "w" : "l");
+      bump(f.awayTeamId, f.season, tie ? "t" : homeWon ? "l" : "w");
+    }
+  }
+  // Feed record wins; else our derived one (omitted entirely if no games played).
+  const recordFor = (teamId: string, season: number, feed: string | null) => {
+    if (feed) return feed;
+    const r = derivedRecord.get(`${teamId}:${season}`);
+    if (!r || r.w + r.l + r.t === 0) return null;
+    return r.t > 0 ? `${r.w}-${r.l}-${r.t}` : `${r.w}-${r.l}`;
+  };
+
   const leagueTabs = [
     { key: "all", label: "All", href: gamesHref(null, null) },
     ...LEAGUES.map((l) => ({
@@ -208,6 +259,8 @@ export default async function GamesPage({
                 homeScore: g.homeScore,
                 awayScore: g.awayScore,
                 venueLabel: venueLabel(g),
+                spread: g.spread,
+                overUnder: g.overUnder,
                 homeTeam: {
                   name: g.homeTeam.name,
                   displayName: g.homeTeam.displayName,
@@ -218,6 +271,7 @@ export default async function GamesPage({
                   color: g.homeTeam.color,
                   altColor: g.homeTeam.altColor,
                   logo: g.homeTeam.logo,
+                  record: recordFor(g.homeTeamId, g.season, g.homeTeam.record),
                 },
                 awayTeam: {
                   name: g.awayTeam.name,
@@ -229,6 +283,7 @@ export default async function GamesPage({
                   color: g.awayTeam.color,
                   altColor: g.awayTeam.altColor,
                   logo: g.awayTeam.logo,
+                  record: recordFor(g.awayTeamId, g.season, g.awayTeam.record),
                 },
               }}
               pick={pickMap.get(g.id) ?? null}
