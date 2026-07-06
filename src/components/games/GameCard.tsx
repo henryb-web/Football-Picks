@@ -1,0 +1,189 @@
+"use client";
+
+import { useState } from "react";
+import { MapPin } from "lucide-react";
+import { LEAGUE_LABELS } from "@/lib/leagues";
+import { formatKickoff } from "@/lib/format";
+import { PickButtons } from "./PickButtons";
+import { TeamLogo } from "./TeamLogo";
+import { LockCountdown } from "./LockCountdown";
+import { ConsensusBar } from "./ConsensusBar";
+import { GameModal } from "./GameModal";
+import type { League, GameStatus, PickSide } from "@/generated/prisma/client";
+
+// Serializable slice of a game + its teams, shared by the card and its modal.
+export type GameCardTeam = {
+  name: string;
+  displayName: string;
+  abbreviation: string | null;
+  location: string | null;
+  venue: string | null;
+  grouping: string | null;
+  color: string | null;
+  altColor: string | null;
+  logo: string | null;
+};
+
+export type GameCardData = {
+  id: string;
+  league: League;
+  season: number;
+  week: number | null;
+  kickoffISO: string;
+  pickLockISO: string;
+  status: GameStatus;
+  homeScore: number | null;
+  awayScore: number | null;
+  venueLabel: string | null;
+  homeTeam: GameCardTeam;
+  awayTeam: GameCardTeam;
+};
+
+export function GameCard({
+  game,
+  pick,
+  consensus,
+  loggedIn,
+  locked,
+}: {
+  game: GameCardData;
+  pick: PickSide | null;
+  consensus: { home: number; away: number };
+  loggedIn: boolean;
+  locked: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const isFinal = game.status === "FINAL";
+  const pickLabel =
+    pick === "HOME"
+      ? game.homeTeam.name
+      : pick === "AWAY"
+        ? game.awayTeam.name
+        : null;
+  const awayC = game.awayTeam.color ?? "3b4252";
+  const homeC = game.homeTeam.color ?? "3b4252";
+  const kickoff = new Date(game.kickoffISO);
+
+  return (
+    <>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen(true);
+          }
+        }}
+        className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+      >
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 w-1.5"
+          style={{
+            background: `linear-gradient(to bottom, #${awayC} 0 50%, #${homeC} 50% 100%)`,
+          }}
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            background: `linear-gradient(110deg, #${awayC}, transparent 42%, transparent 58%, #${homeC})`,
+          }}
+        />
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <TeamLogo logo={game.awayTeam.logo} color={game.awayTeam.color} />
+              {game.awayTeam.displayName}
+              <span className="text-muted">@</span>
+              <TeamLogo logo={game.homeTeam.logo} color={game.homeTeam.color} />
+              {game.homeTeam.displayName}
+            </div>
+            <div className="mt-1 text-xs text-muted">
+              <span className="font-semibold text-cyan-500">
+                {LEAGUE_LABELS[game.league]}
+              </span>
+              {game.week ? ` · Wk ${game.week}` : ""} · {formatKickoff(kickoff)}
+              {game.venueLabel ? (
+                <span className="ml-1 inline-flex items-center gap-0.5">
+                  <MapPin className="inline size-3 -translate-y-px" aria-hidden />
+                  {game.venueLabel}
+                </span>
+              ) : null}
+              {!locked ? (
+                <>
+                  {" · "}
+                  <LockCountdown lockAt={game.pickLockISO} />
+                </>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="shrink-0">
+            {loggedIn && !locked ? (
+              // Stop clicks on the pick buttons from also opening the modal.
+              <div onClick={(e) => e.stopPropagation()}>
+                <PickButtons
+                  gameId={game.id}
+                  awayLabel={game.awayTeam.name}
+                  homeLabel={game.homeTeam.name}
+                  awayColor={game.awayTeam.color}
+                  homeColor={game.homeTeam.color}
+                  initialSide={pick}
+                />
+              </div>
+            ) : (
+              <div className="flex flex-col items-end gap-1 text-right">
+                {isFinal ? (
+                  <span className="font-display text-2xl font-semibold tabular-nums">
+                    {game.awayScore}
+                    <span className="mx-1 text-muted">–</span>
+                    {game.homeScore}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
+                    {game.status === "IN_PROGRESS"
+                      ? "Live"
+                      : locked
+                        ? "Locked"
+                        : "Scheduled"}
+                  </span>
+                )}
+                {pickLabel ? (
+                  <span className="text-xs text-muted">
+                    Your pick:{" "}
+                    <span className="font-semibold text-foreground">
+                      {pickLabel}
+                    </span>
+                  </span>
+                ) : null}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <ConsensusBar
+          awayCount={consensus.away}
+          homeCount={consensus.home}
+          awayColor={game.awayTeam.color}
+          homeColor={game.homeTeam.color}
+        />
+      </div>
+
+      {open ? (
+        <GameModal
+          game={game}
+          pick={pick}
+          consensus={consensus}
+          locked={locked}
+          loggedIn={loggedIn}
+          onClose={() => setOpen(false)}
+        />
+      ) : null}
+    </>
+  );
+}
