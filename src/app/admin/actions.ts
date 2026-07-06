@@ -8,6 +8,7 @@ import { createManualGame, updateGame } from "@/lib/ingest/manual";
 import { settleGame } from "@/lib/scoring";
 import { db } from "@/lib/db";
 import { isLeague } from "@/lib/leagues";
+import { centralDatetimeLocalToDate } from "@/lib/format";
 import type { AdminState } from "@/lib/admin-types";
 import type { GameStatus } from "@/generated/prisma/client";
 
@@ -66,7 +67,7 @@ export async function createGameAction(
   const awayName = String(formData.get("awayName") ?? "").trim();
   if (!homeName || !awayName) return { error: "Enter both team names." };
 
-  const kickoff = new Date(String(formData.get("kickoff") ?? ""));
+  const kickoff = centralDatetimeLocalToDate(String(formData.get("kickoff") ?? ""));
   if (Number.isNaN(kickoff.getTime())) {
     return { error: "Enter a valid kickoff date and time." };
   }
@@ -130,7 +131,7 @@ export async function updateGameAction(
   const awayName = String(formData.get("awayName") ?? "").trim();
   if (!homeName || !awayName) return { error: "Enter both team names." };
 
-  const kickoff = new Date(String(formData.get("kickoff") ?? ""));
+  const kickoff = centralDatetimeLocalToDate(String(formData.get("kickoff") ?? ""));
   if (Number.isNaN(kickoff.getTime())) {
     return { error: "Enter a valid kickoff date and time." };
   }

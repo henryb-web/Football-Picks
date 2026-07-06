@@ -1,14 +1,9 @@
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
-import { formatKickoff } from "@/lib/format";
 import { isLocked } from "@/lib/picks";
-import { PickButtons } from "@/components/games/PickButtons";
-import { TeamLogo } from "@/components/games/TeamLogo";
-import { LockCountdown } from "@/components/games/LockCountdown";
-import { ConsensusBar } from "@/components/games/ConsensusBar";
+import { GameCard } from "@/components/games/GameCard";
 import { Page } from "@/components/ui/Page";
 import type { League, PickSide } from "@/generated/prisma/client";
 
@@ -199,119 +194,49 @@ export default async function GamesPage({
             No games here yet. An admin can add them from the Admin page.
           </p>
         ) : (
-          games.map((g) => {
-            const locked = isLocked(g);
-            const isFinal = g.status === "FINAL";
-            const pick = pickMap.get(g.id) ?? null;
-            const pickLabel =
-              pick === "HOME"
-                ? g.homeTeam.name
-                : pick === "AWAY"
-                  ? g.awayTeam.name
-                  : null;
-
-            const c = consensus.get(g.id) ?? { home: 0, away: 0 };
-            const awayC = g.awayTeam.color ?? "3b4252";
-            const homeC = g.homeTeam.color ?? "3b4252";
-
-            return (
-              <div
-                key={g.id}
-                className="lift relative overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5"
-              >
-                <span
-                  aria-hidden
-                  className="absolute inset-y-0 left-0 w-1.5"
-                  style={{
-                    background: `linear-gradient(to bottom, #${awayC} 0 50%, #${homeC} 50% 100%)`,
-                  }}
-                />
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 opacity-[0.06]"
-                  style={{
-                    background: `linear-gradient(110deg, #${awayC}, transparent 42%, transparent 58%, #${homeC})`,
-                  }}
-                />
-                <div className="relative flex flex-wrap items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 text-sm font-semibold">
-                      <TeamLogo logo={g.awayTeam.logo} color={g.awayTeam.color} />
-                      {g.awayTeam.displayName}
-                      <span className="text-muted">@</span>
-                      <TeamLogo logo={g.homeTeam.logo} color={g.homeTeam.color} />
-                      {g.homeTeam.displayName}
-                    </div>
-                    <div className="mt-1 text-xs text-muted">
-                      <span className="font-semibold text-cyan-500">
-                        {LEAGUE_LABELS[g.league]}
-                      </span>
-                      {g.week ? ` · Wk ${g.week}` : ""} ·{" "}
-                      {formatKickoff(g.kickoff)}
-                      {venueLabel(g) ? (
-                        <span className="ml-1 inline-flex items-center gap-0.5">
-                          <MapPin className="inline size-3 -translate-y-px" aria-hidden />
-                          {venueLabel(g)}
-                        </span>
-                      ) : null}
-                      {!locked ? (
-                        <>
-                          {" · "}
-                          <LockCountdown lockAt={g.pickLockAt.toISOString()} />
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div className="shrink-0">
-                    {userId && !locked ? (
-                      <PickButtons
-                        gameId={g.id}
-                        awayLabel={g.awayTeam.name}
-                        homeLabel={g.homeTeam.name}
-                        awayColor={g.awayTeam.color}
-                        homeColor={g.homeTeam.color}
-                        initialSide={pick}
-                      />
-                    ) : (
-                      <div className="flex flex-col items-end gap-1 text-right">
-                        {isFinal ? (
-                          <span className="font-display text-2xl font-semibold tabular-nums">
-                            {g.awayScore}
-                            <span className="mx-1 text-muted">–</span>
-                            {g.homeScore}
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted">
-                            {g.status === "IN_PROGRESS"
-                              ? "Live"
-                              : locked
-                                ? "Locked"
-                                : "Scheduled"}
-                          </span>
-                        )}
-                        {pickLabel ? (
-                          <span className="text-xs text-muted">
-                            Your pick:{" "}
-                            <span className="font-semibold text-foreground">
-                              {pickLabel}
-                            </span>
-                          </span>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <ConsensusBar
-                  awayCount={c.away}
-                  homeCount={c.home}
-                  awayColor={g.awayTeam.color}
-                  homeColor={g.homeTeam.color}
-                />
-              </div>
-            );
-          })
+          games.map((g) => (
+            <GameCard
+              key={g.id}
+              game={{
+                id: g.id,
+                league: g.league,
+                season: g.season,
+                week: g.week,
+                kickoffISO: g.kickoff.toISOString(),
+                pickLockISO: g.pickLockAt.toISOString(),
+                status: g.status,
+                homeScore: g.homeScore,
+                awayScore: g.awayScore,
+                venueLabel: venueLabel(g),
+                homeTeam: {
+                  name: g.homeTeam.name,
+                  displayName: g.homeTeam.displayName,
+                  abbreviation: g.homeTeam.abbreviation,
+                  location: g.homeTeam.location,
+                  venue: g.homeTeam.venue,
+                  grouping: g.homeTeam.grouping,
+                  color: g.homeTeam.color,
+                  altColor: g.homeTeam.altColor,
+                  logo: g.homeTeam.logo,
+                },
+                awayTeam: {
+                  name: g.awayTeam.name,
+                  displayName: g.awayTeam.displayName,
+                  abbreviation: g.awayTeam.abbreviation,
+                  location: g.awayTeam.location,
+                  venue: g.awayTeam.venue,
+                  grouping: g.awayTeam.grouping,
+                  color: g.awayTeam.color,
+                  altColor: g.awayTeam.altColor,
+                  logo: g.awayTeam.logo,
+                },
+              }}
+              pick={pickMap.get(g.id) ?? null}
+              consensus={consensus.get(g.id) ?? { home: 0, away: 0 }}
+              loggedIn={Boolean(userId)}
+              locked={isLocked(g)}
+            />
+          ))
         )}
       </div>
     </Page>

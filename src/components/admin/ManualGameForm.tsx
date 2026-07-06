@@ -30,7 +30,7 @@ export function ManualGameForm() {
         </div>
         <div>
           <label className={labelClass} htmlFor="m-kickoff">
-            Kickoff
+            Kickoff <span className="text-neutral-400">(Central)</span>
           </label>
           <input
             id="m-kickoff"
