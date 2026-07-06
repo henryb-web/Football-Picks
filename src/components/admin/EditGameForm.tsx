@@ -138,7 +138,7 @@ export function EditGameForm({ game }: { game: EditableGame }) {
           </div>
           <div>
             <label className={labelClass} htmlFor="e-kickoff">
-              Kickoff
+              Kickoff <span className="text-neutral-400">(Central)</span>
             </label>
             <input
               id="e-kickoff"
