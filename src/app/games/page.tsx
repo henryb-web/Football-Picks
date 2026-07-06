@@ -20,6 +20,23 @@ function gamesHref(league: string | null, week: string | number | null) {
   return qs ? `/games?${qs}` : "/games";
 }
 
+// Where the game is played, for the metadata line. A per-game venue override
+// always wins; otherwise fall back to the home team's stadium. HS6A/NFL append
+// the city; CFB shows just the stadium (its `location` is the school name).
+function venueLabel(g: {
+  league: League;
+  venue: string | null;
+  homeTeam: { venue: string | null; location: string | null };
+}): string | null {
+  if (g.venue) return g.venue;
+  if (g.league === "CFB") return g.homeTeam.venue;
+  if (g.league === "HS6A" || g.league === "NFL") {
+    const parts = [g.homeTeam.venue, g.homeTeam.location].filter(Boolean);
+    return parts.length ? parts.join(", ") : null;
+  }
+  return null;
+}
+
 
 export default async function GamesPage({
   searchParams,
@@ -211,15 +228,10 @@ export default async function GamesPage({
                       </span>
                       {g.week ? ` · Wk ${g.week}` : ""} ·{" "}
                       {formatKickoff(g.kickoff)}
-                      {(g.venue || g.homeTeam.venue || g.homeTeam.location) &&
-                      (g.league === "HS6A" || g.league === "NFL") ? (
+                      {venueLabel(g) ? (
                         <span className="ml-1 inline-flex items-center gap-0.5">
                           <MapPin className="inline size-3 -translate-y-px" aria-hidden />
-                          {g.venue
-                            ? g.venue
-                            : [g.homeTeam.venue, g.homeTeam.location]
-                                .filter(Boolean)
-                                .join(", ")}
+                          {venueLabel(g)}
                         </span>
                       ) : null}
                       {!locked ? (
