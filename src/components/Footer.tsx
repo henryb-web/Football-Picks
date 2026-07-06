@@ -4,7 +4,6 @@ export function Footer() {
   return (
     <footer className="mt-auto border-t border-cardborder px-6 py-6">
       <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-xs text-muted sm:flex-row">
-        <span>PickSix · weekly football pick&apos;em for friends 🏈</span>
         <nav className="flex gap-4">
           <Link href="/games" className="hover:text-foreground">
             Games
