@@ -29,6 +29,7 @@ export async function setPickAction(
   });
 
   revalidatePath("/games");
+  revalidatePath("/my-picks");
   return { ok: true };
 }
 
@@ -46,5 +47,6 @@ export async function clearPickAction(gameId: string): Promise<PickActionResult>
 
   await db.pick.deleteMany({ where: { userId: session.user.id, gameId } });
   revalidatePath("/games");
+  revalidatePath("/my-picks");
   return { ok: true };
 }

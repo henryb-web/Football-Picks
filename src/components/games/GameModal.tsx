@@ -6,6 +6,7 @@ import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatGameDate, formatGameTime } from "@/lib/format";
 import { TeamLogo } from "./TeamLogo";
 import { LockCountdown } from "./LockCountdown";
+import { PickButtons } from "./PickButtons";
 import type { GameCardData, GameCardTeam } from "./GameCard";
 import type { League, PickSide } from "@/generated/prisma/client";
 
@@ -181,16 +182,27 @@ export function GameModal({
 
         {/* Your pick */}
         {loggedIn ? (
-          <div className="mt-4 rounded-lg bg-background px-3 py-2 text-sm">
-            {pickLabel ? (
-              <>
-                Your pick:{" "}
-                <span className="font-semibold text-foreground">{pickLabel}</span>
-              </>
+          <div className="mt-4">
+            <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+              Your pick
+            </div>
+            {locked ? (
+              <div className="rounded-lg bg-background px-3 py-2 text-sm">
+                {pickLabel ? (
+                  <span className="font-semibold text-foreground">{pickLabel}</span>
+                ) : (
+                  <span className="text-muted">You didn&apos;t pick this game.</span>
+                )}
+              </div>
             ) : (
-              <span className="text-muted">
-                {locked ? "You didn't pick this game." : "You haven't picked this game yet."}
-              </span>
+              <PickButtons
+                gameId={game.id}
+                awayLabel={game.awayTeam.name}
+                homeLabel={game.homeTeam.name}
+                awayColor={game.awayTeam.color}
+                homeColor={game.homeTeam.color}
+                initialSide={pick}
+              />
             )}
           </div>
         ) : null}
