@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 const LEAGUES = [
   { tag: "NFL", title: "Pro", blurb: "Every NFL matchup.", href: "/games?league=NFL" },
   { tag: "CFB", title: "College", blurb: "Power-conference & CFP teams.", href: "/games?league=CFB" },
-  { tag: "6A", title: "Texas High School", blurb: "Tracked UIL & TAPPS schools.", href: "/games?league=HS6A" },
+  { tag: "6A", title: "Texas High School", blurb: "Tracked UIL 6A teams.", href: "/games?league=HS6A" },
 ];
 
 export default async function Home() {
