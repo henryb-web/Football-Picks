@@ -25,15 +25,11 @@ export default async function Home() {
           }}
         />
         <div className="relative mx-auto max-w-3xl px-6 py-24 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-cyan-500">
-            Weekly pick&apos;em · one leaderboard
-          </p>
-          <h1 className="headline mt-4 text-7xl sm:text-8xl">
+          <h1 className="headline text-7xl sm:text-8xl">
             Pick<span className="text-cyan-500">Six</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
-            Call the NFL, college, and Texas high-school slate before kickoff —
-            against the whole field, all season long.
+            Pick your winner for NFL, NCAA, and UIL 6A games
           </p>
 
           <div className="mt-8 flex justify-center gap-3">
