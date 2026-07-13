@@ -5,6 +5,7 @@ import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
 import { isLocked } from "@/lib/picks";
 import { getConsensus, makeRecordResolver, toGameCardData } from "@/lib/game-card";
 import { GameCard } from "@/components/games/GameCard";
+import { TeamSearch } from "@/components/games/TeamSearch";
 import { Page } from "@/components/ui/Page";
 import type { League, PickSide } from "@/generated/prisma/client";
 
@@ -20,10 +21,12 @@ function gamesHref(league: string | null, week: string | number | null) {
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ league?: string; week?: string }>;
+  searchParams: Promise<{ league?: string; week?: string; team?: string }>;
 }) {
-  const { league, week } = await searchParams;
+  const { league, week, team } = await searchParams;
   const active: League | null = league && isLeague(league) ? league : null;
+  const teamQuery = (team ?? "").trim();
+  const searching = teamQuery.length > 0;
 
   const session = await auth();
   const userId = session?.user?.id ?? null;
@@ -44,8 +47,11 @@ export default async function GamesPage({
     .sort((a, b) => a - b);
 
   // Active week: explicit ?week=, else the earliest week with an open game.
+  // (Skipped while searching a team — we show all of that team's games.)
   let activeWeek: number | null = null;
-  if (week === "all") {
+  if (searching) {
+    activeWeek = null;
+  } else if (week === "all") {
     activeWeek = null;
   } else if (week && /^\d+$/.test(week) && weeks.includes(Number(week))) {
     activeWeek = Number(week);
@@ -64,10 +70,25 @@ export default async function GamesPage({
     activeWeek = upcoming?.week ?? weeks[0] ?? null;
   }
 
-  // Fetch only the games we'll actually render: a single week, or everything
-  // (capped) when the "All" week tab is selected.
+  // Match either team's name (home or away) when searching.
+  const teamNameMatch = {
+    OR: [
+      { displayName: { contains: teamQuery, mode: "insensitive" as const } },
+      { name: { contains: teamQuery, mode: "insensitive" as const } },
+    ],
+  };
+
+  // Fetch the games to render: while searching, every game the team plays
+  // (any week); otherwise a single week, or everything for the "All" tab.
   const games = await db.game.findMany({
-    where: activeWeek == null ? leagueWhere : { ...leagueWhere, week: activeWeek },
+    where: searching
+      ? {
+          ...leagueWhere,
+          OR: [{ homeTeam: teamNameMatch }, { awayTeam: teamNameMatch }],
+        }
+      : activeWeek == null
+        ? leagueWhere
+        : { ...leagueWhere, week: activeWeek },
     include: { homeTeam: true, awayTeam: true },
     orderBy: { kickoff: "asc" },
     take: 300,
@@ -124,8 +145,11 @@ export default async function GamesPage({
         ))}
       </div>
 
-      {/* Week tabs */}
-      {weeks.length > 0 ? (
+      {/* Team search */}
+      <TeamSearch league={active} initialQuery={teamQuery} />
+
+      {/* Week tabs (hidden while searching a team) */}
+      {!searching && weeks.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
             Week
@@ -156,10 +180,29 @@ export default async function GamesPage({
         </div>
       ) : null}
 
+      {searching ? (
+        <div className="mt-4 flex items-center justify-between text-sm text-muted">
+          <span>
+            {games.length} game{games.length === 1 ? "" : "s"} for{" "}
+            <span className="font-semibold text-foreground">
+              &ldquo;{teamQuery}&rdquo;
+            </span>
+          </span>
+          <Link
+            href={gamesHref(active, null)}
+            className="font-semibold text-cyan-500 hover:underline"
+          >
+            Clear
+          </Link>
+        </div>
+      ) : null}
+
       <div className="mt-6 space-y-2">
         {games.length === 0 ? (
           <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
-            No games here yet. An admin can add them from the Admin page.
+            {searching
+              ? `No games found for “${teamQuery}”.`
+              : "No games here yet. An admin can add them from the Admin page."}
           </p>
         ) : (
           games.map((g) => (
