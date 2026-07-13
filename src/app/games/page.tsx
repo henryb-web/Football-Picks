@@ -177,9 +177,6 @@ export default async function GamesPage({
   return (
     <Page>
       <h1 className="headline text-4xl sm:text-5xl">Games</h1>
-      <p className="mt-1.5 text-sm text-muted">
-        Pick a winner for each game. Picks lock at kickoff.
-      </p>
 
       {!userId ? (
         <p className="mt-4 rounded-lg bg-cyan-50 px-4 py-3 text-sm text-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-200">

@@ -8,7 +8,7 @@ export default async function RecapPage() {
 
   return (
     <Page>
-      <PageHeader title="Weekly Recap" subtitle="Who topped the pool each week." />
+      <PageHeader title="Weekly Recap" />
 
       {recaps.length === 0 ? (
         <EmptyState icon={CalendarDays}>

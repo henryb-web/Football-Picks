@@ -36,7 +36,6 @@ export default async function LeaderboardPage() {
     <Page>
       <PageHeader
         title="Leaderboard"
-        subtitle="Global standings — 1 point per correct pick."
       />
 
       {rows.length === 0 ? (

@@ -20,7 +20,6 @@ export default async function BracketsPage() {
     <Page>
       <PageHeader
         title="Brackets"
-        subtitle="Predict the whole postseason before it starts. More points for later rounds."
       />
 
       {brackets.length === 0 ? (

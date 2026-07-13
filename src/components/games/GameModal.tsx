@@ -114,7 +114,7 @@ export function GameModal({
           />
           <Fact
             icon={<Lock className="size-4" />}
-            label="Picks lock"
+            label="Pick choice"
             value={
               locked ? (
                 "Locked"

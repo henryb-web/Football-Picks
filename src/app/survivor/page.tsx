@@ -14,7 +14,6 @@ export default async function SurvivorListPage() {
     <Page>
       <PageHeader
         title="Survivor"
-        subtitle="Pick one team to win each week. Can't reuse a team. One loss and you're out — last one standing wins."
       />
 
       {pools.length === 0 ? (
