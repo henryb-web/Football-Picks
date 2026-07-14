@@ -37,7 +37,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
       <div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">
         <h2>Reset your password</h2>
         <p>We received a request to reset your PickSix password. Click below to choose a new one:</p>
-        <p><a href="${resetUrl}" style="display:inline-block;background:#059669;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Reset password</a></p>
+        <p><a href="${resetUrl}" style="display:inline-block;background:#0891b2;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Reset password</a></p>
         <p style="color:#666">Or paste this link into your browser:<br>${resetUrl}</p>
         <p style="color:#666">This link expires in 1 hour. If you didn't request this, you can ignore this email.</p>
       </div>`,
