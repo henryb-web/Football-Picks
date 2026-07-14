@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { setSurvivorPickAction } from "@/app/survivor/actions";
 import { TeamLogo } from "@/components/games/TeamLogo";
 
-type PickTeam = { teamId: string; name: string; logo: string | null; color: string | null };
+type PickTeam = { teamId: string; name: string; displayName: string; logo: string | null; color: string | null };
 type PickGame = { id: string; locked: boolean; kickoffLabel: string; away: PickTeam; home: PickTeam };
 
 export function SurvivorPicker({
@@ -54,7 +54,7 @@ export function SurvivorPicker({
             : "border-cardborder hover:border-cyan-400"
         }`}
       >
-        <TeamLogo logo={t.logo} color={t.color} size={18} />
+        <TeamLogo logo={t.logo} color={t.color} size={18} name={t.displayName} />
         {t.name}
         {disabledByReuse ? <span className="ml-auto text-xs">used</span> : null}
       </button>

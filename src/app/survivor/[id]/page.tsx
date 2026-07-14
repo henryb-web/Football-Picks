@@ -52,8 +52,8 @@ export default async function SurvivorPoolPage({
     id: g.id,
     locked: isLocked(g),
     kickoffLabel: `${g.awayTeam.name} @ ${g.homeTeam.name} · ${formatKickoff(g.kickoff)}`,
-    away: { teamId: g.awayTeamId, name: g.awayTeam.name, logo: g.awayTeam.logo, color: g.awayTeam.color },
-    home: { teamId: g.homeTeamId, name: g.homeTeam.name, logo: g.homeTeam.logo, color: g.homeTeam.color },
+    away: { teamId: g.awayTeamId, name: g.awayTeam.name, displayName: g.awayTeam.displayName, logo: g.awayTeam.logo, color: g.awayTeam.color },
+    home: { teamId: g.homeTeamId, name: g.homeTeam.name, displayName: g.homeTeam.displayName, logo: g.homeTeam.logo, color: g.homeTeam.color },
   }));
 
   return (
