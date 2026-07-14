@@ -4,7 +4,12 @@ import { ClipboardList } from "lucide-react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLocked } from "@/lib/picks";
-import { getConsensus, makeRecordResolver, toGameCardData } from "@/lib/game-card";
+import {
+  getConsensus,
+  makeLastGameResolver,
+  makeRecordResolver,
+  toGameCardData,
+} from "@/lib/game-card";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import { MyPickCard } from "@/components/games/MyPickCard";
 
@@ -24,6 +29,7 @@ export default async function MyPicksPage() {
   const pushes = picks.filter((p) => p.result === "PUSH").length;
 
   const recordFor = await makeRecordResolver(picks.map((p) => p.game));
+  const lastGameFor = await makeLastGameResolver(picks.map((p) => p.game));
   const consensus = await getConsensus(picks.map((p) => p.gameId));
 
   return (
@@ -45,7 +51,7 @@ export default async function MyPicksPage() {
           {picks.map((p) => (
             <MyPickCard
               key={p.id}
-              game={toGameCardData(p.game, recordFor)}
+              game={toGameCardData(p.game, recordFor, lastGameFor)}
               side={p.side}
               result={p.result}
               consensus={consensus.get(p.gameId) ?? { home: 0, away: 0 }}

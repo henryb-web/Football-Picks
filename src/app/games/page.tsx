@@ -3,7 +3,12 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
 import { isLocked } from "@/lib/picks";
-import { getConsensus, makeRecordResolver, toGameCardData } from "@/lib/game-card";
+import {
+  getConsensus,
+  makeLastGameResolver,
+  makeRecordResolver,
+  toGameCardData,
+} from "@/lib/game-card";
 import { GameCard } from "@/components/games/GameCard";
 import { TeamSearch } from "@/components/games/TeamSearch";
 import { Page } from "@/components/ui/Page";
@@ -104,6 +109,7 @@ export default async function GamesPage({
 
   const consensus = await getConsensus(games.map((g) => g.id));
   const recordFor = await makeRecordResolver(games);
+  const lastGameFor = await makeLastGameResolver(games);
 
   const leagueTabs = [
     { key: "all", label: "All", href: gamesHref(null, null) },
@@ -208,7 +214,7 @@ export default async function GamesPage({
           games.map((g) => (
             <GameCard
               key={g.id}
-              game={toGameCardData(g, recordFor)}
+              game={toGameCardData(g, recordFor, lastGameFor)}
               pick={pickMap.get(g.id) ?? null}
               consensus={consensus.get(g.id) ?? { home: 0, away: 0 }}
               loggedIn={Boolean(userId)}

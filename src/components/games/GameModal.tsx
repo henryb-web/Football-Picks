@@ -258,6 +258,24 @@ function TeamDetail({
       {team.record ? (
         <div className="mt-1 text-xs text-muted">Record: {team.record}</div>
       ) : null}
+      {team.lastGame ? (
+        <div className="mt-1 text-xs text-muted">
+          Last:{" "}
+          <span
+            className={
+              team.lastGame.result === "W"
+                ? "font-semibold text-cyan-500"
+                : team.lastGame.result === "L"
+                  ? "font-semibold text-red-500"
+                  : "font-semibold text-foreground"
+            }
+          >
+            {team.lastGame.result}
+          </span>{" "}
+          {team.lastGame.teamScore}–{team.lastGame.oppScore}{" "}
+          {team.lastGame.home ? "vs" : "@"} {team.lastGame.opponent}
+        </div>
+      ) : null}
       {team.grouping ? (
         <div className="mt-1 text-xs text-muted">
           {groupingLabel(league)}: {team.grouping}

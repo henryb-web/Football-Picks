@@ -1,6 +1,15 @@
 import { db } from "@/lib/db";
-import type { GameCardData, GameCardTeam } from "@/components/games/GameCard";
+import type {
+  GameCardData,
+  GameCardTeam,
+  LastGameSummary,
+} from "@/components/games/GameCard";
 import type { GameStatus, League } from "@/generated/prisma/client";
+
+export type LastGameFor = (
+  teamId: string,
+  beforeISO: string,
+) => LastGameSummary | null;
 
 type TeamRow = {
   name: string;
@@ -123,10 +132,76 @@ export async function makeRecordResolver(
   };
 }
 
+// Resolve each team's most recent FINAL game *before* a reference kickoff.
+// Batches one query over all involved teams; returns a per-team lookup.
+export async function makeLastGameResolver(
+  games: { homeTeamId: string; awayTeamId: string }[],
+): Promise<LastGameFor> {
+  const teamIds = new Set<string>();
+  for (const g of games) {
+    teamIds.add(g.homeTeamId);
+    teamIds.add(g.awayTeamId);
+  }
+  if (!teamIds.size) return () => null;
+
+  const finals = await db.game.findMany({
+    where: {
+      status: "FINAL",
+      homeScore: { not: null },
+      awayScore: { not: null },
+      OR: [
+        { homeTeamId: { in: [...teamIds] } },
+        { awayTeamId: { in: [...teamIds] } },
+      ],
+    },
+    select: {
+      kickoff: true,
+      homeTeamId: true,
+      awayTeamId: true,
+      homeScore: true,
+      awayScore: true,
+      homeTeam: { select: { displayName: true } },
+      awayTeam: { select: { displayName: true } },
+    },
+    orderBy: { kickoff: "desc" },
+  });
+
+  // Group each team's finals, newest first.
+  const byTeam = new Map<string, typeof finals>();
+  for (const f of finals) {
+    for (const tid of [f.homeTeamId, f.awayTeamId]) {
+      if (!teamIds.has(tid)) continue;
+      const arr = byTeam.get(tid) ?? [];
+      arr.push(f);
+      byTeam.set(tid, arr);
+    }
+  }
+
+  return (teamId, beforeISO) => {
+    const arr = byTeam.get(teamId);
+    if (!arr) return null;
+    const before = new Date(beforeISO).getTime();
+    const f = arr.find((x) => x.kickoff.getTime() < before);
+    if (!f || f.homeScore == null || f.awayScore == null) return null;
+    const home = f.homeTeamId === teamId;
+    const teamScore = home ? f.homeScore : f.awayScore;
+    const oppScore = home ? f.awayScore : f.homeScore;
+    return {
+      result: teamScore === oppScore ? "T" : teamScore > oppScore ? "W" : "L",
+      teamScore,
+      oppScore,
+      opponent: (home ? f.awayTeam : f.homeTeam).displayName,
+      home,
+      kickoffISO: f.kickoff.toISOString(),
+    };
+  };
+}
+
 // Map a DB game (with its teams) to the serializable shape the card + modal use.
 export function toGameCardData(
   g: GameRow,
   recordFor: (teamId: string, season: number, feed: string | null) => string | null,
+  lastGameFor: LastGameFor = () => null,
 ): GameCardData {
   const team = (t: TeamRow, teamId: string): GameCardTeam => ({
     name: t.name,
@@ -139,6 +214,7 @@ export function toGameCardData(
     altColor: t.altColor,
     logo: t.logo,
     record: recordFor(teamId, g.season, t.record),
+    lastGame: lastGameFor(teamId, g.kickoff.toISOString()),
   });
   return {
     id: g.id,

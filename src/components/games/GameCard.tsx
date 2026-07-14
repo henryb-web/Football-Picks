@@ -11,6 +11,16 @@ import { ConsensusBar } from "./ConsensusBar";
 import { GameModal } from "./GameModal";
 import type { League, GameStatus, PickSide } from "@/generated/prisma/client";
 
+// A team's most recent completed game (from this team's perspective).
+export type LastGameSummary = {
+  result: "W" | "L" | "T";
+  teamScore: number;
+  oppScore: number;
+  opponent: string;
+  home: boolean;
+  kickoffISO: string;
+};
+
 // Serializable slice of a game + its teams, shared by the card and its modal.
 export type GameCardTeam = {
   name: string;
@@ -23,6 +33,7 @@ export type GameCardTeam = {
   altColor: string | null;
   logo: string | null;
   record: string | null;
+  lastGame: LastGameSummary | null;
 };
 
 export type GameCardData = {
