@@ -18,10 +18,18 @@ export type SeasonLeader = {
   pos: string | null;
   stat: string;
 };
+export type PostseasonGame = {
+  name: string;
+  result: "W" | "L" | "T";
+  teamScore: number;
+  oppScore: number;
+  opponent: string;
+};
 export type SeasonSummary = {
   season: number;
   record: string | null;
   leaders: SeasonLeader[];
+  postseason?: PostseasonGame[];
 };
 
 // A team's most recent completed game (from this team's perspective).

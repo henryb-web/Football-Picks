@@ -294,6 +294,23 @@ function TeamDetail({
               </span>
             </div>
           ) : null}
+          {team.seasonSummary.postseason?.map((p, i) => (
+            <div key={i} className="mt-1 text-[11px] leading-tight text-muted">
+              <span
+                className={
+                  p.result === "W"
+                    ? "font-semibold text-cyan-500"
+                    : p.result === "L"
+                      ? "font-semibold text-red-500"
+                      : "font-semibold text-foreground"
+                }
+              >
+                {p.result}
+              </span>{" "}
+              {p.teamScore}–{p.oppScore} vs {p.opponent}
+              <div className="text-[10px]">{p.name}</div>
+            </div>
+          ))}
           {team.seasonSummary.leaders.map((l) => (
             <div key={l.cat} className="mt-1 text-[11px] leading-tight text-muted">
               <span className="font-semibold text-cyan-500">{l.cat}</span>{" "}

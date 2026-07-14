@@ -56,6 +56,50 @@ async function fetchSummary(leagueKey: string, teamId: string) {
   return { season: SEASON, record, leaders };
 }
 
+// College only: last season's bowl/playoff games (name + result).
+async function fetchPostseason(teamId: string) {
+  const url =
+    `https://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/${teamId}` +
+    `/schedule?season=${SEASON}&seasontype=3`;
+  const d = await getJson(url);
+  const games: Array<{
+    name: string;
+    result: "W" | "L" | "T";
+    teamScore: number;
+    oppScore: number;
+    opponent: string;
+  }> = [];
+  for (const e of d?.events ?? []) {
+    const comp = e.competitions?.[0];
+    const competitors: any[] = comp?.competitors ?? [];
+    const me = competitors.find((c) => String(c.team?.id) === String(teamId));
+    const opp = competitors.find((c) => String(c.team?.id) !== String(teamId));
+    if (!me || !opp) continue;
+    const teamScore = Number(me.score?.value ?? me.score);
+    const oppScore = Number(opp.score?.value ?? opp.score);
+    if (Number.isNaN(teamScore) || Number.isNaN(oppScore)) continue; // unplayed
+    games.push({
+      name: comp?.notes?.[0]?.headline || e.name || e.shortName || "Bowl",
+      result:
+        typeof me.winner === "boolean"
+          ? me.winner
+            ? "W"
+            : oppScore === teamScore
+              ? "T"
+              : "L"
+          : teamScore > oppScore
+            ? "W"
+            : teamScore < oppScore
+              ? "L"
+              : "T",
+      teamScore,
+      oppScore,
+      opponent: opp.team?.displayName || opp.team?.location || "Opponent",
+    });
+  }
+  return games;
+}
+
 // Run `worker` over `items` with a bounded concurrency pool.
 async function pool<T>(items: T[], limit: number, worker: (item: T) => Promise<void>) {
   let i = 0;
@@ -89,7 +133,11 @@ async function main() {
       empty++;
       return;
     }
-    await db.team.update({ where: { id: t.id }, data: { seasonSummary: summary } });
+    const full =
+      t.league === "CFB"
+        ? { ...summary, postseason: await fetchPostseason(t.externalId!) }
+        : summary;
+    await db.team.update({ where: { id: t.id }, data: { seasonSummary: full } });
     ok++;
     if (ok % 25 === 0) console.log(`  …${ok} done`);
   });
