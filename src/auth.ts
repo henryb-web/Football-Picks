@@ -51,7 +51,9 @@ if (googleConfigured) {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
+  // Rolling 180-day sessions: active users effectively never get logged out,
+  // and even inactive ones stay signed in across a full season.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 180 },
   trustHost: true,
   pages: { signIn: "/login" },
   providers,
