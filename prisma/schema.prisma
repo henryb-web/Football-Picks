@@ -260,6 +260,9 @@ model Team {
   logo         String? // team logo URL from the feed
   // Overall win/loss record summary from the feed, e.g. "7-2" (null if unknown).
   record       String?
+  // Prior-season snapshot (NFL/CFB only): { season, record, leaders: [...] }.
+  // Populated by scripts/load-season-summary.ts from ESPN. Null for HS.
+  seasonSummary Json?
 
   homeGames     Game[]         @relation("HomeTeam")
   awayGames     Game[]         @relation("AwayTeam")

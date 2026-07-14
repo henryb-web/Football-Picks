@@ -284,6 +284,28 @@ function TeamDetail({
       {team.location ? (
         <div className="text-xs text-muted">{team.location}</div>
       ) : null}
+      {team.seasonSummary ? (
+        <div className="mt-2 border-t border-cardborder pt-2">
+          {team.seasonSummary.record ? (
+            <div className="text-[11px] text-muted">
+              {team.seasonSummary.season} season:{" "}
+              <span className="font-semibold text-foreground">
+                {team.seasonSummary.record}
+              </span>
+            </div>
+          ) : null}
+          {team.seasonSummary.leaders.map((l) => (
+            <div key={l.cat} className="mt-1 text-[11px] leading-tight text-muted">
+              <span className="font-semibold text-cyan-500">{l.cat}</span>{" "}
+              <span className="font-semibold text-foreground">
+                {l.pos ? `${l.pos} ` : ""}
+                {l.name}
+              </span>
+              <div className="text-[10px]">{l.stat}</div>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

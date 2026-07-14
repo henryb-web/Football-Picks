@@ -11,6 +11,19 @@ import { ConsensusBar } from "./ConsensusBar";
 import { GameModal } from "./GameModal";
 import type { League, GameStatus, PickSide } from "@/generated/prisma/client";
 
+// A prior-season snapshot (NFL/CFB): record + key statistical leaders.
+export type SeasonLeader = {
+  cat: string;
+  name: string;
+  pos: string | null;
+  stat: string;
+};
+export type SeasonSummary = {
+  season: number;
+  record: string | null;
+  leaders: SeasonLeader[];
+};
+
 // A team's most recent completed game (from this team's perspective).
 export type LastGameSummary = {
   result: "W" | "L" | "T";
@@ -34,6 +47,7 @@ export type GameCardTeam = {
   logo: string | null;
   record: string | null;
   lastGame: LastGameSummary | null;
+  seasonSummary: SeasonSummary | null;
 };
 
 export type GameCardData = {

@@ -3,6 +3,7 @@ import type {
   GameCardData,
   GameCardTeam,
   LastGameSummary,
+  SeasonSummary,
 } from "@/components/games/GameCard";
 import type { GameStatus, League } from "@/generated/prisma/client";
 
@@ -22,6 +23,7 @@ type TeamRow = {
   altColor: string | null;
   logo: string | null;
   record: string | null;
+  seasonSummary: unknown;
 };
 
 type GameRow = {
@@ -215,6 +217,7 @@ export function toGameCardData(
     logo: t.logo,
     record: recordFor(teamId, g.season, t.record),
     lastGame: lastGameFor(teamId, g.kickoff.toISOString()),
+    seasonSummary: (t.seasonSummary as SeasonSummary | null) ?? null,
   });
   return {
     id: g.id,
