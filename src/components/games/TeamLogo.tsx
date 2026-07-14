@@ -15,7 +15,7 @@ export function TeamLogo({
       <img
         src={logo}
         alt=""
-        className="shrink-0 object-contain"
+        className="shrink-0 object-contain dark:brightness-125"
         style={{ width: size, height: size }}
       />
     );
