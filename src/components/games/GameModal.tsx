@@ -226,7 +226,7 @@ function TeamSide({
         align === "right" ? "flex-row-reverse text-right" : ""
       }`}
     >
-      <TeamLogo logo={team.logo} color={team.color} size={36} />
+      <TeamLogo logo={team.logo} color={team.color} size={36} name={team.displayName} />
       <div className="min-w-0">
         <div className="truncate text-sm font-semibold">{team.displayName}</div>
         {team.record ? (

@@ -62,7 +62,7 @@ export function MyPickCard({
         {/* the matchup + pick */}
         <div className="min-w-0 flex-1 p-4">
           <div className="flex items-center gap-2">
-            <TeamLogo logo={picked.logo} color={picked.color} size={22} />
+            <TeamLogo logo={picked.logo} color={picked.color} size={22} name={picked.displayName} />
             <span className="headline text-lg">{picked.displayName}</span>
           </div>
           <div className="mt-1 text-xs text-muted">
