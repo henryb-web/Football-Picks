@@ -62,6 +62,9 @@ export type FormResult = "W" | "L" | "P";
 export type LeaderboardRow = {
   userId: string;
   name: string;
+  image: string | null;
+  avatarColor: string | null;
+  avatarEmoji: string | null;
   points: number;
   wins: number;
   losses: number;
@@ -114,19 +117,26 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
 
   const users = await db.user.findMany({
     where: { id: { in: [...byUser.keys()] } },
-    select: { id: true, username: true, name: true },
+    select: {
+      id: true, username: true, name: true,
+      image: true, avatarColor: true, avatarEmoji: true,
+    },
   });
-  const nameOf = new Map(
-    users.map((u) => [u.id, u.username ?? u.name ?? "Player"]),
-  );
+  const userOf = new Map(users.map((u) => [u.id, u]));
 
   const base = [...byUser.entries()]
-    .map(([userId, s]) => ({
-      userId,
-      name: nameOf.get(userId) ?? "Player",
-      ...s,
-      form: (formByUser.get(userId) ?? []).slice().reverse(),
-    }))
+    .map(([userId, s]) => {
+      const u = userOf.get(userId);
+      return {
+        userId,
+        name: u?.username ?? u?.name ?? "Player",
+        image: u?.image ?? null,
+        avatarColor: u?.avatarColor ?? null,
+        avatarEmoji: u?.avatarEmoji ?? null,
+        ...s,
+        form: (formByUser.get(userId) ?? []).slice().reverse(),
+      };
+    })
     .sort((a, b) => b.points - a.points || b.wins - a.wins || a.losses - b.losses);
 
   const currentRank = new Map(base.map((r, i) => [r.userId, i]));

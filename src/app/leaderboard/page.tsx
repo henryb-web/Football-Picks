@@ -66,7 +66,13 @@ export default async function LeaderboardPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2.5">
-                      <Avatar name={r.name} size={30} />
+                      <Avatar
+                        name={r.name}
+                        size={30}
+                        image={r.image}
+                        emoji={r.avatarEmoji}
+                        color={r.avatarColor}
+                      />
                       <div>
                         <div className="font-medium">{r.name}</div>
                         {r.form.length > 0 ? (

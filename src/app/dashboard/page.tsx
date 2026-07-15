@@ -253,7 +253,13 @@ export default async function DashboardPage() {
                   >
                     {i + 1}
                   </span>
-                  <Avatar name={r.name} size={24} />
+                  <Avatar
+                    name={r.name}
+                    size={24}
+                    image={r.image}
+                    emoji={r.avatarEmoji}
+                    color={r.avatarColor}
+                  />
                   {r.name}
                 </span>
                 <span className="text-sm font-bold tabular-nums">{r.points}</span>
