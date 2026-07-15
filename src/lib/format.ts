@@ -1,41 +1,38 @@
-// Kickoffs are shown in US Central time (Texas-centric, sensible default for all
-// three leagues) with a fixed format so server render and any hydration agree.
-const kickoffFmt = new Intl.DateTimeFormat("en-US", {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-  timeZone: "America/Chicago",
-});
+// Kickoffs display in the viewer's chosen time zone, defaulting to US Central
+// (Texas-centric, sensible for all three leagues). A fixed format keeps the
+// server render and any hydration in agreement.
+const DEFAULT_TZ = "America/Chicago";
 
-export function formatKickoff(date: Date): string {
-  return kickoffFmt.format(date);
+export function formatKickoff(date: Date, timeZone: string = DEFAULT_TZ): string {
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone,
+  }).format(date);
 }
 
-// Full date, e.g. "Saturday, September 13, 2025" (Central time, fixed format).
-const gameDateFmt = new Intl.DateTimeFormat("en-US", {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-  timeZone: "America/Chicago",
-});
-
-export function formatGameDate(date: Date): string {
-  return gameDateFmt.format(date);
+// Full date, e.g. "Saturday, September 13, 2025".
+export function formatGameDate(date: Date, timeZone: string = DEFAULT_TZ): string {
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone,
+  }).format(date);
 }
 
-// Time of day with zone, e.g. "7:30 PM CDT" (Central time, fixed format).
-const gameTimeFmt = new Intl.DateTimeFormat("en-US", {
-  hour: "numeric",
-  minute: "2-digit",
-  timeZoneName: "short",
-  timeZone: "America/Chicago",
-});
-
-export function formatGameTime(date: Date): string {
-  return gameTimeFmt.format(date);
+// Time of day with zone, e.g. "7:30 PM CDT".
+export function formatGameTime(date: Date, timeZone: string = DEFAULT_TZ): string {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+    timeZone,
+  }).format(date);
 }
 
 // Shared parts formatter: an instant's US Central wall-clock components.

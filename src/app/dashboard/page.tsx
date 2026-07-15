@@ -4,9 +4,12 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
+import { LEAGUE_LABELS } from "@/lib/leagues";
+import { formatKickoff } from "@/lib/format";
 import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
+import { TeamLogo } from "@/components/games/TeamLogo";
 
 // Start of the football week containing `d`, anchored at Tuesday 12:00 UTC — a
 // dead zone between Monday-night games (which can spill into early Tuesday in UTC)
@@ -83,6 +86,38 @@ export default async function DashboardPage() {
   const name = session.user.username ?? session.user.name ?? "there";
   const top = board.slice(0, 3);
 
+  // Favorite team + its next game (for the "Your team" card).
+  const prefs = await db.user.findUnique({
+    where: { id: userId },
+    select: { favoriteTeamId: true, timezone: true },
+  });
+  const tz = prefs?.timezone || "America/Chicago";
+  const favTeam = prefs?.favoriteTeamId
+    ? await db.team.findUnique({
+        where: { id: prefs.favoriteTeamId },
+        select: { displayName: true, name: true, logo: true, color: true, record: true, league: true },
+      })
+    : null;
+  const favNextGame =
+    favTeam && prefs?.favoriteTeamId
+      ? await db.game.findFirst({
+          where: {
+            status: "SCHEDULED",
+            kickoff: { gt: now },
+            OR: [
+              { homeTeamId: prefs.favoriteTeamId },
+              { awayTeamId: prefs.favoriteTeamId },
+            ],
+          },
+          orderBy: { kickoff: "asc" },
+          select: {
+            kickoff: true,
+            homeTeam: { select: { name: true } },
+            awayTeam: { select: { name: true } },
+          },
+        })
+      : null;
+
   return (
     <Page>
       <h1 className="headline text-4xl sm:text-5xl">
@@ -146,6 +181,49 @@ export default async function DashboardPage() {
         </div>
         <span className="text-2xl">{needPicks > 0 ? "⚠️" : "✓"}</span>
       </Link>
+
+      <div className="mt-8">
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-lg font-bold">Your team</h2>
+          <Link href="/account" className="text-sm font-medium text-cyan-500 hover:underline">
+            {favTeam ? "Change →" : "Set one →"}
+          </Link>
+        </div>
+        {favTeam ? (
+          <Link
+            href={`/games?team=${encodeURIComponent(favTeam.name)}`}
+            className="lift block rounded-xl border border-cardborder bg-card p-5 hover:border-cyan-500/50"
+          >
+            <div className="flex items-center gap-3">
+              <TeamLogo logo={favTeam.logo} color={favTeam.color} name={favTeam.displayName} size={40} />
+              <div className="min-w-0">
+                <div className="headline truncate text-xl">{favTeam.displayName}</div>
+                <div className="text-xs text-muted">
+                  {LEAGUE_LABELS[favTeam.league]}
+                  {favTeam.record ? ` · ${favTeam.record}` : ""}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 text-sm text-muted">
+              {favNextGame ? (
+                <>
+                  Next: {favNextGame.awayTeam.name} @ {favNextGame.homeTeam.name} ·{" "}
+                  {formatKickoff(favNextGame.kickoff, tz)}
+                </>
+              ) : (
+                "No upcoming games scheduled."
+              )}
+            </div>
+          </Link>
+        ) : (
+          <Link
+            href="/account"
+            className="block rounded-xl border border-dashed border-cardborder bg-card p-5 text-sm text-muted transition hover:border-cyan-500/50"
+          >
+            Pick a favorite team in your account and it&apos;ll show up here →
+          </Link>
+        )}
+      </div>
 
       {top.length > 0 ? (
         <div className="mt-8">

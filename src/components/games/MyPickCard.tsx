@@ -25,6 +25,7 @@ export function MyPickCard({
   consensus,
   locked,
   loggedIn,
+  tz = "America/Chicago",
 }: {
   game: GameCardData;
   side: PickSide;
@@ -32,6 +33,7 @@ export function MyPickCard({
   consensus: { home: number; away: number };
   locked: boolean;
   loggedIn: boolean;
+  tz?: string;
 }) {
   const [open, setOpen] = useState(false);
   const picked = side === "HOME" ? game.homeTeam : game.awayTeam;
@@ -70,7 +72,7 @@ export function MyPickCard({
               {LEAGUE_LABELS[game.league]}
             </span>
             {game.week ? ` · Wk ${game.week}` : ""} ·{" "}
-            {game.awayTeam.name} @ {game.homeTeam.name} · {formatKickoff(kickoff)}
+            {game.awayTeam.name} @ {game.homeTeam.name} · {formatKickoff(kickoff, tz)}
             {game.status === "FINAL"
               ? ` · Final ${game.awayScore}–${game.homeScore}`
               : ""}
@@ -93,6 +95,7 @@ export function MyPickCard({
           consensus={consensus}
           locked={locked}
           loggedIn={loggedIn}
+          tz={tz}
           onClose={() => setOpen(false)}
         />
       ) : null}

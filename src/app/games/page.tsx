@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLeague, LEAGUE_LABELS, LEAGUES } from "@/lib/leagues";
 import { isLocked } from "@/lib/picks";
+import { getUserTimeZone } from "@/lib/user-prefs";
 import {
   getConsensus,
   makeLastGameResolver,
@@ -110,6 +111,7 @@ export default async function GamesPage({
   const consensus = await getConsensus(games.map((g) => g.id));
   const recordFor = await makeRecordResolver(games);
   const lastGameFor = await makeLastGameResolver(games);
+  const tz = await getUserTimeZone();
 
   const leagueTabs = [
     { key: "all", label: "All", href: gamesHref(null, null) },
@@ -219,6 +221,7 @@ export default async function GamesPage({
               consensus={consensus.get(g.id) ?? { home: 0, away: 0 }}
               loggedIn={Boolean(userId)}
               locked={isLocked(g)}
+              tz={tz}
             />
           ))
         )}

@@ -1,8 +1,10 @@
 // Avatar: uploaded photo > chosen emoji > deterministic monogram.
+// Ordered around the color wheel (red → orange → … → pink) so the picker
+// reads like a rainbow.
 export const AVATAR_COLORS = [
-  "06b6d4", "8b5cf6", "f59e0b", "ef4444", "22c55e",
-  "3b82f6", "ec4899", "14b8a6", "f97316", "a855f7",
-  "eab308", "0ea5e9", "d946ef", "10b981", "fb7185",
+  "ef4444", "f97316", "f59e0b", "eab308", "22c55e",
+  "10b981", "14b8a6", "06b6d4", "0ea5e9", "3b82f6",
+  "8b5cf6", "a855f7", "d946ef", "ec4899", "fb7185",
 ];
 
 function hashStr(s: string): number {

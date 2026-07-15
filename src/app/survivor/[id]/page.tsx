@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
 import { isLocked } from "@/lib/picks";
+import { getUserTimeZone } from "@/lib/user-prefs";
 import {
   currentSurvivorWeek,
   getSurvivorStandings,
@@ -47,11 +48,12 @@ export default async function SurvivorPoolPage({
         })
       : [];
   const weekPick = view?.picks.find((p) => p.week === week) ?? null;
+  const tz = await getUserTimeZone();
 
   const pickerGames = weekGames.map((g) => ({
     id: g.id,
     locked: isLocked(g),
-    kickoffLabel: `${g.awayTeam.name} @ ${g.homeTeam.name} · ${formatKickoff(g.kickoff)}`,
+    kickoffLabel: `${g.awayTeam.name} @ ${g.homeTeam.name} · ${formatKickoff(g.kickoff, tz)}`,
     away: { teamId: g.awayTeamId, name: g.awayTeam.name, displayName: g.awayTeam.displayName, logo: g.awayTeam.logo, color: g.awayTeam.color },
     home: { teamId: g.homeTeamId, name: g.homeTeam.name, displayName: g.homeTeam.displayName, logo: g.homeTeam.logo, color: g.homeTeam.color },
   }));

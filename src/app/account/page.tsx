@@ -81,7 +81,7 @@ export default async function AccountPage() {
             teamNames={teams.map((t) => t.displayName)}
           />
         </Section>
-        <Section title="Danger zone" danger desc="This can't be undone.">
+        <Section title="Delete account" danger desc="This can't be undone.">
           <DeleteAccount />
         </Section>
       </div>

@@ -4,6 +4,7 @@ import { ClipboardList } from "lucide-react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { isLocked } from "@/lib/picks";
+import { getUserTimeZone } from "@/lib/user-prefs";
 import {
   getConsensus,
   makeLastGameResolver,
@@ -31,6 +32,7 @@ export default async function MyPicksPage() {
   const recordFor = await makeRecordResolver(picks.map((p) => p.game));
   const lastGameFor = await makeLastGameResolver(picks.map((p) => p.game));
   const consensus = await getConsensus(picks.map((p) => p.gameId));
+  const tz = await getUserTimeZone();
 
   return (
     <Page>
@@ -57,6 +59,7 @@ export default async function MyPicksPage() {
               consensus={consensus.get(p.gameId) ?? { home: 0, away: 0 }}
               locked={isLocked(p.game)}
               loggedIn
+              tz={tz}
             />
           ))}
         </div>

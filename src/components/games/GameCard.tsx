@@ -81,12 +81,14 @@ export function GameCard({
   consensus,
   loggedIn,
   locked,
+  tz = "America/Chicago",
 }: {
   game: GameCardData;
   pick: PickSide | null;
   consensus: { home: number; away: number };
   loggedIn: boolean;
   locked: boolean;
+  tz?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -143,7 +145,7 @@ export function GameCard({
               <span className="font-semibold text-cyan-500">
                 {LEAGUE_LABELS[game.league]}
               </span>
-              {game.week ? ` · Wk ${game.week}` : ""} · {formatKickoff(kickoff)}
+              {game.week ? ` · Wk ${game.week}` : ""} · {formatKickoff(kickoff, tz)}
               {game.venueLabel ? (
                 <span className="ml-1 inline-flex items-center gap-0.5">
                   <MapPin className="inline size-3 -translate-y-px" aria-hidden />
@@ -217,6 +219,7 @@ export function GameCard({
           consensus={consensus}
           locked={locked}
           loggedIn={loggedIn}
+          tz={tz}
           onClose={() => setOpen(false)}
         />
       ) : null}

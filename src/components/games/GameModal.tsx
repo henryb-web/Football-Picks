@@ -29,6 +29,7 @@ export function GameModal({
   consensus,
   locked,
   loggedIn,
+  tz = "America/Chicago",
   onClose,
 }: {
   game: GameCardData;
@@ -36,6 +37,7 @@ export function GameModal({
   consensus: { home: number; away: number };
   locked: boolean;
   loggedIn: boolean;
+  tz?: string;
   onClose: () => void;
 }) {
   // Close on Escape and lock background scroll while open.
@@ -106,8 +108,8 @@ export function GameModal({
 
         {/* Facts */}
         <dl className="mt-4 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-cardborder bg-cardborder sm:grid-cols-2">
-          <Fact icon={<CalendarDays className="size-4" />} label="Date" value={formatGameDate(kickoff)} />
-          <Fact icon={<Clock className="size-4" />} label="Kickoff" value={formatGameTime(kickoff)} />
+          <Fact icon={<CalendarDays className="size-4" />} label="Date" value={formatGameDate(kickoff, tz)} />
+          <Fact icon={<Clock className="size-4" />} label="Kickoff" value={formatGameTime(kickoff, tz)} />
           <Fact
             icon={<MapPin className="size-4" />}
             label="Location"
