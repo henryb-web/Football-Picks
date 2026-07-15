@@ -106,7 +106,7 @@ export function GameModal({
               e.stopPropagation();
               onPrev?.();
             }}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:left-auto sm:right-full sm:mr-4 lg:mr-16"
+            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyan-500/25 bg-card/95 p-2 text-cyan-500/70 shadow-lg backdrop-blur transition hover:border-cyan-500/60 hover:bg-card hover:text-cyan-500 sm:left-auto sm:right-full sm:mr-4 lg:mr-16"
           >
             <ChevronLeft className="size-6" />
           </button>
@@ -119,7 +119,7 @@ export function GameModal({
               e.stopPropagation();
               onNext?.();
             }}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:right-auto sm:left-full sm:ml-4 lg:ml-16"
+            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyan-500/25 bg-card/95 p-2 text-cyan-500/70 shadow-lg backdrop-blur transition hover:border-cyan-500/60 hover:bg-card hover:text-cyan-500 sm:right-auto sm:left-full sm:ml-4 lg:ml-16"
           >
             <ChevronRight className="size-6" />
           </button>
