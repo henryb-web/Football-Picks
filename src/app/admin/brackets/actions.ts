@@ -118,3 +118,14 @@ export async function deleteBracketAction(formData: FormData) {
   revalidatePath("/admin/brackets");
   redirect("/admin/brackets");
 }
+
+export async function renameBracketAction(formData: FormData) {
+  await requireAdmin();
+  const bracketId = String(formData.get("bracketId") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+  if (!bracketId || !title) return;
+  await db.bracket.update({ where: { id: bracketId }, data: { title } });
+  revalidatePath(`/admin/brackets/${bracketId}`);
+  revalidatePath(`/brackets/${bracketId}`);
+  revalidatePath("/brackets");
+}

@@ -1,0 +1,159 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { put } from "@vercel/blob";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { auth, signOut } from "@/auth";
+import { db } from "@/lib/db";
+import type { FormState } from "@/lib/form-state";
+
+async function currentUser() {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+  const user = await db.user.findUnique({ where: { id: session.user.id } });
+  if (!user) redirect("/login");
+  return user;
+}
+
+const usernameSchema = z
+  .string()
+  .trim()
+  .min(3, "Username must be at least 3 characters.")
+  .max(20, "Username must be 20 characters or fewer.")
+  .regex(/^[a-zA-Z0-9_]+$/, "Use only letters, numbers, and underscores.");
+
+export async function updateProfileAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const name = String(formData.get("name") ?? "").trim();
+  const parsed = usernameSchema.safeParse(formData.get("username"));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid username." };
+  }
+  const username = parsed.data;
+
+  const taken = await db.user.findFirst({
+    where: { username, NOT: { id: user.id } },
+    select: { id: true },
+  });
+  if (taken) return { error: "That username is taken." };
+
+  await db.user.update({
+    where: { id: user.id },
+    data: { username, name: name || username },
+  });
+  revalidatePath("/account");
+  return { ok: "Profile saved." };
+}
+
+export async function changePasswordAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const current = String(formData.get("current") ?? "");
+  const next = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+
+  if (next.length < 8) return { error: "New password must be at least 8 characters." };
+  if (next !== confirm) return { error: "Passwords don't match." };
+
+  // Accounts with an existing password must confirm the current one.
+  if (user.passwordHash) {
+    const ok = await bcrypt.compare(current, user.passwordHash);
+    if (!ok) return { error: "Current password is incorrect." };
+  }
+
+  const passwordHash = await bcrypt.hash(next, 12);
+  await db.user.update({ where: { id: user.id }, data: { passwordHash } });
+  return { ok: user.passwordHash ? "Password changed." : "Password set." };
+}
+
+export async function updateAvatarAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const color = String(formData.get("color") ?? "").replace(/^#/, "") || null;
+  const emojiRaw = String(formData.get("emoji") ?? "").trim();
+  const emoji = emojiRaw || null;
+  const removePhoto = formData.get("removePhoto") === "1";
+
+  await db.user.update({
+    where: { id: user.id },
+    data: {
+      avatarColor: color,
+      avatarEmoji: emoji,
+      ...(removePhoto ? { image: null } : {}),
+    },
+  });
+  revalidatePath("/account");
+  revalidatePath("/leaderboard");
+  return { ok: "Avatar updated." };
+}
+
+export async function uploadAvatarPhotoAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const file = formData.get("photo");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Choose a photo to upload." };
+  }
+  if (file.size > 5 * 1024 * 1024) return { error: "Photo must be under 5 MB." };
+  if (!file.type.startsWith("image/")) return { error: "That file isn't an image." };
+
+  try {
+    const blob = await put(`avatars/${user.id}-${Date.now()}`, file, {
+      access: "public",
+      contentType: file.type,
+    });
+    await db.user.update({ where: { id: user.id }, data: { image: blob.url } });
+  } catch {
+    return {
+      error:
+        "Photo upload isn't configured yet (needs a Vercel Blob store). Try color/emoji for now.",
+    };
+  }
+  revalidatePath("/account");
+  revalidatePath("/leaderboard");
+  return { ok: "Photo uploaded." };
+}
+
+export async function updatePreferencesAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const themeRaw = String(formData.get("theme") ?? "");
+  const themePref = themeRaw === "light" || themeRaw === "dark" ? themeRaw : null;
+  const timezone = String(formData.get("timezone") ?? "").trim() || null;
+
+  const favName = String(formData.get("favoriteTeam") ?? "").trim();
+  let favoriteTeamId: string | null = null;
+  if (favName) {
+    const team = await db.team.findFirst({
+      where: { displayName: favName },
+      select: { id: true },
+    });
+    favoriteTeamId = team?.id ?? null;
+  }
+
+  await db.user.update({
+    where: { id: user.id },
+    data: { themePref, timezone, favoriteTeamId },
+  });
+  revalidatePath("/account");
+  return { ok: "Preferences saved." };
+}
+
+export async function deleteAccountAction(): Promise<void> {
+  const user = await currentUser();
+  await db.user.delete({ where: { id: user.id } });
+  await signOut({ redirectTo: "/" });
+}

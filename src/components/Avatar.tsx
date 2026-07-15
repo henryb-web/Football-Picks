@@ -1,8 +1,8 @@
-// Deterministic monogram avatar: same name -> same color + initials.
-const COLORS = [
-  "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444", "#22c55e",
-  "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#a855f7",
-  "#eab308", "#0ea5e9", "#d946ef", "#10b981", "#fb7185",
+// Avatar: uploaded photo > chosen emoji > deterministic monogram.
+export const AVATAR_COLORS = [
+  "06b6d4", "8b5cf6", "f59e0b", "ef4444", "22c55e",
+  "3b82f6", "ec4899", "14b8a6", "f97316", "a855f7",
+  "eab308", "0ea5e9", "d946ef", "10b981", "fb7185",
 ];
 
 function hashStr(s: string): number {
@@ -17,8 +17,31 @@ function initials(name: string): string {
   return name.slice(0, 2).toUpperCase();
 }
 
-export function Avatar({ name, size = 28 }: { name: string; size?: number }) {
-  const color = COLORS[hashStr(name) % COLORS.length];
+export function Avatar({
+  name,
+  size = 28,
+  image,
+  emoji,
+  color,
+}: {
+  name: string;
+  size?: number;
+  image?: string | null;
+  emoji?: string | null;
+  color?: string | null;
+}) {
+  if (image) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={image}
+        alt=""
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  const bg = `#${color ?? AVATAR_COLORS[hashStr(name) % AVATAR_COLORS.length]}`;
   return (
     <span
       aria-hidden
@@ -26,11 +49,11 @@ export function Avatar({ name, size = 28 }: { name: string; size?: number }) {
       style={{
         width: size,
         height: size,
-        backgroundColor: color,
-        fontSize: Math.round(size * 0.4),
+        backgroundColor: bg,
+        fontSize: Math.round(size * (emoji ? 0.55 : 0.4)),
       }}
     >
-      {initials(name)}
+      {emoji ?? initials(name)}
     </span>
   );
 }

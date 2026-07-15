@@ -9,6 +9,7 @@ import { SeedEditor } from "@/components/admin/SeedEditor";
 import { GenerateButton } from "@/components/admin/GenerateButton";
 import {
   deleteBracketAction,
+  renameBracketAction,
   setBracketStatusAction,
   setWinnerAction,
 } from "@/app/admin/brackets/actions";
@@ -89,6 +90,19 @@ export default async function ManageBracketPage({
           </span>{" "}
           · {bracket.season} · status <span className="font-semibold">{bracket.status}</span>
         </p>
+        {/* Rename */}
+        <form action={renameBracketAction} className="mt-3 flex flex-wrap items-center gap-2">
+          <input type="hidden" name="bracketId" value={bracket.id} />
+          <input
+            name="title"
+            defaultValue={bracket.title}
+            aria-label="Bracket name"
+            className="min-w-0 flex-1 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-cyan-500"
+          />
+          <button className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-medium transition hover:bg-card">
+            Rename
+          </button>
+        </form>
       </div>
 
       {/* Status controls */}

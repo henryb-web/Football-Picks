@@ -43,7 +43,13 @@ const ITEMS: Item[] = [
 export function MainNav({
   user,
 }: {
-  user: { name: string; isAdmin: boolean } | null;
+  user: {
+    name: string;
+    isAdmin: boolean;
+    image?: string | null;
+    emoji?: string | null;
+    color?: string | null;
+  } | null;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -90,12 +96,22 @@ export function MainNav({
           <div className="hidden items-center gap-2 md:flex">
             {user ? (
               <>
-                <span className="flex items-center gap-1.5">
-                  <Avatar name={user.name} size={24} />
+                <Link
+                  href="/account"
+                  className="flex items-center gap-1.5 rounded-md px-1.5 py-1 transition hover:bg-background"
+                  title="Account settings"
+                >
+                  <Avatar
+                    name={user.name}
+                    size={24}
+                    image={user.image}
+                    emoji={user.emoji}
+                    color={user.color}
+                  />
                   <span className="max-w-[120px] truncate text-sm text-muted">
                     {user.name}
                   </span>
-                </span>
+                </Link>
                 <form action={logoutAction}>
                   <button
                     type="submit"
@@ -158,14 +174,30 @@ export function MainNav({
           </nav>
           <div className="mt-3 border-t border-cardborder pt-3">
             {user ? (
-              <form action={logoutAction}>
-                <button
-                  type="submit"
-                  className="w-full rounded-lg border border-cardborder px-3 py-2 text-sm font-medium"
+              <div className="flex flex-col gap-2">
+                <Link
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg border border-cardborder px-3 py-2 text-sm font-medium"
                 >
-                  Sign out · {user.name}
-                </button>
-              </form>
+                  <Avatar
+                    name={user.name}
+                    size={22}
+                    image={user.image}
+                    emoji={user.emoji}
+                    color={user.color}
+                  />
+                  Account
+                </Link>
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    className="w-full rounded-lg border border-cardborder px-3 py-2 text-sm font-medium"
+                  >
+                    Sign out · {user.name}
+                  </button>
+                </form>
+              </div>
             ) : (
               <div className="flex gap-2">
                 <Link
