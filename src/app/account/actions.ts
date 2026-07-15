@@ -157,6 +157,29 @@ export async function updatePreferencesAction(
   return { ok: "Preferences saved." };
 }
 
+// Set/clear just the favorite team (used by the dashboard picker so it doesn't
+// touch the user's theme or timezone).
+export async function setFavoriteTeamAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const user = await currentUser();
+  const favName = String(formData.get("favoriteTeam") ?? "").trim();
+  let favoriteTeamId: string | null = null;
+  if (favName) {
+    const team = await db.team.findFirst({
+      where: { displayName: favName },
+      select: { id: true },
+    });
+    if (!team) return { error: `No team named "${favName}".` };
+    favoriteTeamId = team.id;
+  }
+  await db.user.update({ where: { id: user.id }, data: { favoriteTeamId } });
+  revalidatePath("/dashboard");
+  revalidatePath("/account");
+  return { ok: favoriteTeamId ? "Favorite team saved." : "Favorite team cleared." };
+}
+
 export async function deleteAccountAction(): Promise<void> {
   const user = await currentUser();
   await db.user.delete({ where: { id: user.id } });

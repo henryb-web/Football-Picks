@@ -10,6 +10,7 @@ import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
 import { TeamLogo } from "@/components/games/TeamLogo";
+import { FavoriteTeamForm } from "./FavoriteTeamForm";
 
 // Start of the football week containing `d`, anchored at Tuesday 12:00 UTC — a
 // dead zone between Monday-night games (which can spill into early Tuesday in UTC)
@@ -117,6 +118,13 @@ export default async function DashboardPage() {
           },
         })
       : null;
+  const teamNames = (
+    await db.team.findMany({
+      select: { displayName: true },
+      distinct: ["displayName"],
+      orderBy: { displayName: "asc" },
+    })
+  ).map((t) => t.displayName);
 
   return (
     <Page>
@@ -183,12 +191,7 @@ export default async function DashboardPage() {
       </Link>
 
       <div className="mt-8">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-lg font-bold">Your team</h2>
-          <Link href="/account" className="text-sm font-medium text-cyan-500 hover:underline">
-            {favTeam ? "Change →" : "Set one →"}
-          </Link>
-        </div>
+        <h2 className="mb-2 text-lg font-bold">Your team</h2>
         {favTeam ? (
           <Link
             href={`/games?team=${encodeURIComponent(favTeam.name)}`}
@@ -216,13 +219,11 @@ export default async function DashboardPage() {
             </div>
           </Link>
         ) : (
-          <Link
-            href="/account"
-            className="block rounded-xl border border-dashed border-cardborder bg-card p-5 text-sm text-muted transition hover:border-cyan-500/50"
-          >
-            Pick a favorite team in your account and it&apos;ll show up here →
-          </Link>
+          <p className="text-sm text-muted">
+            Pick a team below to see its record and next game right here.
+          </p>
         )}
+        <FavoriteTeamForm current={favTeam?.displayName ?? ""} teamNames={teamNames} />
       </div>
 
       {top.length > 0 ? (
