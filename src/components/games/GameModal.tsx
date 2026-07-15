@@ -95,36 +95,39 @@ export function GameModal({
       className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
-      {hasPrev ? (
-        <button
-          type="button"
-          aria-label="Previous game"
-          onClick={(e) => {
-            e.stopPropagation();
-            onPrev?.();
-          }}
-          className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:left-4"
+      {/* Sized to the modal so the arrows hug its edges (~an inch out on
+          desktop); on mobile the sheet is full-width so they tuck inside. */}
+      <div className="relative w-full max-w-lg">
+        {hasPrev ? (
+          <button
+            type="button"
+            aria-label="Previous game"
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrev?.();
+            }}
+            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:left-auto sm:right-full sm:mr-4 lg:mr-16"
+          >
+            <ChevronLeft className="size-6" />
+          </button>
+        ) : null}
+        {hasNext ? (
+          <button
+            type="button"
+            aria-label="Next game"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext?.();
+            }}
+            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:right-auto sm:left-full sm:ml-4 lg:ml-16"
+          >
+            <ChevronRight className="size-6" />
+          </button>
+        ) : null}
+        <div
+          className="relative w-full rounded-t-2xl border border-cardborder bg-card p-5 shadow-2xl sm:rounded-2xl"
+          onClick={(e) => e.stopPropagation()}
         >
-          <ChevronLeft className="size-6" />
-        </button>
-      ) : null}
-      {hasNext ? (
-        <button
-          type="button"
-          aria-label="Next game"
-          onClick={(e) => {
-            e.stopPropagation();
-            onNext?.();
-          }}
-          className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:right-4"
-        >
-          <ChevronRight className="size-6" />
-        </button>
-      ) : null}
-      <div
-        className="relative w-full max-w-lg rounded-t-2xl border border-cardborder bg-card p-5 shadow-2xl sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
         <button
           type="button"
           onClick={onClose}
@@ -257,6 +260,7 @@ export function GameModal({
             )}
           </div>
         ) : null}
+        </div>
         </div>
       </div>
     </div>
