@@ -114,11 +114,16 @@ export async function uploadAvatarPhotoAction(
       contentType: file.type,
     });
     await db.user.update({ where: { id: user.id }, data: { image: blob.url } });
-  } catch {
-    return {
-      error:
-        "Photo upload isn't configured yet (needs a Vercel Blob store). Try color/emoji for now.",
-    };
+  } catch (e) {
+    console.error("avatar upload failed:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/token|BLOB_READ_WRITE_TOKEN|store/i.test(msg)) {
+      return {
+        error:
+          "Photo upload isn't configured (Vercel Blob token missing) — connect a Blob store to the project and redeploy.",
+      };
+    }
+    return { error: `Upload failed: ${msg}` };
   }
   revalidatePath("/account");
   revalidatePath("/leaderboard");
