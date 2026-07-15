@@ -10,7 +10,7 @@ import {
   makeRecordResolver,
   toGameCardData,
 } from "@/lib/game-card";
-import { GameCard } from "@/components/games/GameCard";
+import { GamesBrowser, type GameEntry } from "@/components/games/GamesBrowser";
 import { TeamSearch } from "@/components/games/TeamSearch";
 import { Page } from "@/components/ui/Page";
 import type { League, PickSide } from "@/generated/prisma/client";
@@ -113,6 +113,13 @@ export default async function GamesPage({
   const lastGameFor = await makeLastGameResolver(games);
   const tz = await getUserTimeZone();
 
+  const entries: GameEntry[] = games.map((g) => ({
+    game: toGameCardData(g, recordFor, lastGameFor),
+    pick: pickMap.get(g.id) ?? null,
+    consensus: consensus.get(g.id) ?? { home: 0, away: 0 },
+    locked: isLocked(g),
+  }));
+
   const leagueTabs = [
     { key: "all", label: "All", href: gamesHref(null, null) },
     ...LEAGUES.map((l) => ({
@@ -205,25 +212,15 @@ export default async function GamesPage({
         </div>
       ) : null}
 
-      <div className="mt-6 space-y-2">
-        {games.length === 0 ? (
+      <div className="mt-6">
+        {entries.length === 0 ? (
           <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
             {searching
               ? `No games found for “${teamQuery}”.`
               : "No games here yet. An admin can add them from the Admin page."}
           </p>
         ) : (
-          games.map((g) => (
-            <GameCard
-              key={g.id}
-              game={toGameCardData(g, recordFor, lastGameFor)}
-              pick={pickMap.get(g.id) ?? null}
-              consensus={consensus.get(g.id) ?? { home: 0, away: 0 }}
-              loggedIn={Boolean(userId)}
-              locked={isLocked(g)}
-              tz={tz}
-            />
-          ))
+          <GamesBrowser entries={entries} loggedIn={Boolean(userId)} tz={tz} />
         )}
       </div>
     </Page>

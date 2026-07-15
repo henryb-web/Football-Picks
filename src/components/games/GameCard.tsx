@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
@@ -8,7 +7,6 @@ import { PickButtons } from "./PickButtons";
 import { TeamLogo } from "./TeamLogo";
 import { LockCountdown } from "./LockCountdown";
 import { ConsensusBar } from "./ConsensusBar";
-import { GameModal } from "./GameModal";
 import type { League, GameStatus, PickSide } from "@/generated/prisma/client";
 
 // A prior-season snapshot (NFL/CFB): record + key statistical leaders.
@@ -82,6 +80,7 @@ export function GameCard({
   loggedIn,
   locked,
   tz = "America/Chicago",
+  onOpen,
 }: {
   game: GameCardData;
   pick: PickSide | null;
@@ -89,9 +88,8 @@ export function GameCard({
   loggedIn: boolean;
   locked: boolean;
   tz?: string;
+  onOpen: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-
   const isFinal = game.status === "FINAL";
   const pickLabel =
     pick === "HOME"
@@ -104,20 +102,19 @@ export function GameCard({
   const kickoff = new Date(game.kickoffISO);
 
   return (
-    <>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-haspopup="dialog"
-        onClick={() => setOpen(true)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setOpen(true);
-          }
-        }}
-        className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
-      >
+    <div
+      role="button"
+      tabIndex={0}
+      aria-haspopup="dialog"
+      onClick={onOpen}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen();
+        }
+      }}
+      className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+    >
         <span
           aria-hidden
           className="absolute inset-y-0 left-0 w-1.5"
@@ -211,18 +208,5 @@ export function GameCard({
           homeColor={game.homeTeam.color}
         />
       </div>
-
-      {open ? (
-        <GameModal
-          game={game}
-          pick={pick}
-          consensus={consensus}
-          locked={locked}
-          loggedIn={loggedIn}
-          tz={tz}
-          onClose={() => setOpen(false)}
-        />
-      ) : null}
-    </>
   );
 }

@@ -1,7 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, MapPin, CalendarDays, Clock, Lock, Scale, Sigma } from "lucide-react";
+import {
+  X,
+  MapPin,
+  CalendarDays,
+  Clock,
+  Lock,
+  Scale,
+  Sigma,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatGameDate, formatGameTime } from "@/lib/format";
 import { TeamLogo } from "./TeamLogo";
@@ -31,6 +41,10 @@ export function GameModal({
   loggedIn,
   tz = "America/Chicago",
   onClose,
+  hasPrev = false,
+  hasNext = false,
+  onPrev,
+  onNext,
 }: {
   game: GameCardData;
   pick: PickSide | null;
@@ -39,11 +53,18 @@ export function GameModal({
   loggedIn: boolean;
   tz?: string;
   onClose: () => void;
+  hasPrev?: boolean;
+  hasNext?: boolean;
+  onPrev?: () => void;
+  onNext?: () => void;
 }) {
-  // Close on Escape and lock background scroll while open.
+  // Close on Escape, step between games with the arrow keys, and lock
+  // background scroll while open.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft" && hasPrev) onPrev?.();
+      else if (e.key === "ArrowRight" && hasNext) onNext?.();
     }
     document.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -52,7 +73,7 @@ export function GameModal({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prevOverflow;
     };
-  }, [onClose]);
+  }, [onClose, onPrev, onNext, hasPrev, hasNext]);
 
   const kickoff = new Date(game.kickoffISO);
   const hasScore = game.status === "FINAL" || game.status === "IN_PROGRESS";
@@ -74,6 +95,32 @@ export function GameModal({
       className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
+      {hasPrev ? (
+        <button
+          type="button"
+          aria-label="Previous game"
+          onClick={(e) => {
+            e.stopPropagation();
+            onPrev?.();
+          }}
+          className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:left-4"
+        >
+          <ChevronLeft className="size-6" />
+        </button>
+      ) : null}
+      {hasNext ? (
+        <button
+          type="button"
+          aria-label="Next game"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNext?.();
+          }}
+          className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cardborder bg-card/90 p-2 text-muted shadow-lg backdrop-blur transition hover:border-cyan-500/50 hover:text-foreground sm:right-4"
+        >
+          <ChevronRight className="size-6" />
+        </button>
+      ) : null}
       <div
         className="relative w-full max-w-lg rounded-t-2xl border border-cardborder bg-card p-5 shadow-2xl sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -82,11 +129,13 @@ export function GameModal({
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 rounded-full p-1.5 text-muted transition hover:bg-background hover:text-foreground"
+          className="absolute right-3 top-3 z-10 rounded-full p-1.5 text-muted transition hover:bg-background hover:text-foreground"
         >
           <X className="size-5" />
         </button>
 
+        {/* Body — keyed by game id so it cross-fades when navigating. */}
+        <div key={game.id} className="animate-modalfade">
         {/* Header: league · week · season */}
         <div className="text-xs font-semibold uppercase tracking-wide text-cyan-500">
           {LEAGUE_LABELS[game.league]}
@@ -208,6 +257,7 @@ export function GameModal({
             )}
           </div>
         ) : null}
+        </div>
       </div>
     </div>
   );
