@@ -4,13 +4,11 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
-import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
 import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
-import { TeamLogo } from "@/components/games/TeamLogo";
-import { FavoriteTeamForm } from "./FavoriteTeamForm";
+import { FavoriteTeamCard } from "./FavoriteTeamForm";
 
 // Start of the football week containing `d`, anchored at Tuesday 12:00 UTC — a
 // dead zone between Monday-night games (which can spill into early Tuesday in UTC)
@@ -87,28 +85,34 @@ export default async function DashboardPage() {
   const name = session.user.username ?? session.user.name ?? "there";
   const top = board.slice(0, 3);
 
-  // Favorite team + its next game (for the "Your team" card).
+  // Favorite team per league + each one's next game (for the "Your teams" cards).
   const prefs = await db.user.findUnique({
     where: { id: userId },
-    select: { favoriteTeamId: true, timezone: true },
+    select: {
+      favoriteNflId: true, favoriteCfbId: true, favoriteHs6aId: true, timezone: true,
+    },
   });
   const tz = prefs?.timezone || "America/Chicago";
-  const favTeam = prefs?.favoriteTeamId
-    ? await db.team.findUnique({
-        where: { id: prefs.favoriteTeamId },
-        select: { displayName: true, name: true, logo: true, color: true, record: true, league: true },
-      })
-    : null;
-  const favNextGame =
-    favTeam && prefs?.favoriteTeamId
-      ? await db.game.findFirst({
+  const favConfig = [
+    { league: "NFL" as const, label: "NFL", id: prefs?.favoriteNflId ?? null },
+    { league: "CFB" as const, label: "College", id: prefs?.favoriteCfbId ?? null },
+    { league: "HS6A" as const, label: "Texas HS", id: prefs?.favoriteHs6aId ?? null },
+  ];
+  const favorites = await Promise.all(
+    favConfig.map(async (f) => {
+      const team = f.id
+        ? await db.team.findUnique({
+            where: { id: f.id },
+            select: { displayName: true, name: true, logo: true, color: true, record: true },
+          })
+        : null;
+      let nextGameLabel: string | null = null;
+      if (team && f.id) {
+        const g = await db.game.findFirst({
           where: {
             status: "SCHEDULED",
             kickoff: { gt: now },
-            OR: [
-              { homeTeamId: prefs.favoriteTeamId },
-              { awayTeamId: prefs.favoriteTeamId },
-            ],
+            OR: [{ homeTeamId: f.id }, { awayTeamId: f.id }],
           },
           orderBy: { kickoff: "asc" },
           select: {
@@ -116,15 +120,22 @@ export default async function DashboardPage() {
             homeTeam: { select: { name: true } },
             awayTeam: { select: { name: true } },
           },
+        });
+        if (g) {
+          nextGameLabel = `Next: ${g.awayTeam.name} @ ${g.homeTeam.name} · ${formatKickoff(g.kickoff, tz)}`;
+        }
+      }
+      const teamNames = (
+        await db.team.findMany({
+          where: { league: f.league },
+          select: { displayName: true },
+          distinct: ["displayName"],
+          orderBy: { displayName: "asc" },
         })
-      : null;
-  const teamNames = (
-    await db.team.findMany({
-      select: { displayName: true },
-      distinct: ["displayName"],
-      orderBy: { displayName: "asc" },
-    })
-  ).map((t) => t.displayName);
+      ).map((t) => t.displayName);
+      return { ...f, team, nextGameLabel, teamNames };
+    }),
+  );
 
   return (
     <Page>
@@ -191,39 +202,19 @@ export default async function DashboardPage() {
       </Link>
 
       <div className="mt-8">
-        <h2 className="mb-2 text-lg font-bold">Your team</h2>
-        {favTeam ? (
-          <Link
-            href={`/games?team=${encodeURIComponent(favTeam.name)}`}
-            className="lift block rounded-xl border border-cardborder bg-card p-5 hover:border-cyan-500/50"
-          >
-            <div className="flex items-center gap-3">
-              <TeamLogo logo={favTeam.logo} color={favTeam.color} name={favTeam.displayName} size={40} />
-              <div className="min-w-0">
-                <div className="headline truncate text-xl">{favTeam.displayName}</div>
-                <div className="text-xs text-muted">
-                  {LEAGUE_LABELS[favTeam.league]}
-                  {favTeam.record ? ` · ${favTeam.record}` : ""}
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 text-sm text-muted">
-              {favNextGame ? (
-                <>
-                  Next: {favNextGame.awayTeam.name} @ {favNextGame.homeTeam.name} ·{" "}
-                  {formatKickoff(favNextGame.kickoff, tz)}
-                </>
-              ) : (
-                "No upcoming games scheduled."
-              )}
-            </div>
-          </Link>
-        ) : (
-          <p className="text-sm text-muted">
-            Pick a team below to see its record and next game right here.
-          </p>
-        )}
-        <FavoriteTeamForm current={favTeam?.displayName ?? ""} teamNames={teamNames} />
+        <h2 className="mb-2 text-lg font-bold">Your teams</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {favorites.map((f) => (
+            <FavoriteTeamCard
+              key={f.league}
+              league={f.league}
+              label={f.label}
+              team={f.team}
+              nextGameLabel={f.nextGameLabel}
+              teamNames={f.teamNames}
+            />
+          ))}
+        </div>
       </div>
 
       {top.length > 0 ? (

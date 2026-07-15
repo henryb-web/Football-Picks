@@ -8,6 +8,7 @@ import { z } from "zod";
 import { auth, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import type { FormState } from "@/lib/form-state";
+import type { League } from "@/generated/prisma/client";
 
 async function currentUser() {
   const session = await auth();
@@ -139,45 +140,44 @@ export async function updatePreferencesAction(
   const themePref = themeRaw === "light" || themeRaw === "dark" ? themeRaw : null;
   const timezone = String(formData.get("timezone") ?? "").trim() || null;
 
-  const favName = String(formData.get("favoriteTeam") ?? "").trim();
-  let favoriteTeamId: string | null = null;
-  if (favName) {
-    const team = await db.team.findFirst({
-      where: { displayName: favName },
-      select: { id: true },
-    });
-    favoriteTeamId = team?.id ?? null;
-  }
-
   await db.user.update({
     where: { id: user.id },
-    data: { themePref, timezone, favoriteTeamId },
+    data: { themePref, timezone },
   });
   revalidatePath("/account");
   return { ok: "Preferences saved." };
 }
 
-// Set/clear just the favorite team (used by the dashboard picker so it doesn't
-// touch the user's theme or timezone).
+// Set/clear the favorite team for a specific league (dashboard pickers). Only
+// touches that league's favorite, leaving theme/timezone/other favorites alone.
 export async function setFavoriteTeamAction(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
   const user = await currentUser();
+  const league = String(formData.get("league") ?? "");
+  if (league !== "NFL" && league !== "CFB" && league !== "HS6A") {
+    return { error: "Invalid league." };
+  }
   const favName = String(formData.get("favoriteTeam") ?? "").trim();
-  let favoriteTeamId: string | null = null;
+  let favoriteId: string | null = null;
   if (favName) {
     const team = await db.team.findFirst({
-      where: { displayName: favName },
+      where: { league: league as League, displayName: favName },
       select: { id: true },
     });
-    if (!team) return { error: `No team named "${favName}".` };
-    favoriteTeamId = team.id;
+    if (!team) return { error: `No ${league} team named "${favName}".` };
+    favoriteId = team.id;
   }
-  await db.user.update({ where: { id: user.id }, data: { favoriteTeamId } });
+  const data =
+    league === "NFL"
+      ? { favoriteNflId: favoriteId }
+      : league === "CFB"
+        ? { favoriteCfbId: favoriteId }
+        : { favoriteHs6aId: favoriteId };
+  await db.user.update({ where: { id: user.id }, data });
   revalidatePath("/dashboard");
-  revalidatePath("/account");
-  return { ok: favoriteTeamId ? "Favorite team saved." : "Favorite team cleared." };
+  return { ok: favoriteId ? "Favorite saved." : "Favorite cleared." };
 }
 
 export async function deleteAccountAction(): Promise<void> {

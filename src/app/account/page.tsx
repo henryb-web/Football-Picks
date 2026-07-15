@@ -39,17 +39,6 @@ export default async function AccountPage() {
   const user = await db.user.findUnique({ where: { id: session.user.id } });
   if (!user) redirect("/login");
 
-  const fav = user.favoriteTeamId
-    ? await db.team.findUnique({
-        where: { id: user.favoriteTeamId },
-        select: { displayName: true },
-      })
-    : null;
-  const teams = await db.team.findMany({
-    select: { displayName: true },
-    distinct: ["displayName"],
-    orderBy: { displayName: "asc" },
-  });
   const displayName = user.username ?? user.name ?? user.email ?? "You";
 
   return (
@@ -70,15 +59,10 @@ export default async function AccountPage() {
         <Section title="Password">
           <PasswordForm hasPassword={Boolean(user.passwordHash)} />
         </Section>
-        <Section
-          title="Preferences"
-          desc="Theme, time zone, and your favorite team."
-        >
+        <Section title="Preferences" desc="Theme and time zone.">
           <PreferencesForm
             theme={user.themePref ?? ""}
             timezone={user.timezone ?? ""}
-            favoriteTeam={fav?.displayName ?? ""}
-            teamNames={teams.map((t) => t.displayName)}
           />
         </Section>
         <Section title="Delete account" danger desc="This can't be undone.">

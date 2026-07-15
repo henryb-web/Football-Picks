@@ -69,7 +69,10 @@ model User {
   avatarEmoji    String?  // emoji avatar when no photo
   themePref      String?  // "light" | "dark" (null = system default)
   timezone       String?  // IANA tz for displaying kickoff times, e.g. "America/Chicago"
-  favoriteTeamId String?  // plain id ref (no relation) to a Team
+  // Favorite team per league (plain id refs, no relation).
+  favoriteNflId  String?
+  favoriteCfbId  String?
+  favoriteHs6aId String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

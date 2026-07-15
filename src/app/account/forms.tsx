@@ -178,13 +178,9 @@ export function AvatarForm({
 export function PreferencesForm({
   theme,
   timezone,
-  favoriteTeam,
-  teamNames,
 }: {
   theme: string;
   timezone: string;
-  favoriteTeam: string;
-  teamNames: string[];
 }) {
   const [state, action, pending] = useActionState(updatePreferencesAction, undefined);
   return (
@@ -205,21 +201,6 @@ export function PreferencesForm({
             <option key={t.value} value={t.value}>{t.label}</option>
           ))}
         </select>
-      </label>
-      <label className="block text-sm">
-        <span className="mb-1 block font-medium text-muted">Favorite team</span>
-        <input
-          name="favoriteTeam"
-          defaultValue={favoriteTeam}
-          list="team-options"
-          placeholder="Type a team name…"
-          className={inputCls}
-        />
-        <datalist id="team-options">
-          {teamNames.map((n) => (
-            <option key={n} value={n} />
-          ))}
-        </datalist>
       </label>
       <div className="flex items-center gap-3">
         <button className={btnCls} disabled={pending}>Save preferences</button>
