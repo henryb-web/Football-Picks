@@ -14,14 +14,14 @@ import {
 } from "./actions";
 
 const inputCls =
-  "w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none transition focus:border-cyan-500";
+  "w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none transition focus:border-accent-500";
 const btnCls =
-  "rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-60";
+  "rounded-lg bg-accent-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-500 disabled:opacity-60";
 
 function Feedback({ state }: { state: FormState }) {
   if (!state) return null;
   if (state.error) return <p className="text-sm text-red-500">{state.error}</p>;
-  if (state.ok) return <p className="text-sm text-cyan-500">{state.ok}</p>;
+  if (state.ok) return <p className="text-sm text-accent-500">{state.ok}</p>;
   return null;
 }
 
@@ -115,7 +115,7 @@ export function AvatarForm({
                 key={c}
                 onClick={() => setSelColor(c)}
                 aria-label={`Color #${c}`}
-                className={`h-7 w-7 rounded-full ${selColor === c ? "ring-2 ring-cyan-400 ring-offset-2 ring-offset-card" : ""}`}
+                className={`h-7 w-7 rounded-full ${selColor === c ? "ring-2 ring-accent-400 ring-offset-2 ring-offset-card" : ""}`}
                 style={{ backgroundColor: `#${c}` }}
               />
             ))}
@@ -127,7 +127,7 @@ export function AvatarForm({
             <button
               type="button"
               onClick={() => setSelEmoji("")}
-              className={`h-8 w-8 rounded-md border text-sm ${selEmoji === "" ? "border-cyan-500 text-cyan-500" : "border-cardborder text-muted"}`}
+              className={`h-8 w-8 rounded-md border text-sm ${selEmoji === "" ? "border-accent-500 text-accent-500" : "border-cardborder text-muted"}`}
             >
               –
             </button>
@@ -136,7 +136,7 @@ export function AvatarForm({
                 type="button"
                 key={e}
                 onClick={() => setSelEmoji(e)}
-                className={`h-8 w-8 rounded-md border text-base ${selEmoji === e ? "border-cyan-500 bg-cyan-600/15" : "border-cardborder"}`}
+                className={`h-8 w-8 rounded-md border text-base ${selEmoji === e ? "border-accent-500 bg-accent-600/15" : "border-cardborder"}`}
               >
                 {e}
               </button>
@@ -164,7 +164,7 @@ export function AvatarForm({
           type="file"
           name="photo"
           accept="image/*"
-          className="block text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-cyan-600 file:px-3 file:py-1.5 file:text-sm file:text-white"
+          className="block text-sm text-muted file:mr-3 file:rounded-md file:border-0 file:bg-accent-600 file:px-3 file:py-1.5 file:text-sm file:text-white"
         />
         <div className="flex items-center gap-3">
           <button className={btnCls} disabled={photoPending}>Upload</button>

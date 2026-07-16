@@ -16,7 +16,7 @@ import { Page } from "@/components/ui/Page";
 import { Avatar } from "@/components/Avatar";
 
 const RESULT = {
-  WIN: { label: "Survived", cls: "text-cyan-500" },
+  WIN: { label: "Survived", cls: "text-accent-500" },
   LOSS: { label: "Eliminated", cls: "text-red-500" },
   PENDING: { label: "Pending", cls: "text-muted" },
 } as const;
@@ -60,18 +60,18 @@ export default async function SurvivorPoolPage({
 
   return (
     <Page>
-      <Link href="/survivor" className="text-sm text-cyan-500 hover:underline">
+      <Link href="/survivor" className="text-sm text-accent-500 hover:underline">
         ← All pools
       </Link>
       <h1 className="headline mt-2 text-4xl">{pool.title}</h1>
       <p className="mt-1 text-sm text-muted">
-        <span className="font-semibold text-cyan-500">{LEAGUE_LABELS[pool.league]}</span>{" "}
+        <span className="font-semibold text-accent-500">{LEAGUE_LABELS[pool.league]}</span>{" "}
         · {pool.season} {week != null ? `· Week ${week}` : ""}
       </p>
 
       {!userId ? (
-        <p className="mt-4 rounded-lg bg-cyan-500/10 px-4 py-3 text-sm">
-          <Link href="/login" className="font-semibold text-cyan-500 underline">
+        <p className="mt-4 rounded-lg bg-accent-500/10 px-4 py-3 text-sm">
+          <Link href="/login" className="font-semibold text-accent-500 underline">
             Log in
           </Link>{" "}
           to play survivor.
@@ -80,7 +80,7 @@ export default async function SurvivorPoolPage({
         <p
           className={`mt-4 rounded-lg px-4 py-3 text-sm font-semibold ${
             view.alive
-              ? "bg-cyan-500/10 text-cyan-500"
+              ? "bg-accent-500/10 text-accent-500"
               : "bg-red-500/10 text-red-500"
           }`}
         >
@@ -147,7 +147,7 @@ export default async function SurvivorPoolPage({
               <div
                 key={s.userId}
                 className={`flex items-center justify-between px-4 py-3 text-sm ${
-                  s.userId === userId ? "bg-cyan-500/10" : ""
+                  s.userId === userId ? "bg-accent-500/10" : ""
                 }`}
               >
                 <span className="flex items-center gap-2 font-medium">
@@ -156,7 +156,7 @@ export default async function SurvivorPoolPage({
                 </span>
                 <span className="text-xs">
                   {s.alive ? (
-                    <span className="font-semibold text-cyan-500">
+                    <span className="font-semibold text-accent-500">
                       Alive · {s.survived} wk
                     </span>
                   ) : (

@@ -103,11 +103,11 @@ export default async function AdminPage({
               defaultValue={q}
               placeholder="Search by team…"
               aria-label="Search games by team"
-              className="w-48 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-cyan-500"
+              className="w-48 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-accent-500"
             />
             <button
               type="submit"
-              className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-500"
+              className="rounded-lg bg-accent-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-accent-500"
             >
               Search
             </button>
@@ -136,7 +136,7 @@ export default async function AdminPage({
                     {g.awayTeam.displayName} @ {g.homeTeam.displayName}
                   </div>
                   <div className="text-xs text-muted">
-                    <span className="font-semibold text-cyan-500">
+                    <span className="font-semibold text-accent-500">
                       {LEAGUE_LABELS[g.league]}
                     </span>
                     {g.week ? ` · Wk ${g.week}` : ""} · {formatKickoff(g.kickoff)} ·{" "}
@@ -153,7 +153,7 @@ export default async function AdminPage({
                   />
                   <Link
                     href={`/admin/games/${g.id}`}
-                    className="text-xs font-semibold text-cyan-500 hover:underline"
+                    className="text-xs font-semibold text-accent-500 hover:underline"
                   >
                     Edit
                   </Link>

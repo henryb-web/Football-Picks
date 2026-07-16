@@ -21,7 +21,7 @@ export default async function EditGamePage({
 
   return (
     <main className="mx-auto w-full max-w-xl px-6 py-10">
-      <Link href="/admin" className="text-sm text-cyan-600 hover:underline">
+      <Link href="/admin" className="text-sm text-accent-600 hover:underline">
         ← Back to admin
       </Link>
       <h1 className="mt-3 text-2xl font-black tracking-tight">Edit game</h1>

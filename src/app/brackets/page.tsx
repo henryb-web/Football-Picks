@@ -33,12 +33,12 @@ export default async function BracketsPage() {
             <Link
               key={b.id}
               href={`/brackets/${b.id}`}
-              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-cyan-500/50"
+              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-accent-500/50"
             >
               <div>
                 <div className="font-bold">{b.title}</div>
                 <div className="mt-0.5 text-xs text-muted">
-                  <span className="font-semibold text-cyan-500">
+                  <span className="font-semibold text-accent-500">
                     {LEAGUE_LABELS[b.league]}
                   </span>{" "}
                   · {b.season}
@@ -47,7 +47,7 @@ export default async function BracketsPage() {
               <span
                 className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                   b.status === "OPEN"
-                    ? "bg-cyan-600 text-white"
+                    ? "bg-accent-600 text-white"
                     : "bg-background text-muted"
                 }`}
               >

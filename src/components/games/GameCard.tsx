@@ -113,7 +113,7 @@ export function GameCard({
           onOpen();
         }
       }}
-      className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+      className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-accent-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
     >
         <span
           aria-hidden
@@ -139,7 +139,7 @@ export function GameCard({
               {game.homeTeam.displayName}
             </div>
             <div className="mt-1 text-xs text-muted">
-              <span className="font-semibold text-cyan-500">
+              <span className="font-semibold text-accent-500">
                 {LEAGUE_LABELS[game.league]}
               </span>
               {game.week ? ` · Wk ${game.week}` : ""} · {formatKickoff(kickoff, tz)}
