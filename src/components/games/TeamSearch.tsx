@@ -116,7 +116,7 @@ export function TeamSearch({
           }}
           placeholder="Search a team…"
           aria-label="Search a team"
-          className="w-full rounded-lg border border-cardborder bg-card py-2 pl-9 pr-9 text-sm outline-none transition focus:border-cyan-500 focus-visible:ring-2 focus-visible:ring-cyan-500/40"
+          className="w-full rounded-lg border border-cardborder bg-card py-2 pl-9 pr-9 text-sm outline-none transition focus:border-accent-500 focus-visible:ring-2 focus-visible:ring-accent-500/40"
         />
         {q ? (
           <button

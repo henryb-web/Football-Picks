@@ -61,7 +61,7 @@ export function FavoriteTeamCard({
           list={listId}
           placeholder="Type a team…"
           aria-label={`Favorite ${label} team`}
-          className="min-w-0 flex-1 rounded-lg border border-cardborder bg-background px-2.5 py-1.5 text-sm outline-none transition focus:border-cyan-500"
+          className="min-w-0 flex-1 rounded-lg border border-cardborder bg-background px-2.5 py-1.5 text-sm outline-none transition focus:border-accent-500"
         />
         <datalist id={listId}>
           {teamNames.map((n) => (
@@ -70,7 +70,7 @@ export function FavoriteTeamCard({
         </datalist>
         <button
           disabled={pending}
-          className="rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-60"
+          className="rounded-lg bg-accent-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-accent-500 disabled:opacity-60"
         >
           {team ? "Change" : "Set"}
         </button>
@@ -78,7 +78,7 @@ export function FavoriteTeamCard({
       {state?.error ? (
         <p className="mt-1 text-xs text-red-500">{state.error}</p>
       ) : state?.ok ? (
-        <p className="mt-1 text-xs text-cyan-500">{state.ok}</p>
+        <p className="mt-1 text-xs text-accent-500">{state.ok}</p>
       ) : null}
     </div>
   );

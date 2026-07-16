@@ -106,7 +106,7 @@ export function GameModal({
               e.stopPropagation();
               onPrev?.();
             }}
-            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyan-500/25 bg-card/95 p-2 text-cyan-500/70 shadow-lg backdrop-blur transition hover:border-cyan-500/60 hover:bg-card hover:text-cyan-500 sm:left-auto sm:right-full sm:mr-4 lg:mr-16"
+            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-accent-500/25 bg-card/95 p-2 text-accent-500/70 shadow-lg backdrop-blur transition hover:border-accent-500/60 hover:bg-card hover:text-accent-500 sm:left-auto sm:right-full sm:mr-4 lg:mr-16"
           >
             <ChevronLeft className="size-6" />
           </button>
@@ -119,7 +119,7 @@ export function GameModal({
               e.stopPropagation();
               onNext?.();
             }}
-            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyan-500/25 bg-card/95 p-2 text-cyan-500/70 shadow-lg backdrop-blur transition hover:border-cyan-500/60 hover:bg-card hover:text-cyan-500 sm:right-auto sm:left-full sm:ml-4 lg:ml-16"
+            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-accent-500/25 bg-card/95 p-2 text-accent-500/70 shadow-lg backdrop-blur transition hover:border-accent-500/60 hover:bg-card hover:text-accent-500 sm:right-auto sm:left-full sm:ml-4 lg:ml-16"
           >
             <ChevronRight className="size-6" />
           </button>
@@ -140,7 +140,7 @@ export function GameModal({
         {/* Body — keyed by game id so it cross-fades when navigating. */}
         <div key={game.id} className="animate-modalfade">
         {/* Header: league · week · season */}
-        <div className="text-xs font-semibold uppercase tracking-wide text-cyan-500">
+        <div className="text-xs font-semibold uppercase tracking-wide text-accent-500">
           {LEAGUE_LABELS[game.league]}
           {game.week ? ` · Week ${game.week}` : ""} · {game.season}
         </div>
@@ -284,12 +284,12 @@ function TeamSide({
     >
       <TeamLogo logo={team.logo} color={team.color} size={36} name={team.displayName} />
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold">{team.displayName}</div>
+        <div className="headline truncate text-xl">{team.displayName}</div>
         {team.record ? (
-          <div className="text-xs text-muted">{team.record}</div>
+          <div className="text-xs tabular-nums text-muted">{team.record}</div>
         ) : null}
         {score != null ? (
-          <div className="font-display text-2xl font-semibold tabular-nums">{score}</div>
+          <div className="font-display text-3xl font-semibold tabular-nums">{score}</div>
         ) : null}
       </div>
     </div>
@@ -320,7 +320,7 @@ function TeamDetail({
           <span
             className={
               team.lastGame.result === "W"
-                ? "font-semibold text-cyan-500"
+                ? "font-semibold text-accent-500"
                 : team.lastGame.result === "L"
                   ? "font-semibold text-red-500"
                   : "font-semibold text-foreground"
@@ -355,7 +355,7 @@ function TeamDetail({
               <span
                 className={
                   p.result === "W"
-                    ? "font-semibold text-cyan-500"
+                    ? "font-semibold text-accent-500"
                     : p.result === "L"
                       ? "font-semibold text-red-500"
                       : "font-semibold text-foreground"
@@ -369,7 +369,7 @@ function TeamDetail({
           ))}
           {team.seasonSummary.leaders.map((l) => (
             <div key={l.cat} className="mt-1 text-[11px] leading-tight text-muted">
-              <span className="font-semibold text-cyan-500">{l.cat}</span>{" "}
+              <span className="font-semibold text-accent-500">{l.cat}</span>{" "}
               <span className="font-semibold text-foreground">
                 {l.pos ? `${l.pos} ` : ""}
                 {l.name}
@@ -394,7 +394,7 @@ function Fact({
 }) {
   return (
     <div className="flex items-start gap-2 bg-card px-3 py-2.5">
-      <span className="mt-0.5 text-cyan-500">{icon}</span>
+      <span className="mt-0.5 text-accent-500">{icon}</span>
       <div className="min-w-0">
         <div className="text-[10px] font-semibold uppercase tracking-wide text-muted">
           {label}

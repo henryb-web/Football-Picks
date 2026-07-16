@@ -29,5 +29,5 @@ export function LockCountdown({ lockAt }: { lockAt: string }) {
         ? `locks in ${hours}h ${mins}m`
         : `locks in ${mins}m`;
 
-  return <span className="font-medium text-cyan-500">{label}</span>;
+  return <span className="font-medium text-accent-500">{label}</span>;
 }

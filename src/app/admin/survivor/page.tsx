@@ -15,7 +15,7 @@ export default async function AdminSurvivorPage() {
   return (
     <main className="mx-auto w-full max-w-3xl space-y-8 px-6 py-10">
       <div>
-        <Link href="/admin" className="text-sm text-cyan-500 hover:underline">
+        <Link href="/admin" className="text-sm text-accent-500 hover:underline">
           ← Back to admin
         </Link>
         <h1 className="mt-2 text-3xl font-black tracking-tight">Survivor pools</h1>
@@ -41,7 +41,7 @@ export default async function AdminSurvivorPage() {
               <div>
                 <div className="font-bold">{p.title}</div>
                 <div className="mt-0.5 text-xs text-muted">
-                  <span className="font-semibold text-cyan-500">
+                  <span className="font-semibold text-accent-500">
                     {LEAGUE_LABELS[p.league]}
                   </span>{" "}
                   · {p.season} · {p._count.picks} picks
@@ -53,7 +53,7 @@ export default async function AdminSurvivorPage() {
                   type="submit"
                   className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
                     p.active
-                      ? "bg-cyan-600 text-white hover:bg-cyan-500"
+                      ? "bg-accent-600 text-white hover:bg-accent-500"
                       : "border border-cardborder hover:bg-background"
                   }`}
                 >

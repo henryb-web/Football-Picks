@@ -13,7 +13,7 @@ type Props = {
 };
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30";
+  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30";
 const labelClass = "block text-sm font-medium text-foreground";
 
 export function AuthForm({
@@ -36,7 +36,7 @@ export function AuthForm({
       </p>
 
       {notice ? (
-        <p className="mt-4 rounded-lg bg-cyan-500/10 px-3 py-2 text-sm text-cyan-500">
+        <p className="mt-4 rounded-lg bg-accent-500/10 px-3 py-2 text-sm text-accent-500">
           {notice}
         </p>
       ) : null}
@@ -74,7 +74,7 @@ export function AuthForm({
 
         {!isSignup ? (
           <div className="-mt-1 text-right">
-            <Link href="/forgot" className="text-xs font-medium text-cyan-500 hover:underline">
+            <Link href="/forgot" className="text-xs font-medium text-accent-500 hover:underline">
               Forgot your password?
             </Link>
           </div>
@@ -89,7 +89,7 @@ export function AuthForm({
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-lg bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-60"
+          className="w-full rounded-lg bg-accent-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-500 disabled:opacity-60"
         >
           {pending ? "Please wait…" : isSignup ? "Sign up" : "Log in"}
         </button>
@@ -116,12 +116,12 @@ export function AuthForm({
         {isSignup ? (
           <>
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-cyan-500 hover:underline">Log in</Link>
+            <Link href="/login" className="font-semibold text-accent-500 hover:underline">Log in</Link>
           </>
         ) : (
           <>
             New here?{" "}
-            <Link href="/signup" className="font-semibold text-cyan-500 hover:underline">Create an account</Link>
+            <Link href="/signup" className="font-semibold text-accent-500 hover:underline">Create an account</Link>
           </>
         )}
       </p>

@@ -5,21 +5,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Light theme */
-  --background: #f5f6f8;
-  --foreground: #0b0f14;
+  /* Light "broadcast day": cool chalk + navy ink */
+  --background: #eef1f6;
+  --foreground: #0a0e1a;
   --card: #ffffff;
-  --card-border: #e6e8ec;
-  --muted: #5b6675;
+  --card-border: #d3dae6;
+  --muted: #55617a;
+  --gold: #1667c4;
+  --rule: #0a0e1a;
 }
 
 .dark {
-  /* Dark "sportsbook" theme */
-  --background: #080b11;
-  --foreground: #e9eef4;
-  --card: #111824;
-  --card-border: #1f2a38;
-  --muted: #8a97a8;
+  /* Dark "broadcast booth": stadium night + chalk */
+  --background: #0a0e1a;
+  --foreground: #eef3fb;
+  --card: #121a2e;
+  --card-border: #26324e;
+  --muted: #8493b2;
+  --gold: #3b93f2;
+  --rule: #eef3fb;
 }
 
 @theme inline {
@@ -28,30 +32,61 @@
   --color-card: var(--card);
   --color-cardborder: var(--card-border);
   --color-muted: var(--muted);
+  --color-gold: var(--gold);
+
+  /* Scoreboard-blue accent ramp. */
+  --color-accent-50: #eaf3fe;
+  --color-accent-100: #cfe4fd;
+  --color-accent-200: #a6cdfb;
+  --color-accent-300: #6fb0f8;
+  --color-accent-400: #3b93f2;
+  --color-accent-500: #1f7ee6;
+  --color-accent-600: #1667c4;
+  --color-accent-700: #14539c;
+  --color-accent-800: #16467d;
+  --color-accent-900: #163c68;
+  --color-accent-950: #0f2647;
+
+  /* Field green — semantic "win / positive", separate from the amber accent. */
+  --color-field-500: #35c05a;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-oswald);
 }
 
-/* Broadcast-style headline: condensed, uppercase, tight tracking. */
+/* Broadcast headline: condensed athletic caps, tight tracking. */
 .headline {
-  font-family: var(--font-oswald), system-ui, sans-serif;
+  font-family: var(--font-oswald), "Arial Narrow", system-ui, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.01em;
-  line-height: 0.95;
+  line-height: 0.92;
+}
+
+/* A hairline rule in the accent, e.g. under a masthead. */
+.rule-gold {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--gold);
 }
 
 body {
-  /* Subtle "stadium" glow at the top over the base background. */
+  /* Broadcast ground: faint vertical scanlines + an amber stage bloom on top. */
   background-color: var(--background);
-  background-image: radial-gradient(
-    1100px 520px at 50% -12%,
-    rgba(6, 182, 212, 0.09),
-    transparent 70%
-  );
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 62px,
+      color-mix(in srgb, var(--foreground) 4%, transparent) 62px 64px
+    ),
+    radial-gradient(
+      1100px 520px at 50% -12%,
+      color-mix(in srgb, var(--gold) 14%, transparent),
+      transparent 70%
+    );
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
 
 /* Card lift + slight grow on hover (for cards / larger interactables). */

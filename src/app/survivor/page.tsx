@@ -24,11 +24,11 @@ export default async function SurvivorListPage() {
             <Link
               key={p.id}
               href={`/survivor/${p.id}`}
-              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-cyan-500/50"
+              className="lift flex items-center justify-between rounded-xl border border-cardborder bg-card p-4 hover:border-accent-500/50"
             >
               <div className="font-bold">{p.title}</div>
               <span className="text-xs text-muted">
-                <span className="font-semibold text-cyan-500">
+                <span className="font-semibold text-accent-500">
                   {LEAGUE_LABELS[p.league]}
                 </span>{" "}
                 · {p.season}

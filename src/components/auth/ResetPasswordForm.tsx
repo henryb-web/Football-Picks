@@ -6,7 +6,7 @@ import { resetPasswordAction } from "@/lib/password-reset-actions";
 import type { FormState } from "@/lib/form-state";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30";
+  "mt-1 w-full rounded-lg border border-cardborder bg-background px-3 py-2 text-sm outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-500/30";
 const labelClass = "block text-sm font-medium text-foreground";
 
 export function ResetPasswordForm({ token }: { token: string }) {
@@ -40,7 +40,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-60"
+            className="w-full rounded-lg bg-accent-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-500 disabled:opacity-60"
           >
             {pending ? "Saving…" : "Reset password"}
           </button>

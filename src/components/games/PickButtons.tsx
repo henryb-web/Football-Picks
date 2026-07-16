@@ -52,14 +52,14 @@ export function PickButtons({
   }
 
   const base =
-    "min-w-[96px] rounded-lg border px-3 py-2 text-sm font-bold transition hover:scale-105 active:scale-95 disabled:opacity-60";
+    "min-w-[96px] rounded-md border px-3 py-2 text-xs font-bold uppercase tracking-wide transition hover:scale-105 active:scale-95 disabled:opacity-60";
   const unselected =
-    "border-cardborder text-foreground hover:border-cyan-400";
+    "border-cardborder text-foreground hover:border-accent-400";
 
   function classes(target: PickSide, color: string | null) {
     if (side !== target) return `${base} ${unselected}`;
     // Selected: tint with the team's color when we have one, else the accent.
-    return color ? `${base} text-white` : `${base} border-cyan-500 bg-cyan-600 text-white`;
+    return color ? `${base} text-white` : `${base} border-accent-500 bg-accent-600 text-white`;
   }
   function style(target: PickSide, color: string | null) {
     if (side === target && color) {

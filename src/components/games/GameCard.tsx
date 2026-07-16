@@ -113,7 +113,7 @@ export function GameCard({
           onOpen();
         }
       }}
-      className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+      className="lift relative cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card p-4 pl-5 text-left transition hover:border-accent-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
     >
         <span
           aria-hidden
@@ -131,15 +131,15 @@ export function GameCard({
         />
         <div className="relative flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="headline flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base sm:text-lg">
               <TeamLogo logo={game.awayTeam.logo} color={game.awayTeam.color} name={game.awayTeam.displayName} />
               {game.awayTeam.displayName}
-              <span className="text-muted">@</span>
+              <span className="font-sans text-xs lowercase text-muted">@</span>
               <TeamLogo logo={game.homeTeam.logo} color={game.homeTeam.color} name={game.homeTeam.displayName} />
               {game.homeTeam.displayName}
             </div>
             <div className="mt-1 text-xs text-muted">
-              <span className="font-semibold text-cyan-500">
+              <span className="font-semibold text-accent-500">
                 {LEAGUE_LABELS[game.league]}
               </span>
               {game.week ? ` · Wk ${game.week}` : ""} · {formatKickoff(kickoff, tz)}

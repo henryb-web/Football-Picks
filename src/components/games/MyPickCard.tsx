@@ -9,7 +9,7 @@ import type { GameCardData } from "./GameCard";
 import type { PickResult, PickSide } from "@/generated/prisma/client";
 
 const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
-  WIN: { label: "Win", className: "bg-cyan-600 text-white" },
+  WIN: { label: "Win", className: "bg-accent-600 text-white" },
   LOSS: { label: "Loss", className: "bg-red-600 text-white" },
   PUSH: { label: "Push", className: "bg-neutral-500 text-white" },
   VOID: { label: "Void", className: "bg-neutral-600 text-white" },
@@ -53,7 +53,7 @@ export function MyPickCard({
             setOpen(true);
           }
         }}
-        className="lift relative flex cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card text-left transition hover:border-cyan-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+        className="lift relative flex cursor-pointer overflow-hidden rounded-xl border border-cardborder bg-card text-left transition hover:border-accent-500/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
       >
         {/* picked-team color edge */}
         <span
@@ -68,7 +68,7 @@ export function MyPickCard({
             <span className="headline text-lg">{picked.displayName}</span>
           </div>
           <div className="mt-1 text-xs text-muted">
-            <span className="font-semibold text-cyan-500">
+            <span className="font-semibold text-accent-500">
               {LEAGUE_LABELS[game.league]}
             </span>
             {game.week ? ` · Wk ${game.week}` : ""} ·{" "}

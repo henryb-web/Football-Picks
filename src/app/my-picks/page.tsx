@@ -44,7 +44,7 @@ export default async function MyPicksPage() {
       {picks.length === 0 ? (
         <EmptyState icon={ClipboardList}>
           You haven&apos;t made any picks yet.{" "}
-          <Link href="/games" className="font-semibold text-cyan-500 hover:underline">
+          <Link href="/games" className="font-semibold text-accent-500 hover:underline">
             Go pick some games →
           </Link>
         </EmptyState>

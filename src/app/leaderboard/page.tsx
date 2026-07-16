@@ -21,7 +21,7 @@ function Movement({ m }: { m: number | null }) {
   if (m === 0) return <span className="text-[10px] text-muted">—</span>;
   const up = m > 0;
   return (
-    <span className={`text-[10px] font-bold ${up ? "text-cyan-400" : "text-red-400"}`}>
+    <span className={`text-[10px] font-bold ${up ? "text-accent-400" : "text-red-400"}`}>
       {up ? "▲" : "▼"}
       {Math.abs(m)}
     </span>
@@ -55,7 +55,7 @@ export default async function LeaderboardPage() {
             </thead>
             <tbody className="divide-y divide-cardborder">
               {rows.map((r, i) => (
-                <tr key={r.userId} className={r.userId === meId ? "bg-cyan-500/10" : ""}>
+                <tr key={r.userId} className={r.userId === meId ? "bg-accent-500/10" : ""}>
                   <td className="px-4 py-3">
                     <div className="flex items-baseline gap-1.5">
                       <span className={`font-display text-lg ${medalClass(i)}`}>

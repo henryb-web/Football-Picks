@@ -6,17 +6,19 @@ import { db } from "@/lib/db";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
+// Body: a clean neutral grotesque — the broadcast "chyron" copy face.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
+// Mono for tabular data (kickoff countdowns, scores).
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-// Condensed athletic display face for headlines, scores, and big numbers.
+// Display: condensed athletic capitals — jerseys, scoreboards, lower-thirds.
 const oswald = Oswald({
   variable: "--font-oswald",
   subsets: ["latin"],
@@ -57,7 +59,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* Apply theme before paint (account pref, else localStorage, else dark). */}
+        {/* Apply theme before paint (account pref, else localStorage, else dark booth). */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Header />
         {children}

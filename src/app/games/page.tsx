@@ -135,7 +135,7 @@ export default async function GamesPage({
       <h1 className="headline text-4xl sm:text-5xl">Games</h1>
 
       {!userId ? (
-        <p className="mt-4 rounded-lg bg-cyan-50 px-4 py-3 text-sm text-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-200">
+        <p className="mt-4 rounded-lg bg-accent-50 px-4 py-3 text-sm text-accent-800 dark:bg-accent-950/40 dark:text-accent-200">
           <Link href="/login" className="font-semibold underline">
             Log in
           </Link>{" "}
@@ -151,7 +151,7 @@ export default async function GamesPage({
             href={t.href}
             className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
               activeLeagueKey === t.key
-                ? "bg-cyan-600 text-white"
+                ? "bg-accent-600 text-white"
                 : "border border-cardborder hover:bg-card"
             }`}
           >
@@ -175,7 +175,7 @@ export default async function GamesPage({
               href={gamesHref(active, w)}
               className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
                 activeWeek === w
-                  ? "bg-cyan-600 text-white"
+                  ? "bg-accent-600 text-white"
                   : "border border-cardborder hover:bg-card"
               }`}
             >
@@ -186,7 +186,7 @@ export default async function GamesPage({
             href={gamesHref(active, "all")}
             className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
               activeWeek == null
-                ? "bg-cyan-600 text-white"
+                ? "bg-accent-600 text-white"
                 : "border border-cardborder hover:bg-card"
             }`}
           >
@@ -205,7 +205,7 @@ export default async function GamesPage({
           </span>
           <Link
             href={gamesHref(active, null)}
-            className="font-semibold text-cyan-500 hover:underline"
+            className="font-semibold text-accent-500 hover:underline"
           >
             Clear
           </Link>

@@ -38,8 +38,8 @@ function WinnerButton({
         type="submit"
         className={`rounded-md px-2.5 py-1 text-sm transition ${
           isWinner
-            ? "bg-cyan-600 font-bold text-white"
-            : "border border-cardborder hover:border-cyan-400"
+            ? "bg-accent-600 font-bold text-white"
+            : "border border-cardborder hover:border-accent-400"
         }`}
       >
         {entry.seed}. {entry.displayName}
@@ -80,12 +80,12 @@ export default async function ManageBracketPage({
   return (
     <main className="mx-auto w-full max-w-3xl space-y-8 px-6 py-10">
       <div>
-        <Link href="/admin/brackets" className="text-sm text-cyan-500 hover:underline">
+        <Link href="/admin/brackets" className="text-sm text-accent-500 hover:underline">
           ← All brackets
         </Link>
         <h1 className="mt-2 text-2xl font-black tracking-tight">{bracket.title}</h1>
         <p className="mt-1 text-sm text-muted">
-          <span className="font-semibold text-cyan-500">
+          <span className="font-semibold text-accent-500">
             {LEAGUE_LABELS[bracket.league]}
           </span>{" "}
           · {bracket.season} · status <span className="font-semibold">{bracket.status}</span>
@@ -97,7 +97,7 @@ export default async function ManageBracketPage({
             name="title"
             defaultValue={bracket.title}
             aria-label="Bracket name"
-            className="min-w-0 flex-1 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-cyan-500"
+            className="min-w-0 flex-1 rounded-lg border border-cardborder bg-background px-3 py-1.5 text-sm outline-none focus:border-accent-500"
           />
           <button className="rounded-lg border border-cardborder px-3 py-1.5 text-sm font-medium transition hover:bg-card">
             Rename
@@ -115,7 +115,7 @@ export default async function ManageBracketPage({
               type="submit"
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
                 bracket.status === s
-                  ? "bg-cyan-600 text-white"
+                  ? "bg-accent-600 text-white"
                   : "border border-cardborder hover:bg-card"
               }`}
             >
