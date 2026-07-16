@@ -5,10 +5,12 @@ import { db } from "@/lib/db";
 import { getLeaderboard } from "@/lib/scoring";
 import { getUserStats } from "@/lib/stats";
 import { formatKickoff } from "@/lib/format";
+import { LEAGUE_LABELS } from "@/lib/leagues";
 import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
 import { FavoriteTeamCard } from "./FavoriteTeamForm";
+import { FavoriteGamesCard } from "./FavoriteGamesCard";
 
 // Start of the football week containing `d`, anchored at Tuesday 12:00 UTC — a
 // dead zone between Monday-night games (which can spill into early Tuesday in UTC)
@@ -137,6 +139,53 @@ export default async function DashboardPage() {
     }),
   );
 
+  // Upcoming games across ALL three favorites, soonest first — for the rotating
+  // "Next up" card.
+  const favIds = [
+    prefs?.favoriteNflId,
+    prefs?.favoriteCfbId,
+    prefs?.favoriteHs6aId,
+  ].filter((x): x is string => Boolean(x));
+  const favGameRows = favIds.length
+    ? await db.game.findMany({
+        where: {
+          status: "SCHEDULED",
+          kickoff: { gt: now },
+          OR: [{ homeTeamId: { in: favIds } }, { awayTeamId: { in: favIds } }],
+        },
+        orderBy: { kickoff: "asc" },
+        take: 12,
+        include: {
+          homeTeam: { select: { displayName: true, name: true, color: true, logo: true, venue: true } },
+          awayTeam: { select: { displayName: true, name: true, color: true, logo: true } },
+        },
+      })
+    : [];
+  const favGames = favGameRows.map((g) => {
+    const favIsHome = favIds.includes(g.homeTeamId);
+    const favTeam = favIsHome ? g.homeTeam : g.awayTeam;
+    return {
+      id: g.id,
+      league: LEAGUE_LABELS[g.league],
+      week: g.week,
+      kickoffLabel: formatKickoff(g.kickoff, tz),
+      venue: g.homeTeam.venue,
+      favName: favTeam.displayName,
+      away: {
+        displayName: g.awayTeam.displayName,
+        color: g.awayTeam.color,
+        logo: g.awayTeam.logo,
+        isFav: favIds.includes(g.awayTeamId),
+      },
+      home: {
+        displayName: g.homeTeam.displayName,
+        color: g.homeTeam.color,
+        logo: g.homeTeam.logo,
+        isFav: favIsHome,
+      },
+    };
+  });
+
   return (
     <Page>
       <h1 className="headline text-4xl sm:text-5xl">
@@ -200,6 +249,13 @@ export default async function DashboardPage() {
         </div>
         <span className="text-2xl">{needPicks > 0 ? "⚠️" : "✓"}</span>
       </Link>
+
+      {favGames.length > 0 ? (
+        <div className="mt-8">
+          <h2 className="mb-2 text-lg font-bold">Favorite Next Up</h2>
+          <FavoriteGamesCard games={favGames} />
+        </div>
+      ) : null}
 
       <div className="mt-8">
         <h2 className="mb-2 text-lg font-bold">Your teams</h2>
