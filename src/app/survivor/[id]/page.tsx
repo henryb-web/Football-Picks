@@ -14,6 +14,7 @@ import {
   isPoolMember,
 } from "@/lib/survivor";
 import { SurvivorPicker } from "@/components/survivor/SurvivorPicker";
+import { TeamLogo } from "@/components/games/TeamLogo";
 import { Page } from "@/components/ui/Page";
 import { Avatar } from "@/components/Avatar";
 import { joinPoolAction } from "../actions";
@@ -24,6 +25,12 @@ const RESULT = {
   WIN: { label: "Survived", cls: "text-accent-500" },
   LOSS: { label: "Eliminated", cls: "text-red-500" },
   PENDING: { label: "Pending", cls: "text-muted" },
+} as const;
+
+const RESULT_PILL = {
+  WIN: "bg-accent-500/15 text-accent-500",
+  LOSS: "bg-red-500/15 text-red-500",
+  PENDING: "bg-background text-muted",
 } as const;
 
 export default async function SurvivorPoolPage({
@@ -191,10 +198,15 @@ export default async function SurvivorPoolPage({
           <h2 className="mb-2 text-lg font-bold">Your picks</h2>
           <div className="divide-y divide-cardborder overflow-hidden rounded-xl border border-cardborder bg-card">
             {view.picks.map((p) => (
-              <div key={p.id} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                <span className="text-muted">Week {p.week}</span>
-                <span className="font-semibold">{p.team.displayName}</span>
-                <span className={`text-xs font-semibold ${RESULT[p.result].cls}`}>
+              <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+                <span className="w-12 shrink-0 text-xs font-semibold uppercase tracking-wide text-muted">
+                  Wk {p.week}
+                </span>
+                <TeamLogo logo={p.team.logo} color={p.team.color} name={p.team.displayName} size={22} />
+                <span className="truncate font-semibold">{p.team.displayName}</span>
+                <span
+                  className={`ml-auto shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${RESULT_PILL[p.result]}`}
+                >
                   {RESULT[p.result].label}
                 </span>
               </div>
@@ -205,7 +217,17 @@ export default async function SurvivorPoolPage({
 
       {/* Standings */}
       <section className="mt-8">
-        <h2 className="mb-2 text-lg font-bold">Standings</h2>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-lg font-bold">Standings</h2>
+          {standings.length > 0 ? (
+            <span className="text-xs text-muted">
+              <span className="font-semibold text-accent-500">
+                {standings.filter((s) => s.alive).length} alive
+              </span>{" "}
+              · {standings.filter((s) => !s.alive).length} out
+            </span>
+          ) : null}
+        </div>
         {standings.length === 0 ? (
           <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
             No players yet — be the first to join.

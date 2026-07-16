@@ -21,7 +21,13 @@ export function PickButtons({
 }) {
   const [side, setSide] = useState<PickSide | null>(initialSide);
   const [error, setError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  function showFlash(msg: string) {
+    setFlash(msg);
+    setTimeout(() => setFlash(null), 1600);
+  }
 
   function choose(next: PickSide) {
     if (pending) return;
@@ -36,6 +42,8 @@ export function PickButtons({
         if ("error" in res) {
           setSide(prev);
           setError(res.error);
+        } else {
+          showFlash("Removed");
         }
       });
       return;
@@ -47,6 +55,8 @@ export function PickButtons({
       if ("error" in res) {
         setSide(prev);
         setError(res.error);
+      } else {
+        showFlash("Saved ✓");
       }
     });
   }
@@ -92,7 +102,11 @@ export function PickButtons({
           {homeLabel}
         </button>
       </div>
-      {error ? <span className="text-xs text-red-500">{error}</span> : null}
+      {error ? (
+        <span className="text-xs text-red-500">{error}</span>
+      ) : flash ? (
+        <span className="text-xs font-semibold text-accent-500">{flash}</span>
+      ) : null}
     </div>
   );
 }

@@ -88,14 +88,14 @@ export function FeaturedSlate({ slate }: { slate: SlateGame[] }) {
         </div>
 
         {/* Teams */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-          <div className="flex items-center gap-3 px-5 py-7">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center">
+          <div className="flex min-w-0 items-center gap-3 px-4 py-6 sm:px-5 sm:py-7">
             <TeamLogo logo={g.away.logo} color={g.away.color} name={g.away.displayName} size={44} />
-            <span className="headline block text-2xl sm:text-3xl">{g.away.displayName}</span>
+            <span className="headline min-w-0 text-lg sm:text-2xl md:text-3xl">{g.away.displayName}</span>
           </div>
-          <span className="px-2 font-mono text-xs text-muted">AT</span>
-          <div className="flex items-center justify-end gap-3 px-5 py-7 text-right">
-            <span className="headline block text-2xl sm:text-3xl">{g.home.displayName}</span>
+          <span className="px-1 font-mono text-xs text-muted sm:px-2">AT</span>
+          <div className="flex min-w-0 items-center justify-end gap-3 px-4 py-6 text-right sm:px-5 sm:py-7">
+            <span className="headline min-w-0 text-lg sm:text-2xl md:text-3xl">{g.home.displayName}</span>
             <TeamLogo logo={g.home.logo} color={g.home.color} name={g.home.displayName} size={44} />
           </div>
         </div>
