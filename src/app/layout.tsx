@@ -1,30 +1,28 @@
 import type { Metadata } from "next";
-import { Spectral, Cinzel, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Oswald } from "next/font/google";
 import "./globals.css";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
-// Body: a warm book serif, like the copy inside a gameday program.
-const bodySerif = Spectral({
-  variable: "--font-spectral",
+// Body: a clean neutral grotesque — the broadcast "chyron" copy face.
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
 });
 
-// Display: engraved Roman capitals — the collegiate "athletic department" mark.
-const displaySerif = Cinzel({
-  variable: "--font-cinzel",
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
-
-// Mono kept for tabular data (kickoff countdowns, ticket numbers).
+// Mono for tabular data (kickoff countdowns, scores).
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Display: condensed athletic capitals — jerseys, scoreboards, lower-thirds.
+const oswald = Oswald({
+  variable: "--font-oswald",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -52,16 +50,16 @@ export default async function RootLayout({
   } catch {
     /* ignore */
   }
-  const themeScript = `try{var p=${JSON.stringify(themePref)};var t=p||localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}if(p){localStorage.setItem('theme',p)}}catch(e){}`;
+  const themeScript = `try{var p=${JSON.stringify(themePref)};var t=p||localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}if(p){localStorage.setItem('theme',p)}}catch(e){}`;
 
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bodySerif.variable} ${displaySerif.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {/* Apply theme before paint (account pref, else localStorage, else light paper). */}
+        {/* Apply theme before paint (account pref, else localStorage, else dark booth). */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Header />
         {children}

@@ -131,10 +131,10 @@ export function GameCard({
         />
         <div className="relative flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="headline flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base sm:text-lg">
               <TeamLogo logo={game.awayTeam.logo} color={game.awayTeam.color} name={game.awayTeam.displayName} />
               {game.awayTeam.displayName}
-              <span className="text-muted">@</span>
+              <span className="font-sans text-xs lowercase text-muted">@</span>
               <TeamLogo logo={game.homeTeam.logo} color={game.homeTeam.color} name={game.homeTeam.displayName} />
               {game.homeTeam.displayName}
             </div>

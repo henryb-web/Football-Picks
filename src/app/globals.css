@@ -5,25 +5,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Light "gameday program": warm paper + ink */
-  --background: #e8e1d1;
-  --foreground: #1c1815;
-  --card: #f6f1e6;
-  --card-border: #d7ccb6;
-  --muted: #6d6150;
-  --gold: #9c7a34;
-  --rule: #1c1815;
+  /* Light "broadcast day": cool chalk + navy ink */
+  --background: #eef1f6;
+  --foreground: #0a0e1a;
+  --card: #ffffff;
+  --card-border: #d3dae6;
+  --muted: #55617a;
+  --gold: #1667c4;
+  --rule: #0a0e1a;
 }
 
 .dark {
-  /* Dark "night program": warm leather + cream */
-  --background: #171310;
-  --foreground: #ece4d5;
-  --card: #221b15;
-  --card-border: #382e22;
-  --muted: #a2937d;
-  --gold: #c8a24a;
-  --rule: #ece4d5;
+  /* Dark "broadcast booth": stadium night + chalk */
+  --background: #0a0e1a;
+  --foreground: #eef3fb;
+  --card: #121a2e;
+  --card-border: #26324e;
+  --muted: #8493b2;
+  --gold: #3b93f2;
+  --rule: #eef3fb;
 }
 
 @theme inline {
@@ -34,33 +34,36 @@
   --color-muted: var(--muted);
   --color-gold: var(--gold);
 
-  /* Burnt-orange accent ramp (replaces the old cyan). */
-  --color-accent-50: #faf2e8;
-  --color-accent-100: #f5e4cf;
-  --color-accent-200: #ebc79e;
-  --color-accent-300: #e0a968;
-  --color-accent-400: #d07e2c;
-  --color-accent-500: #bf5700;
-  --color-accent-600: #a44a00;
-  --color-accent-700: #833b02;
-  --color-accent-800: #632d06;
-  --color-accent-900: #4a2205;
-  --color-accent-950: #2c1402;
+  /* Scoreboard-blue accent ramp. */
+  --color-accent-50: #eaf3fe;
+  --color-accent-100: #cfe4fd;
+  --color-accent-200: #a6cdfb;
+  --color-accent-300: #6fb0f8;
+  --color-accent-400: #3b93f2;
+  --color-accent-500: #1f7ee6;
+  --color-accent-600: #1667c4;
+  --color-accent-700: #14539c;
+  --color-accent-800: #16467d;
+  --color-accent-900: #163c68;
+  --color-accent-950: #0f2647;
 
-  --font-sans: var(--font-spectral);
+  /* Field green — semantic "win / positive", separate from the amber accent. */
+  --color-field-500: #35c05a;
+
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-cinzel);
+  --font-display: var(--font-oswald);
 }
 
-/* Engraved collegiate headline: Roman capitals, open tracking. */
+/* Broadcast headline: condensed athletic caps, tight tracking. */
 .headline {
-  font-family: var(--font-cinzel), "Palatino Linotype", Georgia, serif;
+  font-family: var(--font-oswald), "Arial Narrow", system-ui, sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1;
+  letter-spacing: 0.01em;
+  line-height: 0.92;
 }
 
-/* A gold program hairline, optionally centered under a masthead. */
+/* A hairline rule in the accent, e.g. under a masthead. */
 .rule-gold {
   height: 0;
   border: 0;
@@ -68,16 +71,22 @@
 }
 
 body {
-  /* Faint warm bloom at the top, like stage light on paper. */
+  /* Broadcast ground: faint vertical scanlines + an amber stage bloom on top. */
   background-color: var(--background);
-  background-image: radial-gradient(
-    1100px 520px at 50% -12%,
-    color-mix(in srgb, var(--gold) 22%, transparent),
-    transparent 70%
-  );
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 62px,
+      color-mix(in srgb, var(--foreground) 4%, transparent) 62px 64px
+    ),
+    radial-gradient(
+      1100px 520px at 50% -12%,
+      color-mix(in srgb, var(--gold) 14%, transparent),
+      transparent 70%
+    );
   background-attachment: fixed;
   color: var(--foreground);
-  font-family: var(--font-spectral), "Palatino Linotype", Georgia, serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
 
 /* Card lift + slight grow on hover (for cards / larger interactables). */

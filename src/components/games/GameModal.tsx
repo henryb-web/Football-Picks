@@ -284,12 +284,12 @@ function TeamSide({
     >
       <TeamLogo logo={team.logo} color={team.color} size={36} name={team.displayName} />
       <div className="min-w-0">
-        <div className="truncate text-sm font-semibold">{team.displayName}</div>
+        <div className="headline truncate text-xl">{team.displayName}</div>
         {team.record ? (
-          <div className="text-xs text-muted">{team.record}</div>
+          <div className="text-xs tabular-nums text-muted">{team.record}</div>
         ) : null}
         {score != null ? (
-          <div className="font-display text-2xl font-semibold tabular-nums">{score}</div>
+          <div className="font-display text-3xl font-semibold tabular-nums">{score}</div>
         ) : null}
       </div>
     </div>
