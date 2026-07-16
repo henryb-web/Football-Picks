@@ -1,4 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+
+// Load test credentials (E2E_IDENTIFIER / E2E_PASSWORD) from .env.local, which
+// is gitignored — so passwords stay out of git and off the command line.
+dotenv.config({ path: path.resolve(__dirname, ".env.local") });
 
 // E2E config for PickSix. Runs against the local app; reuses a dev server if one
 // is already up, otherwise starts one.
