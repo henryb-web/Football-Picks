@@ -80,7 +80,7 @@ export function FavoriteGamesCard({ games }: { games: FavGame[] }) {
       </div>
 
       {/* Matchup */}
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-5">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-4 py-5">
         <Side team={g.away} />
         <span className="px-1 font-mono text-xs text-muted">AT</span>
         <Side team={g.home} right />

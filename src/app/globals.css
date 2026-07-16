@@ -70,6 +70,10 @@
   border-top: 1px solid var(--gold);
 }
 
+html {
+  overflow-x: hidden; /* viewport never scrolls sideways */
+}
+
 body {
   /* Broadcast ground: faint vertical scanlines + an amber stage bloom on top. */
   background-color: var(--background);
@@ -87,6 +91,7 @@ body {
   background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden; /* guard: the page never scrolls sideways */
 }
 
 /* Card lift + slight grow on hover (for cards / larger interactables). */

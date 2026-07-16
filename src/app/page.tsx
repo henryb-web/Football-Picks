@@ -64,14 +64,14 @@ export default async function Home() {
             <span className="inline-block size-1.5 rounded-full bg-accent-500" />
             NFL · College · Texas 6A
           </div>
-          <h1 className="headline text-7xl sm:text-8xl">
+          <h1 className="headline text-6xl sm:text-8xl">
             Pick<span className="text-accent-500">Six</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-muted">
             Pick your winner for NFL, NCAA, and UIL 6A games.
           </p>
 
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             {loggedIn ? (
               <>
                 <Link href="/games" className={primaryBtn}>Make your picks</Link>

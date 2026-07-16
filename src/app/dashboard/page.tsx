@@ -37,7 +37,8 @@ function StatCard({
   gold?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-cardborder bg-card p-4">
+    <div className="relative overflow-hidden rounded-xl border border-cardborder bg-card p-4">
+      <span aria-hidden className={`absolute inset-x-0 top-0 h-0.5 ${gold ? "bg-amber-400/70" : "bg-accent-500/40"}`} />
       <div className="text-[11px] font-semibold uppercase tracking-widest text-muted">
         {label}
       </div>

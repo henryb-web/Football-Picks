@@ -21,6 +21,7 @@ export function SurvivorPicker({
   const used = new Set(usedTeamIds);
   const [sel, setSel] = useState<string | null>(pickedTeamId);
   const [error, setError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   function pick(gameId: string, teamId: string) {
@@ -33,6 +34,9 @@ export function SurvivorPicker({
       if ("error" in r) {
         setSel(prev);
         setError(r.error);
+      } else {
+        setFlash("Pick locked in ✓");
+        setTimeout(() => setFlash(null), 1600);
       }
     });
   }
@@ -75,7 +79,11 @@ export function SurvivorPicker({
           </div>
         </div>
       ))}
-      {error ? <p className="text-xs text-red-500">{error}</p> : null}
+      {error ? (
+        <p className="text-xs text-red-500">{error}</p>
+      ) : flash ? (
+        <p className="text-xs font-semibold text-accent-500">{flash}</p>
+      ) : null}
     </div>
   );
 }
