@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 import { requireAdmin } from "@/lib/admin";
 import { db } from "@/lib/db";
 import { isLeague } from "@/lib/leagues";
+import { createSurvivorPool } from "@/lib/survivor";
 import type { AdminState } from "@/lib/admin-types";
 import type { League } from "@/generated/prisma/client";
 
@@ -12,6 +14,9 @@ export async function createSurvivorPoolAction(
   formData: FormData,
 ): Promise<AdminState> {
   await requireAdmin();
+  const session = await auth();
+  const ownerId = session?.user?.id;
+  if (!ownerId) return { error: "Not signed in." };
   const leagueRaw = String(formData.get("league") ?? "");
   if (!isLeague(leagueRaw)) return { error: "Pick a league." };
   const season = Number(formData.get("season"));
@@ -19,16 +24,15 @@ export async function createSurvivorPoolAction(
   const title =
     String(formData.get("title") ?? "").trim() || `${leagueRaw} ${season} Survivor`;
 
-  const existing = await db.survivorPool.findUnique({
-    where: { league_season: { league: leagueRaw as League, season } },
+  const res = await createSurvivorPool({
+    ownerId,
+    league: leagueRaw as League,
+    season,
+    title,
+    isPrivate: false,
   });
-  if (existing) {
-    return { error: "A survivor pool for that league and season already exists." };
-  }
+  if ("error" in res) return { error: res.error };
 
-  await db.survivorPool.create({
-    data: { league: leagueRaw as League, season, title },
-  });
   revalidatePath("/admin/survivor");
   revalidatePath("/survivor");
   return { ok: "Survivor pool created." };

@@ -82,6 +82,8 @@ model User {
   passwordResetTokens PasswordResetToken[]
   bracketPicks        BracketPick[]
   survivorPicks       SurvivorPick[]
+  survivorEntries     SurvivorEntry[]
+  ownedSurvivorPools  SurvivorPool[]  @relation("SurvivorOwner")
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -218,15 +220,35 @@ model BracketPick {
 // and you're out. Uses existing Games of the pool's league/season.
 
 model SurvivorPool {
-  id        String         @id @default(cuid())
+  id        String          @id @default(cuid())
   league    League
   season    Int
   title     String
-  active    Boolean        @default(true)
-  createdAt DateTime       @default(now())
+  active    Boolean         @default(true)
+  isPrivate Boolean         @default(false)
+  joinCode  String          @unique
+  ownerId   String
+  owner     User            @relation("SurvivorOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+  members   SurvivorEntry[]
   picks     SurvivorPick[]
 
-  @@unique([league, season])
+  @@index([ownerId])
+}
+
+// A user's membership in a pool. Membership (not just having a pick) is what
+// gates picking and appears in standings, so private pools can be joined via
+// code before any games are pickable.
+model SurvivorEntry {
+  id       String       @id @default(cuid())
+  poolId   String
+  pool     SurvivorPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime     @default(now())
+
+  @@unique([poolId, userId])
+  @@index([poolId])
 }
 
 model SurvivorPick {
