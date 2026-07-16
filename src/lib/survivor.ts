@@ -4,6 +4,78 @@ import type { League } from "@/generated/prisma/client";
 
 export type SurvivorActionResult = { ok: true } | { error: string };
 
+// Short, unambiguous join code (no 0/O/1/I/L).
+function generateJoinCode(): string {
+  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i = 0; i < 6; i++) {
+    s += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return s;
+}
+
+export async function createSurvivorPool(input: {
+  ownerId: string;
+  league: League;
+  season: number;
+  title: string;
+  isPrivate: boolean;
+}): Promise<{ id: string; joinCode: string } | { error: string }> {
+  let joinCode = generateJoinCode();
+  for (let i = 0; i < 6; i++) {
+    const clash = await db.survivorPool.findUnique({ where: { joinCode } });
+    if (!clash) break;
+    joinCode = generateJoinCode();
+  }
+  const pool = await db.survivorPool.create({
+    data: {
+      league: input.league,
+      season: input.season,
+      title: input.title,
+      isPrivate: input.isPrivate,
+      joinCode,
+      ownerId: input.ownerId,
+      members: { create: { userId: input.ownerId } }, // owner is auto-joined
+    },
+    select: { id: true, joinCode: true },
+  });
+  return pool;
+}
+
+export async function isPoolMember(poolId: string, userId: string): Promise<boolean> {
+  const entry = await db.survivorEntry.findUnique({
+    where: { poolId_userId: { poolId, userId } },
+  });
+  return Boolean(entry);
+}
+
+export async function joinPool(userId: string, poolId: string): Promise<SurvivorActionResult> {
+  const pool = await db.survivorPool.findUnique({ where: { id: poolId } });
+  if (!pool || !pool.active) return { error: "This pool isn't active." };
+  await db.survivorEntry.upsert({
+    where: { poolId_userId: { poolId, userId } },
+    create: { poolId, userId },
+    update: {},
+  });
+  return { ok: true };
+}
+
+export async function joinPoolByCode(
+  userId: string,
+  code: string,
+): Promise<{ ok: true; poolId: string } | { error: string }> {
+  const pool = await db.survivorPool.findUnique({
+    where: { joinCode: code.trim().toUpperCase() },
+  });
+  if (!pool || !pool.active) return { error: "No active pool with that code." };
+  await db.survivorEntry.upsert({
+    where: { poolId_userId: { poolId: pool.id, userId } },
+    create: { poolId: pool.id, userId },
+    update: {},
+  });
+  return { ok: true, poolId: pool.id };
+}
+
 // Earliest week that still has an open (unlocked, scheduled) game; falls back to
 // the lowest week present so the page always has something to show.
 export async function currentSurvivorWeek(
@@ -29,6 +101,16 @@ export async function setSurvivorPick(
 ): Promise<SurvivorActionResult> {
   const pool = await db.survivorPool.findUnique({ where: { id: poolId } });
   if (!pool || !pool.active) return { error: "This pool isn't active." };
+
+  // Must be a member to pick. Public pools auto-join on first pick; private
+  // pools require joining with the code first.
+  const member = await db.survivorEntry.findUnique({
+    where: { poolId_userId: { poolId, userId } },
+  });
+  if (!member) {
+    if (pool.isPrivate) return { error: "Join this private pool with its code first." };
+    await db.survivorEntry.create({ data: { poolId, userId } });
+  }
 
   const game = await db.game.findUnique({ where: { id: gameId } });
   if (!game) return { error: "Game not found." };
@@ -103,12 +185,28 @@ export type SurvivorStanding = {
 export async function getSurvivorStandings(
   poolId: string,
 ): Promise<SurvivorStanding[]> {
-  const picks = await db.survivorPick.findMany({
-    where: { poolId },
-    include: { user: { select: { id: true, username: true, name: true } } },
-  });
+  const [entries, picks] = await Promise.all([
+    db.survivorEntry.findMany({
+      where: { poolId },
+      include: { user: { select: { id: true, username: true, name: true } } },
+    }),
+    db.survivorPick.findMany({
+      where: { poolId },
+      include: { user: { select: { id: true, username: true, name: true } } },
+    }),
+  ]);
 
   const byUser = new Map<string, SurvivorStanding>();
+  // Seed every member so those who haven't picked yet still appear.
+  for (const e of entries) {
+    byUser.set(e.userId, {
+      userId: e.userId,
+      name: e.user.username ?? e.user.name ?? "Player",
+      survived: 0,
+      alive: true,
+      eliminatedWeek: null,
+    });
+  }
   for (const p of picks) {
     const e =
       byUser.get(p.userId) ??

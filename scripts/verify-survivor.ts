@@ -6,6 +6,7 @@ import {
   setSurvivorPick,
   gradeSurvivorForGame,
   getSurvivorStandings,
+  createSurvivorPool,
 } from "@/lib/survivor";
 
 const SEASON = 2095;
@@ -39,9 +40,15 @@ async function main() {
 
   const g1 = await makeGame(1, "SurvA", "SurvB"); // week 1
   const g2 = await makeGame(2, "SurvA", "SurvC"); // week 2 (SurvA again)
-  const pool = await db.survivorPool.create({
-    data: { league: "NFL", season: SEASON, title: "Survivor test" },
+  const created = await createSurvivorPool({
+    ownerId: user.id,
+    league: "NFL",
+    season: SEASON,
+    title: "Survivor test",
+    isPrivate: false,
   });
+  if ("error" in created) throw new Error(created.error);
+  const pool = { id: created.id };
 
   const r1 = await setSurvivorPick(user.id, pool.id, g1.id, g1.homeTeamId); // SurvA wk1
   console.log("pick week1 (SurvA):", "ok" in r1 ? "OK" : `FAIL ${(r1 as { error: string }).error}`);
