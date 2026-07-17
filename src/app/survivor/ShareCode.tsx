@@ -19,7 +19,7 @@ export function ShareCode({ code }: { code: string }) {
         <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
           Invite code
         </div>
-        <div className="headline text-2xl tracking-[0.25em] text-accent-500">{code}</div>
+        <div data-testid="invite-code" className="headline text-2xl tracking-[0.25em] text-accent-500">{code}</div>
       </div>
       <button
         type="button"
