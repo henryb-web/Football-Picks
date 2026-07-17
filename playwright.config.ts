@@ -26,8 +26,18 @@ export default defineConfig({
   },
 
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile", use: { ...devices["Pixel 5"] } },
+    // Logs in once and saves the session; the browser projects depend on it.
+    { name: "setup", testMatch: /.*\.setup\.ts/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
+    },
+    {
+      name: "mobile",
+      use: { ...devices["Pixel 5"] },
+      dependencies: ["setup"],
+    },
   ],
 
   webServer: {
