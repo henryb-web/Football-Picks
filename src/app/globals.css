@@ -153,7 +153,8 @@ body {
     transform: none;
   }
   .animate-bar,
-  .animate-modalfade {
+  .animate-modalfade,
+  .animate-pulse {
     animation: none;
   }
 }
