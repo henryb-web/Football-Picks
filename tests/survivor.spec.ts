@@ -70,6 +70,21 @@ test.describe("signed in", () => {
     await expect(page.getByText("Invite code")).toBeVisible();
   });
 
+  test("join a pool owned by another user, by invite code", async ({ page }) => {
+    // Unlike the test above (which "joins" a pool you own), this exercises the
+    // real foreign-join path. Depends on a local pool with this code owned by
+    // someone other than the test user (seeded manually as `henryb`); it will
+    // fail on a fresh/CI DB. TODO: seed via a second user for full portability.
+    const code = "B7HPHU";
+
+    await page.goto("/survivor");
+    await page.getByPlaceholder("Enter code").fill(code);
+    await page.getByRole("button", { name: "Join", exact: true }).click();
+
+    // Joining resolves the code and redirects into the pool.
+    await expect(page).toHaveURL(/\/survivor\/[a-z0-9]+/i);
+  });
+
   test("can make a survivor pick", async ({ page }) => {
     // A fresh NFL pool guarantees the current week has pickable games.
     const name = `E2E Pick ${Date.now()}`;
