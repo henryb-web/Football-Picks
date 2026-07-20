@@ -13,6 +13,26 @@
   --muted: #55617a;
   --gold: #1667c4;
   --rule: #0a0e1a;
+
+  /* Accent ramp (scoreboard blue) + semantics — referenced by @theme so a
+     skin can override the whole ramp at runtime by redefining these vars. */
+  --accent-50: #eaf3fe;
+  --accent-100: #cfe4fd;
+  --accent-200: #a6cdfb;
+  --accent-300: #6fb0f8;
+  --accent-400: #3b93f2;
+  --accent-500: #1f7ee6;
+  --accent-600: #1667c4;
+  --accent-700: #14539c;
+  --accent-800: #16467d;
+  --accent-900: #163c68;
+  --accent-950: #0f2647;
+  --field-500: #35c05a;
+
+  /* Foil ramp — only used by the .skin-rip treatment; harmless otherwise. */
+  --foil-a: #5ee7d0;
+  --foil-b: #ff7ac2;
+  --foil-c: #f2c85b;
 }
 
 .dark {
@@ -26,6 +46,51 @@
   --rule: #eef3fb;
 }
 
+/* ============================================================
+   THE RIP — glossy holo trading-card skin (opt-in via .skin-rip
+   on <html>, orthogonal to the .dark light/dark switch).
+   ============================================================ */
+.skin-rip {
+  /* Holo teal accent ramp (one of the foil colors, kept legible as text). */
+  --accent-50: #e7fbf6;
+  --accent-100: #c4f5ec;
+  --accent-200: #93ecdd;
+  --accent-300: #5ee7d0;
+  --accent-400: #34d6bd;
+  --accent-500: #16bfa4;
+  --accent-600: #0fa189;
+  --accent-700: #10806e;
+  --accent-800: #146458;
+  --accent-900: #124f47;
+  --accent-950: #062d29;
+  --field-500: #2fd07f;
+  --foil-a: #5ee7d0;
+  --foil-b: #ff7ac2;
+  --foil-c: #f2c85b;
+}
+
+.skin-rip:not(.dark) {
+  /* Rip "daylight": bright pull with the same holo accents. */
+  --background: #f4f1f8;
+  --foreground: #1b1420;
+  --card: #ffffff;
+  --card-border: #e7ddef;
+  --muted: #6c6076;
+  --gold: #c0269c;
+  --rule: #1b1420;
+}
+
+.skin-rip.dark {
+  /* Rip primary: plum-black cabinet, the natural home for foil. */
+  --background: #131019;
+  --foreground: #ece7f2;
+  --card: #1b1723;
+  --card-border: #2c2637;
+  --muted: #9990a6;
+  --gold: #ff7ac2;
+  --rule: #ece7f2;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -34,21 +99,21 @@
   --color-muted: var(--muted);
   --color-gold: var(--gold);
 
-  /* Scoreboard-blue accent ramp. */
-  --color-accent-50: #eaf3fe;
-  --color-accent-100: #cfe4fd;
-  --color-accent-200: #a6cdfb;
-  --color-accent-300: #6fb0f8;
-  --color-accent-400: #3b93f2;
-  --color-accent-500: #1f7ee6;
-  --color-accent-600: #1667c4;
-  --color-accent-700: #14539c;
-  --color-accent-800: #16467d;
-  --color-accent-900: #163c68;
-  --color-accent-950: #0f2647;
+  /* Accent ramp — resolves to the --accent-* vars so a skin can retint it. */
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+  --color-accent-900: var(--accent-900);
+  --color-accent-950: var(--accent-950);
 
-  /* Field green — semantic "win / positive", separate from the amber accent. */
-  --color-field-500: #35c05a;
+  /* Field green — semantic "win / positive", separate from the accent. */
+  --color-field-500: var(--field-500);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -115,6 +180,106 @@ body {
 }
 .pop:active {
   transform: scale(0.95);
+}
+
+/* ============================================================
+   THE RIP — visual treatment (only active under .skin-rip)
+   ============================================================ */
+
+/* Plum cabinet ground: holo pools instead of broadcast scanlines. */
+.skin-rip body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(
+      1200px 600px at 82% -12%,
+      color-mix(in srgb, var(--foil-b) 15%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 520px at -5% 0%,
+      color-mix(in srgb, var(--foil-a) 12%, transparent),
+      transparent 55%
+    );
+  background-attachment: fixed;
+}
+
+/* Foil holo border on every card surface (.lift): the card fill paints on the
+   padding box, the holo gradient on the border box — a reliable gradient
+   border with no mask-compositing. */
+.skin-rip .lift {
+  position: relative;
+  border-color: transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(
+        135deg,
+        var(--foil-a),
+        var(--foil-b) 45%,
+        var(--foil-c) 78%,
+        var(--foil-a)
+      )
+      border-box;
+}
+
+/* Glossy sweep across the card — swipes once on hover (the "foil" catch). */
+.skin-rip .lift::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    color-mix(in srgb, #fff 24%, transparent) 50%,
+    transparent 62%
+  );
+  transform: translateX(-130%);
+  pointer-events: none;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .skin-rip .lift:hover::after {
+    animation: ripSheen 0.9s ease;
+  }
+}
+@keyframes ripSheen {
+  to {
+    transform: translateX(130%);
+  }
+}
+
+/* Display face: the artifact's chunky condensed (Impact family) in place of
+   Oswald, for the wordmark, team names, and section titles. */
+.skin-rip .headline {
+  font-family: Impact, "Haettenschweiler", "Arial Narrow Bold", "Arial Narrow",
+    var(--font-oswald), sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* Pick-button labels share the condensed display face. */
+.skin-rip .pick-btn {
+  font-family: Impact, "Haettenschweiler", "Arial Narrow Bold", "Arial Narrow",
+    var(--font-oswald), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+/* Holo wordmark: the "6" chip and "PickSix" pull the foil ramp (holo text). */
+.skin-rip .logo-badge {
+  background-image: linear-gradient(135deg, var(--foil-a), var(--foil-b));
+  color: #191320;
+}
+.skin-rip .logo-mark,
+.skin-rip .logo-mark span {
+  background-image: linear-gradient(
+    100deg,
+    var(--foil-a),
+    var(--foil-b) 55%,
+    var(--foil-c)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 /* Consensus bar fills in on load. */

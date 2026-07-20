@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
@@ -10,6 +11,7 @@ import {
   PreferencesForm,
   DeleteAccount,
 } from "./forms";
+import { SkinToggle } from "./SkinToggle";
 
 function Section({
   title,
@@ -40,6 +42,7 @@ export default async function AccountPage() {
   if (!user) redirect("/login");
 
   const displayName = user.username ?? user.name ?? user.email ?? "You";
+  const skin = (await cookies()).get("skin")?.value === "rip" ? "rip" : "booth";
 
   return (
     <Page>
@@ -58,6 +61,9 @@ export default async function AccountPage() {
         </Section>
         <Section title="Password">
           <PasswordForm hasPassword={Boolean(user.passwordHash)} />
+        </Section>
+        <Section title="Look" desc="The app's visual style (saved on this device).">
+          <SkinToggle initial={skin} />
         </Section>
         <Section title="Preferences" desc="Theme and time zone.">
           <PreferencesForm

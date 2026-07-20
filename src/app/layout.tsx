@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono, Oswald } from "next/font/google";
 import "./globals.css";
 import { auth } from "@/auth";
@@ -52,11 +53,17 @@ export default async function RootLayout({
   }
   const themeScript = `try{var p=${JSON.stringify(themePref)};var t=p||localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}if(p){localStorage.setItem('theme',p)}}catch(e){}`;
 
+  // Visual skin (per-device, cookie-based): "rip" opts into The Rip look,
+  // anything else stays on the default Broadcast Booth. Rendered server-side
+  // so the class is present before first paint (no flash).
+  const skin = (await cookies()).get("skin")?.value;
+  const skinClass = skin === "rip" ? "skin-rip" : "";
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} dark h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${oswald.variable} ${skinClass} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {/* Apply theme before paint (account pref, else localStorage, else dark booth). */}
