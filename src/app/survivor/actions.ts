@@ -9,6 +9,7 @@ import {
   createSurvivorPool,
   joinPool,
   joinPoolByCode,
+  deleteSurvivorPool,
 } from "@/lib/survivor";
 import type { FormState } from "@/lib/form-state";
 import type { League } from "@/generated/prisma/client";
@@ -74,6 +75,23 @@ export async function joinByCodeAction(
 
   revalidatePath("/survivor");
   redirect(`/survivor/${res.poolId}`);
+}
+
+// Delete a pool the signed-in user owns (host-only, from the pool page).
+export async function deletePoolAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sign in to delete a pool." };
+  const poolId = String(formData.get("poolId") ?? "");
+  if (!poolId) return { error: "Missing pool." };
+
+  const res = await deleteSurvivorPool(session.user.id, poolId);
+  if ("error" in res) return { error: res.error };
+
+  revalidatePath("/survivor");
+  redirect("/survivor");
 }
 
 // Join a public pool (form on the pool page).

@@ -20,6 +20,7 @@ import { Avatar } from "@/components/Avatar";
 import { joinPoolAction } from "../actions";
 import { JoinByCodeForm } from "../JoinByCodeForm";
 import { ShareCode } from "../ShareCode";
+import { DeletePoolButton } from "../DeletePoolButton";
 
 const RESULT = {
   WIN: { label: "Survived", cls: "text-accent-500" },
@@ -52,6 +53,7 @@ export default async function SurvivorPoolPage({
   if (!pool) notFound();
 
   const member = userId ? await isPoolMember(pool.id, userId) : false;
+  const isOwner = userId != null && pool.ownerId === userId;
   const ownerName = pool.owner.username ?? pool.owner.name ?? "Someone";
 
   const header = (
@@ -257,6 +259,16 @@ export default async function SurvivorPoolPage({
           </div>
         )}
       </section>
+
+      {/* Host controls (owner only) */}
+      {isOwner ? (
+        <section className="mt-10 border-t border-cardborder pt-5">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
+            Host controls
+          </h2>
+          <DeletePoolButton poolId={pool.id} />
+        </section>
+      ) : null}
     </Page>
   );
 }

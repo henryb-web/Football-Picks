@@ -110,5 +110,21 @@ test.describe("signed in", () => {
     });
     await expect(pickerAfter.getByRole("button", { pressed: true })).toBeVisible();
   });
+
+  test("owner can delete a pool they created", async ({ page }) => {
+    const name = `E2E Delete ${Date.now()}`;
+    await page.goto("/survivor");
+    await page.getByLabel("Pool name").fill(name);
+    await page.getByRole("button", { name: "Create pool" }).click();
+    await expect(page).toHaveURL(/\/survivor\/[a-z0-9]+/i);
+
+    // Host controls appear for the owner; delete is a two-step confirm.
+    await page.getByRole("button", { name: "Delete pool" }).click();
+    await page.getByRole("button", { name: "Yes, delete" }).click();
+
+    // Redirects to the list and the pool no longer appears under Your pools.
+    await expect(page).toHaveURL(/\/survivor$/);
+    await expect(page.getByRole("link", { name })).toHaveCount(0);
+  });
 });
 

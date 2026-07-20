@@ -76,6 +76,24 @@ export async function joinPoolByCode(
   return { ok: true, poolId: pool.id };
 }
 
+// Delete a pool the caller owns. Cascades (via the schema) to every member's
+// SurvivorEntry and SurvivorPick rows, so this removes the pool for everyone.
+export async function deleteSurvivorPool(
+  userId: string,
+  poolId: string,
+): Promise<SurvivorActionResult> {
+  const pool = await db.survivorPool.findUnique({
+    where: { id: poolId },
+    select: { ownerId: true },
+  });
+  if (!pool) return { error: "Pool not found." };
+  if (pool.ownerId !== userId) {
+    return { error: "Only the pool's host can delete it." };
+  }
+  await db.survivorPool.delete({ where: { id: poolId } });
+  return { ok: true };
+}
+
 // Earliest week that still has an open (unlocked, scheduled) game; falls back to
 // the lowest week present so the page always has something to show.
 export async function currentSurvivorWeek(
