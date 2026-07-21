@@ -263,8 +263,10 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* Foil holo outline on the game modal (same treatment as the cards). */
+/* Foil holo outline on the game modal — a touch bolder than the cards (2px +
+   a soft holo glow) so it reads clearly on the larger surface. */
 .skin-rip .modal-panel {
+  border-width: 2px;
   border-color: transparent;
   background:
     linear-gradient(var(--card), var(--card)) padding-box,
@@ -276,6 +278,9 @@ body {
         var(--foil-a)
       )
       border-box;
+  box-shadow:
+    0 0 22px -4px color-mix(in srgb, var(--foil-b) 45%, transparent),
+    0 24px 60px -24px rgba(0, 0, 0, 0.8);
 }
 
 /* Holo wordmark: the "6" chip and "PickSix" pull the foil ramp (holo text). */
