@@ -1,5 +1,15 @@
 import { test, expect } from "@playwright/test";
+import { Client } from "pg";
 import { STORAGE_STATE } from "./auth-file";
+
+// Raw pg (not the generated Prisma client, which uses import.meta and won't
+// load under Playwright's CJS transform) against the same DB the dev server
+// uses — DATABASE_URL is loaded by playwright.config.ts. Used to seed fixtures.
+// Same alphabet as the app's join-code generator (no ambiguous 0/O/1/I/L).
+function randomJoinCode() {
+  const a = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 6 }, () => a[Math.floor(Math.random() * a.length)]).join("");
+}
 
 // --- Guest (signed out) ---
 test("a guest can open a public pool but is prompted to log in", async ({ page }) => {
@@ -71,18 +81,43 @@ test.describe("signed in", () => {
   });
 
   test("join a pool owned by another user, by invite code", async ({ page }) => {
-    // Unlike the test above (which "joins" a pool you own), this exercises the
-    // real foreign-join path. Depends on a local pool with this code owned by
-    // someone other than the test user (seeded manually as `henryb`); it will
-    // fail on a fresh/CI DB. TODO: seed via a second user for full portability.
-    const code = "B7HPHU";
+    // Seed a foreign pool (owned by a throwaway user) directly in the DB, then
+    // join it via the UI as the test user — the real foreign-join path with no
+    // dependency on pre-existing data. The E2E pool + e2e_ user are removed by
+    // global teardown.
+    const stamp = Date.now();
+    const code = randomJoinCode();
+    const userId = `e2e_user_${stamp}`;
+    const poolId = `e2e_pool_${stamp}`;
+    const db = new Client({ connectionString: process.env.DATABASE_URL });
+    await db.connect();
+    try {
+      await db.query(
+        `INSERT INTO "User" (id, email, username, name, "createdAt", "updatedAt")
+         VALUES ($1, $2, $3, $4, now(), now())`,
+        [userId, `e2e_${stamp}@example.com`, `e2e_${stamp}`.slice(0, 20), "E2E Owner"],
+      );
+      await db.query(
+        `INSERT INTO "SurvivorPool"
+           (id, league, season, title, active, "isPrivate", "joinCode", "ownerId", "createdAt")
+         VALUES ($1, 'NFL'::"League", $2, $3, true, false, $4, $5, now())`,
+        [poolId, new Date().getFullYear(), `E2E Foreign ${stamp}`, code, userId],
+      );
+      await db.query(
+        `INSERT INTO "SurvivorEntry" (id, "poolId", "userId", "joinedAt")
+         VALUES ($1, $2, $3, now())`, // owner is a member
+        [`e2e_entry_${stamp}`, poolId, userId],
+      );
+    } finally {
+      await db.end();
+    }
 
+    // As the test user (storageState), join that foreign pool by its code.
     await page.goto("/survivor");
     await page.getByPlaceholder("Enter code").fill(code);
     await page.getByRole("button", { name: "Join", exact: true }).click();
-
-    // Joining resolves the code and redirects into the pool.
     await expect(page).toHaveURL(/\/survivor\/[a-z0-9]+/i);
+    await expect(page.getByText("Invite code")).toBeVisible();
   });
 
   test("can make a survivor pick", async ({ page }) => {

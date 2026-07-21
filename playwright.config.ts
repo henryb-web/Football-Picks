@@ -15,6 +15,7 @@ dotenv.config({
 // is already up, otherwise starts one.
 export default defineConfig({
   testDir: "./tests",
+  globalTeardown: "./tests/global-teardown.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
