@@ -41,8 +41,11 @@ export function TeamLogo({
       <img
         src={logo}
         alt=""
-        className={`shrink-0 object-contain${halo}`}
-        style={{ width: size, height: size }}
+        className={`shrink-0${halo}`}
+        // objectFit inline so it can't be overridden to `fill` (which squishes
+        // non-square logos — most HS logos are 3:2, unlike the square pro/college
+        // marks). contain letterboxes them in the square box, no distortion.
+        style={{ width: size, height: size, objectFit: "contain" }}
       />
     );
   }
