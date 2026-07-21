@@ -16,7 +16,6 @@ AUTH_GOOGLE_ID=""
 AUTH_GOOGLE_SECRET=""
 
 # External data feeds (milestone 3)
-ODDS_API_KEY=""
 CFBD_API_KEY=""
 EOF
 echo "wrote .env.example"
