@@ -72,7 +72,7 @@ export function FeaturedSlate({ slate }: { slate: SlateGame[] }) {
 
       <div
         key={`${g.league}-${i}`}
-        className="animate-modalfade overflow-hidden rounded-lg border border-cardborder bg-card"
+        className="rip-hero animate-modalfade overflow-hidden rounded-lg border border-cardborder bg-card"
       >
         {/* Graphics bar */}
         <div className="flex items-stretch justify-between border-b border-cardborder bg-gradient-to-r from-accent-500/15 to-transparent">
