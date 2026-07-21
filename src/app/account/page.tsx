@@ -60,8 +60,16 @@ export default async function AccountPage() {
         <Section title="Profile" desc="Your display name and username.">
           <ProfileForm name={user.name ?? ""} username={user.username ?? ""} />
         </Section>
-        <Section title="Password">
-          <PasswordForm hasPassword={Boolean(user.passwordHash)} />
+        <Section title="Password" desc="The email you sign in with, and your password.">
+          <div className="space-y-4">
+            <div>
+              <span className="block text-sm font-medium text-foreground">Email</span>
+              <p className="mt-1 rounded-lg border border-cardborder bg-background px-3 py-2 text-sm text-muted">
+                {user.email}
+              </p>
+            </div>
+            <PasswordForm hasPassword={Boolean(user.passwordHash)} />
+          </div>
         </Section>
         <Section title="Look" desc="The app's visual style (saved on this device).">
           <SkinToggle initial={skin} />
