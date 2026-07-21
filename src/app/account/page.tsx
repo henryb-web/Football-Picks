@@ -57,10 +57,10 @@ export default async function AccountPage() {
             color={user.avatarColor}
           />
         </Section>
-        <Section title="Profile" desc="Your display name and username.">
+        <Section title="Profile">
           <ProfileForm name={user.name ?? ""} username={user.username ?? ""} />
         </Section>
-        <Section title="Password" desc="The email you sign in with, and your password.">
+        <Section title="Login">
           <div className="space-y-4">
             <div>
               <span className="block text-sm font-medium text-foreground">Email</span>
@@ -71,10 +71,10 @@ export default async function AccountPage() {
             <PasswordForm hasPassword={Boolean(user.passwordHash)} />
           </div>
         </Section>
-        <Section title="Look" desc="The app's visual style (saved on this device).">
+        <Section title="Look">
           <SkinToggle initial={skin} />
         </Section>
-        <Section title="Preferences" desc="Theme and time zone.">
+        <Section title="Preferences">
           <PreferencesForm
             theme={user.themePref ?? ""}
             timezone={user.timezone ?? ""}
