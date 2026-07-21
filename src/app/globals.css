@@ -263,6 +263,21 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* Foil holo outline on the game modal (same treatment as the cards). */
+.skin-rip .modal-panel {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(
+        135deg,
+        var(--foil-a),
+        var(--foil-b) 45%,
+        var(--foil-c) 78%,
+        var(--foil-a)
+      )
+      border-box;
+}
+
 /* Holo wordmark: the "6" chip and "PickSix" pull the foil ramp (holo text). */
 .skin-rip .logo-badge {
   background-image: linear-gradient(135deg, var(--foil-a), var(--foil-b));
