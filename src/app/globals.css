@@ -263,6 +263,20 @@ body {
   letter-spacing: 0.04em;
 }
 
+/* Selected pick: holo gradient fill replaces the team-color/accent fill. The
+   fill is set inline (background-color) so we overlay an opaque gradient
+   background-image; border-color is inline too, hence !important. */
+.skin-rip .pick-btn[aria-pressed="true"] {
+  background-image: linear-gradient(
+    120deg,
+    var(--foil-a),
+    var(--foil-b) 68%,
+    var(--foil-c)
+  );
+  border-color: transparent !important;
+  color: #17121d;
+}
+
 /* Foil holo outline on the game modal — a touch bolder than the cards (2px +
    a soft holo glow) so it reads clearly on the larger surface. */
 .skin-rip .modal-panel {
