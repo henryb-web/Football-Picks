@@ -68,6 +68,7 @@ model User {
   avatarColor    String?  // monogram color (hex without #) when no photo
   avatarEmoji    String?  // emoji avatar when no photo
   themePref      String?  // "light" | "dark" (null = system default)
+  skin           String?  // "booth" | "rip" — chosen visual skin (null = booth)
   timezone       String?  // IANA tz for displaying kickoff times, e.g. "America/Chicago"
   // Favorite team per league (plain id refs, no relation).
   favoriteNflId  String?

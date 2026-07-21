@@ -39,25 +39,28 @@ export default async function RootLayout({
   // A logged-in user's saved theme wins over the per-device localStorage value,
   // so it follows them across devices. Guarded so a DB hiccup can't blank the app.
   let themePref: string | null = null;
+  let dbSkin: string | null = null;
   try {
     const session = await auth();
     if (session?.user?.id) {
       const u = await db.user.findUnique({
         where: { id: session.user.id },
-        select: { themePref: true },
+        select: { themePref: true, skin: true },
       });
       themePref = u?.themePref ?? null;
+      dbSkin = u?.skin ?? null;
     }
   } catch {
     /* ignore */
   }
   const themeScript = `try{var p=${JSON.stringify(themePref)};var t=p||localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}if(p){localStorage.setItem('theme',p)}}catch(e){}`;
 
-  // Visual skin (per-device, cookie-based): "rip" opts into The Rip look,
-  // anything else stays on the default Broadcast Booth. Rendered server-side
-  // so the class is present before first paint (no flash).
-  const skin = (await cookies()).get("skin")?.value;
-  const skinClass = skin === "rip" ? "skin-rip" : "";
+  // Visual skin: a logged-in user's saved choice (dbSkin) follows them across
+  // devices; otherwise fall back to the per-device `skin` cookie. "rip" opts
+  // into The Rip look, anything else stays on the default Broadcast Booth.
+  // Rendered server-side so the class is present before first paint (no flash).
+  const cookieSkin = (await cookies()).get("skin")?.value ?? null;
+  const skinClass = (dbSkin ?? cookieSkin) === "rip" ? "skin-rip" : "";
 
   return (
     <html

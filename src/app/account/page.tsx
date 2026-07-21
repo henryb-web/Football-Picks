@@ -42,7 +42,8 @@ export default async function AccountPage() {
   if (!user) redirect("/login");
 
   const displayName = user.username ?? user.name ?? user.email ?? "You";
-  const skin = (await cookies()).get("skin")?.value === "rip" ? "rip" : "booth";
+  const skin =
+    (user.skin ?? (await cookies()).get("skin")?.value) === "rip" ? "rip" : "booth";
 
   return (
     <Page>

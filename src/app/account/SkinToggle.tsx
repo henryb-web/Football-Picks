@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { setSkinAction } from "./actions";
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -33,7 +34,8 @@ export function SkinToggle({ initial }: { initial: Skin }) {
 
   function choose(next: Skin) {
     setSkin(next);
-    applySkin(next);
+    applySkin(next); // instant preview + per-device cookie
+    void setSkinAction(next); // persist to the account (cross-device)
   }
 
   return (

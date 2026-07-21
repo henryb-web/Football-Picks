@@ -180,6 +180,18 @@ export async function setFavoriteTeamAction(
   return { ok: favoriteId ? "Favorite saved." : "Favorite cleared." };
 }
 
+// Persist the chosen visual skin to the account so it follows the user across
+// devices. The SkinToggle also flips the class + cookie client-side for an
+// instant, logged-out-friendly preview; this is the durable store.
+export async function setSkinAction(skin: string): Promise<void> {
+  const user = await currentUser();
+  await db.user.update({
+    where: { id: user.id },
+    data: { skin: skin === "rip" ? "rip" : "booth" },
+  });
+  revalidatePath("/", "layout");
+}
+
 export async function deleteAccountAction(): Promise<void> {
   const user = await currentUser();
   await db.user.delete({ where: { id: user.id } });
