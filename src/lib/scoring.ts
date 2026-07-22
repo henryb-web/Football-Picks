@@ -75,10 +75,12 @@ export type LeaderboardRow = {
 };
 
 // Global standings across all settled picks.
-export async function getLeaderboard(): Promise<LeaderboardRow[]> {
+// Pass `memberIds` to scope the board to a group's members; omit for global.
+export async function getLeaderboard(memberIds?: string[]): Promise<LeaderboardRow[]> {
+  const scope = memberIds ? { userId: { in: memberIds } } : {};
   const rows = await db.pick.groupBy({
     by: ["userId", "result"],
-    where: { result: { in: ["WIN", "LOSS", "PUSH"] } },
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] }, ...scope },
     _count: { _all: true },
     _sum: { pointsAwarded: true },
   });
@@ -102,7 +104,7 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
 
   // Each player's last-5 form (most recent settled picks).
   const recent = await db.pick.findMany({
-    where: { result: { in: ["WIN", "LOSS", "PUSH"] } },
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] }, ...scope },
     select: { userId: true, result: true },
     orderBy: { game: { kickoff: "desc" } },
   });
@@ -145,7 +147,7 @@ export async function getLeaderboard(): Promise<LeaderboardRow[]> {
   // so we don't need stored snapshots.
   const movement = new Map<string, number | null>();
   const settled = await db.pick.findMany({
-    where: { result: { in: ["WIN", "LOSS", "PUSH"] } },
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] }, ...scope },
     select: { userId: true, pointsAwarded: true, game: { select: { week: true } } },
   });
   const weeks = settled.map((p) => p.game.week).filter((w): w is number => w != null);

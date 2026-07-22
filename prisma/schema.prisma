@@ -85,6 +85,8 @@ model User {
   survivorPicks       SurvivorPick[]
   survivorEntries     SurvivorEntry[]
   ownedSurvivorPools  SurvivorPool[]  @relation("SurvivorOwner")
+  ownedPickemGroups   PickemGroup[]      @relation("PickemOwner")
+  pickemMemberships   PickemMembership[]
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -271,6 +273,34 @@ model SurvivorPick {
   @@unique([poolId, userId, week])
   @@index([gameId])
   @@index([poolId])
+}
+
+// --- Pick'em groups ---
+// Private/public groups with their own leaderboard. Picks stay global (one per
+// user per game); a group just scopes the standings to its members.
+model PickemGroup {
+  id        String             @id @default(cuid())
+  name      String
+  isPrivate Boolean            @default(true)
+  joinCode  String             @unique
+  ownerId   String
+  owner     User               @relation("PickemOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt DateTime           @default(now())
+  members   PickemMembership[]
+
+  @@index([ownerId])
+}
+
+model PickemMembership {
+  id       String      @id @default(cuid())
+  groupId  String
+  group    PickemGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime    @default(now())
+
+  @@unique([groupId, userId])
+  @@index([groupId])
 }
 
 model Team {

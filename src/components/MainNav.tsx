@@ -11,6 +11,7 @@ import {
   GitMerge,
   Skull,
   Trophy,
+  UsersRound,
   CalendarDays,
   ClipboardList,
   Settings,
@@ -35,6 +36,7 @@ const ITEMS: Item[] = [
   { href: "/brackets", label: "Brackets", icon: GitMerge },
   { href: "/survivor", label: "Survivor", icon: Skull },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/groups", label: "Groups", icon: UsersRound },
   { href: "/recap", label: "Recap", icon: CalendarDays },
   { href: "/my-picks", label: "My Picks", icon: ClipboardList, auth: true },
   { href: "/admin", label: "Admin", icon: Settings, admin: true },
@@ -70,7 +72,7 @@ export function MainNav({
             <span>Sports Extra</span>
             <span>Price: One Pick</span>
           </div>
-          <div className="pm-title">The PickSix Post</div>
+          <div className="pm-title">The Pick Post</div>
           <div className="pm-rule pm-rule-bot">
             <span>Sunday Edition</span>
             <span>NFL · College · Texas 6A</span>
