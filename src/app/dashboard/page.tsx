@@ -8,6 +8,7 @@ import { formatKickoff } from "@/lib/format";
 import { LEAGUE_LABELS } from "@/lib/leagues";
 import { Page } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
+import { BadgePills } from "@/components/Badges";
 import { Avatar } from "@/components/Avatar";
 import { FavoriteTeamCard } from "./FavoriteTeamForm";
 import { FavoriteGamesCard } from "./FavoriteGamesCard";
@@ -216,15 +217,8 @@ export default async function DashboardPage() {
       ) : null}
 
       {stats.badges.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {stats.badges.map((b) => (
-            <span
-              key={b.label}
-              className="rounded-full border border-cardborder bg-card px-3 py-1 text-xs font-semibold"
-            >
-              {b.emoji} {b.label}
-            </span>
-          ))}
+        <div className="mt-3">
+          <BadgePills badges={stats.badges} />
         </div>
       ) : null}
 

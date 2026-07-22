@@ -7,6 +7,8 @@ import { Page } from "@/components/ui/Page";
 import { Avatar } from "@/components/Avatar";
 import { getGroupLeaderboard, getGroupMessages, isGroupMember } from "@/lib/pickem-groups";
 import { getStandingsSeries } from "@/lib/scoring";
+import { getStatsForUsers } from "@/lib/stats";
+import { StreakFlame, BadgeChips } from "@/components/Badges";
 import { StandingsChart } from "@/components/StandingsChart";
 import { ShareCode } from "@/app/survivor/ShareCode";
 import { JoinGroupForm } from "../JoinGroupForm";
@@ -103,6 +105,7 @@ export default async function GroupPage({
   const rows = await getGroupLeaderboard(group.id);
   const messages = await getGroupMessages(group.id);
   const series = await getStandingsSeries(rows.map((r) => r.userId));
+  const stats = await getStatsForUsers(rows.map((r) => r.userId));
 
   return (
     <Page>
@@ -162,7 +165,15 @@ export default async function GroupPage({
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
                         <Avatar name={r.name} size={30} image={r.image} emoji={r.avatarEmoji} color={r.avatarColor} />
-                        <span className="font-medium">{r.name}</span>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium">{r.name}</span>
+                            <StreakFlame n={stats.get(r.userId)?.currentStreak ?? 0} />
+                          </div>
+                          <div className="mt-0.5">
+                            <BadgeChips badges={stats.get(r.userId)?.badges ?? []} max={3} />
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right font-display text-lg tabular-nums">{r.points}</td>

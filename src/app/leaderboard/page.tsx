@@ -1,8 +1,10 @@
 import { Trophy } from "lucide-react";
 import { auth } from "@/auth";
 import { getLeaderboard, getStandingsSeries } from "@/lib/scoring";
+import { getStatsForUsers } from "@/lib/stats";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
+import { StreakFlame, BadgeChips } from "@/components/Badges";
 import { Avatar } from "@/components/Avatar";
 import { StandingsChart } from "@/components/StandingsChart";
 
@@ -36,6 +38,7 @@ export default async function LeaderboardPage() {
     auth(),
   ]);
   const meId = session?.user?.id;
+  const stats = await getStatsForUsers(rows.map((r) => r.userId));
 
   return (
     <Page>
@@ -85,12 +88,14 @@ export default async function LeaderboardPage() {
                         color={r.avatarColor}
                       />
                       <div>
-                        <div className="font-medium">{r.name}</div>
-                        {r.form.length > 0 ? (
-                          <div className="mt-1">
-                            <FormPips form={r.form} />
-                          </div>
-                        ) : null}
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium">{r.name}</span>
+                          <StreakFlame n={stats.get(r.userId)?.currentStreak ?? 0} />
+                        </div>
+                        <div className="mt-1 flex items-center gap-2">
+                          {r.form.length > 0 ? <FormPips form={r.form} /> : null}
+                          <BadgeChips badges={stats.get(r.userId)?.badges ?? []} max={3} />
+                        </div>
                       </div>
                     </div>
                   </td>
