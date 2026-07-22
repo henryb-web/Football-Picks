@@ -1,0 +1,7 @@
+{
+  "//": "Auto-restarts `next dev` ONLY when the generated Prisma client changes (i.e. right after `prisma migrate dev` / `prisma generate`). This clears the client instance cached on globalThis in src/lib/db.ts, which otherwise serves a stale schema and 500s on any new column/model. Ordinary app edits are untouched — Next's own HMR handles those, so your open tab isn't needlessly restarted.",
+  "watch": ["src/generated/prisma"],
+  "ext": "ts,js",
+  "delay": "750",
+  "exec": "next dev"
+}
