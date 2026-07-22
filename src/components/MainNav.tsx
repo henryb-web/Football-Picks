@@ -62,6 +62,21 @@ export function MainNav({
 
   return (
     <header className="sticky top-0 z-20 border-b border-cardborder bg-card/80 backdrop-blur">
+      {/* Newspaper masthead — CSS-gated, only shown under The Post skin. */}
+      <div className="post-masthead" aria-hidden="true">
+        <div className="post-masthead-inner">
+          <div className="pm-rule pm-rule-top">
+            <span>Vol. I · No. 1</span>
+            <span>Sports Extra</span>
+            <span>Price: One Pick</span>
+          </div>
+          <div className="pm-title">The PickSix Post</div>
+          <div className="pm-rule pm-rule-bot">
+            <span>Sunday Edition</span>
+            <span>NFL · College · Texas 6A</span>
+          </div>
+        </div>
+      </div>
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-6 py-3">
         <Link href="/" onClick={() => setOpen(false)}>
           <Logo />
