@@ -72,7 +72,7 @@ export function MainNav({
             <span>Sports Extra</span>
             <span>Price: One Pick</span>
           </div>
-          <div className="pm-title">The Pick Post</div>
+          <div className="pm-title">The PickSix Post</div>
           <div className="pm-rule pm-rule-bot">
             <span>Sunday Edition</span>
             <span>NFL · College · Texas 6A</span>
