@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { formatGameDate, formatGameTime } from "@/lib/format";
 import { getUserTimeZone } from "@/lib/user-prefs";
+import { getLeaderboard } from "@/lib/scoring";
 import { FeaturedSlate, type SlateGame } from "./FeaturedSlate";
+import { PostFrontPage } from "./PostFrontPage";
 
 const LEAGUES = [
   { tag: "NFL", title: "Pro", blurb: "Every NFL matchup.", href: "/games?league=NFL" },
@@ -54,6 +57,27 @@ export default async function Home() {
     }),
   );
   const slate = slateRaw.filter((s): s is SlateGame => s !== null);
+
+  // Under The Post skin, the home route becomes an actual newspaper front page
+  // (lead story + ruled standings). Skin resolves like layout.tsx: logged-in
+  // account choice wins, else the per-device cookie.
+  let dbSkin: string | null = null;
+  if (session?.user?.id) {
+    try {
+      const u = await db.user.findUnique({
+        where: { id: session.user.id },
+        select: { skin: true },
+      });
+      dbSkin = u?.skin ?? null;
+    } catch {
+      /* ignore */
+    }
+  }
+  const skin = dbSkin ?? (await cookies()).get("skin")?.value ?? null;
+  if (skin === "post") {
+    const standings = await getLeaderboard();
+    return <PostFrontPage slate={slate} standings={standings} loggedIn={loggedIn} />;
+  }
 
   return (
     <main className="flex flex-1 flex-col">
