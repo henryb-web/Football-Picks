@@ -185,9 +185,10 @@ export async function setFavoriteTeamAction(
 // instant, logged-out-friendly preview; this is the durable store.
 export async function setSkinAction(skin: string): Promise<void> {
   const user = await currentUser();
+  const value = ["booth", "rip", "post"].includes(skin) ? skin : "booth";
   await db.user.update({
     where: { id: user.id },
-    data: { skin: skin === "rip" ? "rip" : "booth" },
+    data: { skin: value },
   });
   revalidatePath("/", "layout");
 }

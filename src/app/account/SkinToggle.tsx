@@ -5,7 +5,7 @@ import { setSkinAction } from "./actions";
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
-type Skin = "booth" | "rip";
+type Skin = "booth" | "rip" | "post";
 
 const OPTIONS: { id: Skin; name: string; desc: string }[] = [
   {
@@ -18,12 +18,19 @@ const OPTIONS: { id: Skin; name: string; desc: string }[] = [
     name: "The Rip",
     desc: "Plum cabinet + holo foil. Glossy trading-card energy.",
   },
+  {
+    id: "post",
+    name: "The Post",
+    desc: "Morning newspaper: newsprint, serif, box scores.",
+  },
 ];
 
 // Apply the choice to the live document: flip the class for an instant preview
 // and persist the cookie so layout.tsx renders it (before paint) next load.
 function applySkin(next: Skin) {
-  document.documentElement.classList.toggle("skin-rip", next === "rip");
+  const el = document.documentElement;
+  el.classList.toggle("skin-rip", next === "rip");
+  el.classList.toggle("skin-post", next === "post");
   document.cookie = `skin=${next}; path=/; max-age=${ONE_YEAR}; samesite=lax`;
 }
 

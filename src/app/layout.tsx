@@ -60,7 +60,9 @@ export default async function RootLayout({
   // into The Rip look, anything else stays on the default Broadcast Booth.
   // Rendered server-side so the class is present before first paint (no flash).
   const cookieSkin = (await cookies()).get("skin")?.value ?? null;
-  const skinClass = (dbSkin ?? cookieSkin) === "rip" ? "skin-rip" : "";
+  const skinPref = dbSkin ?? cookieSkin;
+  const skinClass =
+    skinPref === "rip" ? "skin-rip" : skinPref === "post" ? "skin-post" : "";
 
   return (
     <html
