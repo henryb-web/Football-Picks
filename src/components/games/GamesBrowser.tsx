@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { GameCard, type GameCardData } from "./GameCard";
 import { GameModal } from "./GameModal";
-import type { PickSide } from "@/generated/prisma/client";
+import type { Confidence, PickSide } from "@/generated/prisma/client";
 
 // One row in the games list — everything the card and its modal need.
 export type GameEntry = {
   game: GameCardData;
   pick: PickSide | null;
+  confidence: Confidence | null;
   consensus: { home: number; away: number };
   locked: boolean;
 };
@@ -36,6 +37,7 @@ export function GamesBrowser({
           key={e.game.id}
           game={e.game}
           pick={e.pick}
+          confidence={e.confidence}
           consensus={e.consensus}
           loggedIn={loggedIn}
           locked={e.locked}
@@ -47,6 +49,7 @@ export function GamesBrowser({
         <GameModal
           game={current.game}
           pick={current.pick}
+          confidence={current.confidence}
           consensus={current.consensus}
           locked={current.locked}
           loggedIn={loggedIn}

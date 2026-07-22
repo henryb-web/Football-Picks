@@ -7,7 +7,8 @@ import { PickButtons } from "./PickButtons";
 import { TeamLogo } from "./TeamLogo";
 import { LockCountdown } from "./LockCountdown";
 import { ConsensusBar } from "./ConsensusBar";
-import type { League, GameStatus, PickSide } from "@/generated/prisma/client";
+import { CONFIDENCE_META } from "@/lib/confidence";
+import type { Confidence, League, GameStatus, PickSide } from "@/generated/prisma/client";
 
 // A prior-season snapshot (NFL/CFB): record + key statistical leaders.
 export type SeasonLeader = {
@@ -76,6 +77,7 @@ export type GameCardData = {
 export function GameCard({
   game,
   pick,
+  confidence,
   consensus,
   loggedIn,
   locked,
@@ -84,6 +86,7 @@ export function GameCard({
 }: {
   game: GameCardData;
   pick: PickSide | null;
+  confidence: Confidence | null;
   consensus: { home: number; away: number };
   loggedIn: boolean;
   locked: boolean;
@@ -169,6 +172,7 @@ export function GameCard({
                   awayColor={game.awayTeam.color}
                   homeColor={game.homeTeam.color}
                   initialSide={pick}
+                  initialConfidence={confidence}
                 />
               </div>
             ) : (
@@ -194,6 +198,14 @@ export function GameCard({
                     <span className="font-semibold text-foreground">
                       {pickLabel}
                     </span>
+                    {confidence ? (
+                      <span
+                        className="ml-1"
+                        title={`${CONFIDENCE_META[confidence].label} — correct +${CONFIDENCE_META[confidence].win}, wrong ${CONFIDENCE_META[confidence].loss}`}
+                      >
+                        {CONFIDENCE_META[confidence].emoji}
+                      </span>
+                    ) : null}
                   </span>
                 ) : null}
               </div>

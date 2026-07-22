@@ -55,7 +55,9 @@ export default async function MyPicksPage() {
               key={p.id}
               game={toGameCardData(p.game, recordFor, lastGameFor)}
               side={p.side}
+              confidence={p.confidence}
               result={p.result}
+              pointsAwarded={p.pointsAwarded}
               consensus={consensus.get(p.gameId) ?? { home: 0, away: 0 }}
               locked={isLocked(p.game)}
               loggedIn

@@ -39,6 +39,13 @@ enum PickResult {
   VOID
 }
 
+// Optional confidence wager on a pick. Untagged (null) scores the normal way
+// (correct +1 / wrong 0); tagging raises the reward and adds downside if wrong.
+enum Confidence {
+  STRONG // correct +2, wrong -1
+  LOCK   // correct +3, wrong -2
+}
+
 enum BracketStatus {
   SETUP // admin still seeding the field
   OPEN // picks accepted
@@ -397,6 +404,9 @@ model Pick {
   game   Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   side PickSide
+
+  // Optional confidence wager (null = untagged, scored normally).
+  confidence Confidence?
 
   result        PickResult @default(PENDING)
   pointsAwarded Int        @default(0)

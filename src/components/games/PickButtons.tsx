@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { setPickAction, clearPickAction } from "@/app/games/actions";
-import type { PickSide } from "@/generated/prisma/client";
+import {
+  setPickAction,
+  clearPickAction,
+  setPickConfidenceAction,
+} from "@/app/games/actions";
+import { CONFIDENCE_META } from "@/lib/confidence";
+import type { Confidence, PickSide } from "@/generated/prisma/client";
 
 export function PickButtons({
   gameId,
@@ -11,6 +16,7 @@ export function PickButtons({
   awayColor,
   homeColor,
   initialSide,
+  initialConfidence,
 }: {
   gameId: string;
   awayLabel: string;
@@ -18,8 +24,12 @@ export function PickButtons({
   awayColor: string | null;
   homeColor: string | null;
   initialSide: PickSide | null;
+  initialConfidence: Confidence | null;
 }) {
   const [side, setSide] = useState<PickSide | null>(initialSide);
+  const [confidence, setConfidence] = useState<Confidence | null>(
+    initialConfidence,
+  );
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -34,9 +44,10 @@ export function PickButtons({
     const prev = side;
     setError(null);
 
-    // Clicking your current pick again removes it.
+    // Clicking your current pick again removes it (and its confidence).
     if (side === next) {
       setSide(null);
+      setConfidence(null);
       startTransition(async () => {
         const res = await clearPickAction(gameId);
         if ("error" in res) {
@@ -61,6 +72,22 @@ export function PickButtons({
     });
   }
 
+  function chooseConfidence(next: Confidence | null) {
+    if (pending || !side) return;
+    const prev = confidence;
+    setError(null);
+    setConfidence(next);
+    startTransition(async () => {
+      const res = await setPickConfidenceAction(gameId, next);
+      if ("error" in res) {
+        setConfidence(prev);
+        setError(res.error);
+      } else {
+        showFlash(next ? `${CONFIDENCE_META[next].label} ✓` : "Cleared");
+      }
+    });
+  }
+
   const base =
     "pick-btn min-w-[96px] rounded-md border px-3 py-2 text-xs font-bold uppercase tracking-wide transition hover:scale-105 active:scale-95 disabled:opacity-60";
   const unselected =
@@ -76,6 +103,16 @@ export function PickButtons({
       return { backgroundColor: `#${color}`, borderColor: `#${color}` };
     }
     return undefined;
+  }
+
+  // Confidence chips: Normal (untagged) + each tier. Shown only once a side is
+  // picked, since confidence rides on top of an existing pick.
+  const cChip =
+    "rounded-full border px-2 py-0.5 text-[11px] font-semibold transition disabled:opacity-60";
+  function cClasses(active: boolean) {
+    return active
+      ? `${cChip} border-accent-500 bg-accent-600 text-white`
+      : `${cChip} border-cardborder text-muted hover:border-accent-400`;
   }
 
   return (
@@ -102,6 +139,41 @@ export function PickButtons({
           {homeLabel}
         </button>
       </div>
+
+      {side ? (
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+            Confidence
+          </span>
+          <button
+            type="button"
+            onClick={() => chooseConfidence(null)}
+            disabled={pending}
+            aria-pressed={confidence === null}
+            title="Normal — correct +1, wrong 0"
+            className={cClasses(confidence === null)}
+          >
+            Normal
+          </button>
+          {(Object.keys(CONFIDENCE_META) as Confidence[]).map((c) => {
+            const m = CONFIDENCE_META[c];
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => chooseConfidence(c)}
+                disabled={pending}
+                aria-pressed={confidence === c}
+                title={`${m.label} — correct +${m.win}, wrong ${m.loss}`}
+                className={cClasses(confidence === c)}
+              >
+                {m.emoji} {m.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
       {error ? (
         <span className="text-xs text-red-500">{error}</span>
       ) : flash ? (

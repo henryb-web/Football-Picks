@@ -17,8 +17,9 @@ import { formatGameDate, formatGameTime } from "@/lib/format";
 import { TeamLogo } from "./TeamLogo";
 import { LockCountdown } from "./LockCountdown";
 import { PickButtons } from "./PickButtons";
+import { CONFIDENCE_META } from "@/lib/confidence";
 import type { GameCardData, GameCardTeam } from "./GameCard";
-import type { League, PickSide } from "@/generated/prisma/client";
+import type { Confidence, League, PickSide } from "@/generated/prisma/client";
 
 // What `grouping` means per league (see the Team model comment).
 function groupingLabel(league: League): string {
@@ -36,6 +37,7 @@ function statusText(game: GameCardData, locked: boolean): string {
 export function GameModal({
   game,
   pick,
+  confidence = null,
   consensus,
   locked,
   loggedIn,
@@ -48,6 +50,7 @@ export function GameModal({
 }: {
   game: GameCardData;
   pick: PickSide | null;
+  confidence?: Confidence | null;
   consensus: { home: number; away: number };
   locked: boolean;
   loggedIn: boolean;
@@ -243,7 +246,17 @@ export function GameModal({
             {locked ? (
               <div className="rounded-lg bg-background px-3 py-2 text-sm">
                 {pickLabel ? (
-                  <span className="font-semibold text-foreground">{pickLabel}</span>
+                  <>
+                    <span className="font-semibold text-foreground">{pickLabel}</span>
+                    {confidence ? (
+                      <span
+                        className="ml-1.5 text-muted"
+                        title={`${CONFIDENCE_META[confidence].label} — correct +${CONFIDENCE_META[confidence].win}, wrong ${CONFIDENCE_META[confidence].loss}`}
+                      >
+                        {CONFIDENCE_META[confidence].emoji} {CONFIDENCE_META[confidence].label}
+                      </span>
+                    ) : null}
+                  </>
                 ) : (
                   <span className="text-muted">You didn&apos;t pick this game.</span>
                 )}
@@ -256,6 +269,7 @@ export function GameModal({
                 awayColor={game.awayTeam.color}
                 homeColor={game.homeTeam.color}
                 initialSide={pick}
+                initialConfidence={confidence}
               />
             )}
           </div>

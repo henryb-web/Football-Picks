@@ -1,18 +1,22 @@
 import { db } from "@/lib/db";
 import { gradeSurvivorForGame } from "@/lib/survivor";
-import type { PickResult, PickSide } from "@/generated/prisma/client";
+import { confidencePoints } from "@/lib/confidence";
+import type { Confidence, PickResult, PickSide } from "@/generated/prisma/client";
 
-// Straight-up grading: 1 point per correct winner; a tie is a push worth 0.
-// All leagues are scored this way — pick the winner, no spreads.
+// Straight-up grading: pick the winner (no spreads), then apply the pick's
+// confidence wager. Untagged: correct +1 / wrong 0. Strong: +2 / -1. Lock:
+// +3 / -2. A tie is a push worth 0. All leagues are scored this way.
 function gradeStraightUp(
   side: PickSide,
+  confidence: Confidence | null,
   homeScore: number,
   awayScore: number,
 ): { result: PickResult; points: number } {
   if (homeScore === awayScore) return { result: "PUSH", points: 0 };
   const homeWon = homeScore > awayScore;
   const correct = side === "HOME" ? homeWon : !homeWon;
-  return correct ? { result: "WIN", points: 1 } : { result: "LOSS", points: 0 };
+  const result: PickResult = correct ? "WIN" : "LOSS";
+  return { result, points: confidencePoints(result, confidence) };
 }
 
 // Grade (or reset) every pick on a game. Safe to call repeatedly: if the game
@@ -28,7 +32,7 @@ export async function settleGame(gameId: string): Promise<void> {
     game.status === "FINAL" && game.homeScore != null && game.awayScore != null;
   const picks = await db.pick.findMany({
     where: { gameId },
-    select: { id: true, side: true, result: true, pointsAwarded: true },
+    select: { id: true, side: true, confidence: true, result: true, pointsAwarded: true },
   });
 
   for (const p of picks) {
@@ -43,6 +47,7 @@ export async function settleGame(gameId: string): Promise<void> {
     }
     const { result, points } = gradeStraightUp(
       p.side,
+      p.confidence,
       game.homeScore as number,
       game.awayScore as number,
     );

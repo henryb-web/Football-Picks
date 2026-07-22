@@ -5,8 +5,9 @@ import { LEAGUE_LABELS } from "@/lib/leagues";
 import { formatKickoff } from "@/lib/format";
 import { TeamLogo } from "./TeamLogo";
 import { GameModal } from "./GameModal";
+import { CONFIDENCE_META } from "@/lib/confidence";
 import type { GameCardData } from "./GameCard";
-import type { PickResult, PickSide } from "@/generated/prisma/client";
+import type { Confidence, PickResult, PickSide } from "@/generated/prisma/client";
 
 const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
   WIN: { label: "Win", className: "bg-accent-600 text-white" },
@@ -21,7 +22,9 @@ const RESULT_BADGE: Record<PickResult, { label: string; className: string }> = {
 export function MyPickCard({
   game,
   side,
+  confidence,
   result,
+  pointsAwarded,
   consensus,
   locked,
   loggedIn,
@@ -29,7 +32,9 @@ export function MyPickCard({
 }: {
   game: GameCardData;
   side: PickSide;
+  confidence: Confidence | null;
   result: PickResult;
+  pointsAwarded: number;
   consensus: { home: number; away: number };
   locked: boolean;
   loggedIn: boolean;
@@ -39,6 +44,8 @@ export function MyPickCard({
   const picked = side === "HOME" ? game.homeTeam : game.awayTeam;
   const badge = RESULT_BADGE[result];
   const kickoff = new Date(game.kickoffISO);
+  const settled = result === "WIN" || result === "LOSS" || result === "PUSH";
+  const cm = confidence ? CONFIDENCE_META[confidence] : null;
 
   return (
     <>
@@ -66,6 +73,14 @@ export function MyPickCard({
           <div className="flex items-center gap-2">
             <TeamLogo logo={picked.logo} color={picked.color} size={22} name={picked.displayName} />
             <span className="headline text-lg">{picked.displayName}</span>
+            {cm ? (
+              <span
+                className="rounded-full border border-cardborder px-2 py-0.5 text-[11px] font-semibold text-muted"
+                title={`${cm.label} — correct +${cm.win}, wrong ${cm.loss}`}
+              >
+                {cm.emoji} {cm.label}
+              </span>
+            ) : null}
           </div>
           <div className="mt-1 text-xs text-muted">
             <span className="font-semibold text-accent-500">
@@ -79,12 +94,25 @@ export function MyPickCard({
           </div>
         </div>
         {/* perforated result stub */}
-        <div className="relative flex w-28 shrink-0 items-center justify-center border-l border-dashed border-cardborder">
+        <div className="relative flex w-28 shrink-0 flex-col items-center justify-center gap-1 border-l border-dashed border-cardborder">
           <span className="absolute left-0 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-background" />
           <span className="absolute bottom-0 left-0 h-3 w-3 -translate-x-1/2 translate-y-1/2 rounded-full bg-background" />
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${badge.className}`}>
             {badge.label}
           </span>
+          {settled ? (
+            <span
+              className={`text-xs font-bold tabular-nums ${
+                pointsAwarded > 0
+                  ? "text-accent-500"
+                  : pointsAwarded < 0
+                    ? "text-red-500"
+                    : "text-muted"
+              }`}
+            >
+              {pointsAwarded > 0 ? `+${pointsAwarded}` : pointsAwarded} pt
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -92,6 +120,7 @@ export function MyPickCard({
         <GameModal
           game={game}
           pick={side}
+          confidence={confidence}
           consensus={consensus}
           locked={locked}
           loggedIn={loggedIn}

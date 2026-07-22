@@ -13,7 +13,7 @@ import {
 import { GamesBrowser, type GameEntry } from "@/components/games/GamesBrowser";
 import { TeamSearch } from "@/components/games/TeamSearch";
 import { Page } from "@/components/ui/Page";
-import type { League, PickSide } from "@/generated/prisma/client";
+import type { Confidence, League, PickSide } from "@/generated/prisma/client";
 
 function gamesHref(league: string | null, week: string | number | null) {
   const params = new URLSearchParams();
@@ -100,12 +100,12 @@ export default async function GamesPage({
     take: 300,
   });
 
-  const pickMap = new Map<string, PickSide>();
+  const pickMap = new Map<string, { side: PickSide; confidence: Confidence | null }>();
   if (userId && games.length) {
     const picks = await db.pick.findMany({
       where: { userId, gameId: { in: games.map((g) => g.id) } },
     });
-    for (const p of picks) pickMap.set(p.gameId, p.side);
+    for (const p of picks) pickMap.set(p.gameId, { side: p.side, confidence: p.confidence });
   }
 
   const consensus = await getConsensus(games.map((g) => g.id));
@@ -113,12 +113,16 @@ export default async function GamesPage({
   const lastGameFor = await makeLastGameResolver(games);
   const tz = await getUserTimeZone();
 
-  const entries: GameEntry[] = games.map((g) => ({
-    game: toGameCardData(g, recordFor, lastGameFor),
-    pick: pickMap.get(g.id) ?? null,
-    consensus: consensus.get(g.id) ?? { home: 0, away: 0 },
-    locked: isLocked(g),
-  }));
+  const entries: GameEntry[] = games.map((g) => {
+    const mine = pickMap.get(g.id) ?? null;
+    return {
+      game: toGameCardData(g, recordFor, lastGameFor),
+      pick: mine?.side ?? null,
+      confidence: mine?.confidence ?? null,
+      consensus: consensus.get(g.id) ?? { home: 0, away: 0 },
+      locked: isLocked(g),
+    };
+  });
 
   const leagueTabs = [
     { key: "all", label: "All", href: gamesHref(null, null) },
