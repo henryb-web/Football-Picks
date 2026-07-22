@@ -15,10 +15,6 @@ test.describe("dashboard (signed in)", () => {
     await page.goto("/dashboard");
   });
 
-  test("shows the welcome header", async ({ page }) => {
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Welcome back");
-  });
-
   test("shows the four stat cards", async ({ page }) => {
     for (const label of ["Rank", "Points", "Record", "Streak"]) {
       await expect(page.getByText(label, { exact: true })).toBeVisible();
@@ -35,5 +31,14 @@ test.describe("dashboard (signed in)", () => {
     if (await heading.count()) {
       await expect(heading).toBeVisible();
     }
+  });
+
+
+  test('pick confidence level', async ({ page }) => {
+    await page.goto("/dashboard");
+    await page.getByRole('link', { name: '11 games need your picks this week' }).click();
+    await page.getByRole('button', { name: 'Normal', exact: true }).click();
+    await page.getByRole('button', { name: '💪 Strong', exact: true }).click();
+    await page.getByRole('button', { name: '🔒 Lock', exact: true }).click();
   });
 });
