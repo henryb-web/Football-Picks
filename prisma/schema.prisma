@@ -87,6 +87,7 @@ model User {
   ownedSurvivorPools  SurvivorPool[]  @relation("SurvivorOwner")
   ownedPickemGroups   PickemGroup[]      @relation("PickemOwner")
   pickemMemberships   PickemMembership[]
+  groupMessages       GroupMessage[]
 }
 
 // --- Auth.js (NextAuth) adapter models ---
@@ -287,8 +288,22 @@ model PickemGroup {
   owner     User               @relation("PickemOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   createdAt DateTime           @default(now())
   members   PickemMembership[]
+  messages  GroupMessage[]
 
   @@index([ownerId])
+}
+
+// Trash talk: a message feed scoped to a group (members post & read).
+model GroupMessage {
+  id        String      @id @default(cuid())
+  groupId   String
+  group     PickemGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime    @default(now())
+
+  @@index([groupId])
 }
 
 model PickemMembership {

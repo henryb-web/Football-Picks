@@ -8,6 +8,7 @@ import {
   joinGroup,
   joinGroupByCode,
   deletePickemGroup,
+  postGroupMessage,
 } from "@/lib/pickem-groups";
 import type { FormState } from "@/lib/form-state";
 
@@ -53,6 +54,20 @@ export async function joinGroupAction(formData: FormData): Promise<void> {
   if (!groupId) return;
   await joinGroup(session.user.id, groupId);
   revalidatePath(`/groups/${groupId}`);
+}
+
+export async function postMessageAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sign in to post." };
+  const groupId = String(formData.get("groupId") ?? "");
+  const body = String(formData.get("body") ?? "");
+  const res = await postGroupMessage(session.user.id, groupId, body);
+  if ("error" in res) return { error: res.error };
+  revalidatePath(`/groups/${groupId}`);
+  return { ok: "posted" };
 }
 
 export async function deleteGroupAction(

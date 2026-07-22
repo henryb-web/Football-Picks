@@ -1,9 +1,10 @@
 import { Trophy } from "lucide-react";
 import { auth } from "@/auth";
-import { getLeaderboard } from "@/lib/scoring";
+import { getLeaderboard, getStandingsSeries } from "@/lib/scoring";
 import { Page, PageHeader, EmptyState } from "@/components/ui/Page";
 import { FormPips } from "@/components/FormPips";
 import { Avatar } from "@/components/Avatar";
+import { StandingsChart } from "@/components/StandingsChart";
 
 // Gold / silver / bronze for the top three.
 function medalClass(i: number): string {
@@ -29,7 +30,11 @@ function Movement({ m }: { m: number | null }) {
 }
 
 export default async function LeaderboardPage() {
-  const [rows, session] = await Promise.all([getLeaderboard(), auth()]);
+  const [rows, series, session] = await Promise.all([
+    getLeaderboard(),
+    getStandingsSeries(),
+    auth(),
+  ]);
   const meId = session?.user?.id;
 
   return (
@@ -37,6 +42,12 @@ export default async function LeaderboardPage() {
       <PageHeader
         title="Leaderboard"
       />
+
+      {series.weeks.length >= 2 ? (
+        <div className="mb-4">
+          <StandingsChart data={series} meId={meId} />
+        </div>
+      ) : null}
 
       {rows.length === 0 ? (
         <EmptyState icon={Trophy}>

@@ -87,6 +87,60 @@ export async function deletePickemGroup(
   return { ok: true };
 }
 
+// --- Trash talk ---
+
+export type GroupMessageRow = {
+  id: string;
+  body: string;
+  createdAt: Date;
+  userId: string;
+  name: string;
+  image: string | null;
+  avatarColor: string | null;
+  avatarEmoji: string | null;
+};
+
+export async function getGroupMessages(
+  groupId: string,
+  limit = 50,
+): Promise<GroupMessageRow[]> {
+  const msgs = await db.groupMessage.findMany({
+    where: { groupId },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: {
+      user: { select: { username: true, name: true, image: true, avatarColor: true, avatarEmoji: true } },
+    },
+  });
+  return msgs
+    .map((m) => ({
+      id: m.id,
+      body: m.body,
+      createdAt: m.createdAt,
+      userId: m.userId,
+      name: m.user.username ?? m.user.name ?? "Player",
+      image: m.user.image,
+      avatarColor: m.user.avatarColor,
+      avatarEmoji: m.user.avatarEmoji,
+    }))
+    .reverse(); // oldest -> newest for chat display
+}
+
+export async function postGroupMessage(
+  userId: string,
+  groupId: string,
+  body: string,
+): Promise<GroupResult> {
+  const text = body.trim();
+  if (!text) return { error: "Say something first." };
+  if (text.length > 500) return { error: "Keep it under 500 characters." };
+  if (!(await isGroupMember(groupId, userId))) {
+    return { error: "Join the group to post." };
+  }
+  await db.groupMessage.create({ data: { groupId, userId, body: text } });
+  return { ok: true };
+}
+
 // Group standings: the global leaderboard scoped to members, plus any members
 // who haven't made a settled pick yet (shown 0–0 so the whole group appears).
 export async function getGroupLeaderboard(groupId: string): Promise<LeaderboardRow[]> {

@@ -5,11 +5,26 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Page } from "@/components/ui/Page";
 import { Avatar } from "@/components/Avatar";
-import { getGroupLeaderboard, isGroupMember } from "@/lib/pickem-groups";
+import { getGroupLeaderboard, getGroupMessages, isGroupMember } from "@/lib/pickem-groups";
+import { getStandingsSeries } from "@/lib/scoring";
+import { StandingsChart } from "@/components/StandingsChart";
 import { ShareCode } from "@/app/survivor/ShareCode";
 import { JoinGroupForm } from "../JoinGroupForm";
 import { DeleteGroupButton } from "../DeleteGroupButton";
+import { ChatComposer } from "../ChatComposer";
 import { joinGroupAction } from "../actions";
+
+// Approximate relative time, computed at render (server-side, so no hydration
+// mismatch — this page is a server component).
+function ago(d: Date): string {
+  const s = Math.max(0, (Date.now() - d.getTime()) / 1000);
+  if (s < 60) return "just now";
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
 
 function medalClass(i: number): string {
   return i === 0
@@ -86,6 +101,8 @@ export default async function GroupPage({
   }
 
   const rows = await getGroupLeaderboard(group.id);
+  const messages = await getGroupMessages(group.id);
+  const series = await getStandingsSeries(rows.map((r) => r.userId));
 
   return (
     <Page>
@@ -116,6 +133,11 @@ export default async function GroupPage({
       {/* Group standings */}
       <section className="mt-8">
         <h2 className="mb-2 text-lg font-bold">Standings</h2>
+        {series.weeks.length >= 2 ? (
+          <div className="mb-3">
+            <StandingsChart data={series} meId={userId} />
+          </div>
+        ) : null}
         {rows.length === 0 ? (
           <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
             No members yet.
@@ -153,6 +175,32 @@ export default async function GroupPage({
             </table>
           </div>
         )}
+      </section>
+
+      {/* Trash talk */}
+      <section className="mt-8">
+        <h2 className="mb-2 text-lg font-bold">Trash talk</h2>
+        {messages.length === 0 ? (
+          <p className="rounded-xl border border-cardborder bg-card p-5 text-sm text-muted">
+            No chatter yet{member ? " — start it off." : "."}
+          </p>
+        ) : (
+          <div className="space-y-3 rounded-xl border border-cardborder bg-card p-4">
+            {messages.map((m) => (
+              <div key={m.id} className="flex items-start gap-2.5">
+                <Avatar name={m.name} size={28} image={m.image} emoji={m.avatarEmoji} color={m.avatarColor} />
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-sm font-semibold">{m.name}</span>
+                    <span className="text-[11px] text-muted">{ago(m.createdAt)}</span>
+                  </div>
+                  <p className="break-words text-sm text-foreground/90">{m.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {member ? <ChatComposer groupId={group.id} /> : null}
       </section>
 
       {/* Owner controls */}

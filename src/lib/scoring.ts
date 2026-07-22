@@ -175,3 +175,58 @@ export async function getLeaderboard(memberIds?: string[]): Promise<LeaderboardR
 
   return base.map((r) => ({ ...r, movement: movement.get(r.userId) ?? null }));
 }
+
+export type StandingsSeries = {
+  weeks: number[];
+  series: { userId: string; name: string; cumulative: number[] }[];
+};
+
+// Cumulative points by week for the top players (default 6), for a line chart.
+// Pass `memberIds` to scope to a group; omit for global.
+export async function getStandingsSeries(
+  memberIds?: string[],
+  top = 6,
+): Promise<StandingsSeries> {
+  const scope = memberIds ? { userId: { in: memberIds } } : {};
+  const picks = await db.pick.findMany({
+    where: { result: { in: ["WIN", "LOSS", "PUSH"] }, ...scope },
+    select: { userId: true, pointsAwarded: true, game: { select: { week: true } } },
+  });
+
+  const weekSet = new Set<number>();
+  for (const p of picks) if (p.game.week != null) weekSet.add(p.game.week);
+  const weeks = [...weekSet].sort((a, b) => a - b);
+  if (weeks.length === 0) return { weeks: [], series: [] };
+
+  const perUserWeek = new Map<string, Map<number, number>>();
+  const totals = new Map<string, number>();
+  for (const p of picks) {
+    if (p.game.week == null) continue;
+    const uw = perUserWeek.get(p.userId) ?? new Map<number, number>();
+    uw.set(p.game.week, (uw.get(p.game.week) ?? 0) + p.pointsAwarded);
+    perUserWeek.set(p.userId, uw);
+    totals.set(p.userId, (totals.get(p.userId) ?? 0) + p.pointsAwarded);
+  }
+
+  const topIds = [...totals.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, top)
+    .map(([id]) => id);
+  const users = await db.user.findMany({
+    where: { id: { in: topIds } },
+    select: { id: true, username: true, name: true },
+  });
+  const nameOf = new Map(users.map((u) => [u.id, u.username ?? u.name ?? "Player"]));
+
+  const series = topIds.map((id) => {
+    const uw = perUserWeek.get(id) ?? new Map<number, number>();
+    let run = 0;
+    const cumulative = weeks.map((w) => {
+      run += uw.get(w) ?? 0;
+      return run;
+    });
+    return { userId: id, name: nameOf.get(id) ?? "Player", cumulative };
+  });
+
+  return { weeks, series };
+}
