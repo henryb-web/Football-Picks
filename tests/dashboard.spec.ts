@@ -34,11 +34,40 @@ test.describe("dashboard (signed in)", () => {
   });
 
 
-  test('pick confidence level', async ({ page }) => {
-    await page.goto("/dashboard");
-    await page.getByRole('link', { name: '11 games need your picks this week' }).click();
-    await page.getByRole('button', { name: 'Normal', exact: true }).click();
-    await page.getByRole('button', { name: '💪 Strong', exact: true }).click();
-    await page.getByRole('button', { name: '🔒 Lock', exact: true }).click();
+  test("setting a pick's confidence level toggles between the tiers", async ({ page }) => {
+    await page.goto("/games");
+
+    // First open (pickable) game card — the `has` filter guarantees the pick
+    // buttons rendered, i.e. it's not locked. Scope everything to this one card
+    // so other cards' confidence rows can't match.
+    const card = page
+      .locator('[aria-haspopup="dialog"]', { has: page.locator(".pick-btn") })
+      .first();
+    await expect(card).toBeVisible();
+
+    const strong = card.getByRole("button", { name: "Strong" });
+    const lock = card.getByRole("button", { name: "Lock" });
+    const normal = card.getByRole("button", { name: "Normal", exact: true });
+
+    // Confidence chips only appear once a side is picked. Pick a team if this
+    // card doesn't already have one (picks persist across runs).
+    if (!(await strong.isVisible())) {
+      await card.locator(".pick-btn").first().click();
+    }
+    await expect(normal).toBeVisible();
+
+    // Each tier is mutually exclusive (aria-pressed). Assert after each explicit
+    // click so the test is independent of the card's starting confidence.
+    await strong.click();
+    await expect(strong).toHaveAttribute("aria-pressed", "true");
+    await expect(normal).toHaveAttribute("aria-pressed", "false");
+
+    await lock.click();
+    await expect(lock).toHaveAttribute("aria-pressed", "true");
+    await expect(strong).toHaveAttribute("aria-pressed", "false");
+
+    await normal.click();
+    await expect(normal).toHaveAttribute("aria-pressed", "true");
+    await expect(lock).toHaveAttribute("aria-pressed", "false");
   });
 });
